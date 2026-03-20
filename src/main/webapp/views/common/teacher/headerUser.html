@@ -1,0 +1,84 @@
+<!DOCTYPE html >
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+</head>
+<body>
+<div id="menu-main" th:fragment="headerUser">
+  <header class="main-header">
+    <div class="container-fluid">
+      <div class="header-wrapper">
+        <div class="logo">
+          <i class="bi bi-mortarboard-fill"></i>
+          <span onclick="window.location.href='/teacher/index'" class="pointer">Internship System</span>
+        </div>
+        <ul class="main-menu">
+          <li>
+            <a href="/teacher/index"
+               th:classappend="${#httpServletRequest.requestURI == '/teacher/index'} ? 'active'">
+              Trang chủ
+            </a>
+          </li>
+
+          <li>
+            <a href="/teacher/blogs"
+               th:classappend="${#httpServletRequest.requestURI.startsWith('/teacher/blogs')} ? 'active'">
+              Thông báo
+            </a>
+          </li>
+
+          <li>
+            <a href="/teacher/documents"
+               th:classappend="${#httpServletRequest.requestURI.startsWith('/teacher/documents')} ? 'active'">
+              Tài nguyên
+            </a>
+          </li>
+
+          <li>
+            <a href="/teacher/company"
+               th:classappend="${#httpServletRequest.requestURI.startsWith('/teacher/company')} ? 'active'">
+              Doanh nghiệp liên kết
+            </a>
+          </li>
+
+          <li>
+            <a href="/teacher/project"
+               th:classappend="${#httpServletRequest.requestURI.startsWith('/teacher/project')} ? 'active'">
+              Quản lý
+            </a>
+          </li>
+        </ul>
+        <div class="search-container">
+          <i class="bi bi-search"></i>
+          <input type="text" placeholder="Tìm kiếm thông tin..." />
+        </div>
+        <div class="header-icons">
+          <i class="bi bi-bell"></i>
+          <i class="bi bi-person-circle" onclick="window.location.href='/teacher/my-account'"></i>
+          <i class="bi bi-box-arrow-right" onclick="window.location.href = '/logout'"></i>
+        </div>
+      </div>
+    </div>
+  </header>
+  <script>
+    let stompClient = null;
+
+    function connectOnline() {
+      const socket = new SockJS('/ws');
+      stompClient = Stomp.over(socket);
+      stompClient.connect({}, function (frame) {
+        console.log('Connected: ' + frame);
+        stompClient.subscribe('/topic/online', function (message) {
+        });
+      }, function (error) {
+        console.error('Connection socket failed:', error);
+        setTimeout(connect, 5000);
+      });
+    }
+
+    connectOnline();
+  </script>
+</div>
+</body>
+</html>
+

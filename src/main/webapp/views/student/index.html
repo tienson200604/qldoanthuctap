@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hệ thống quản lý thực tập</title>
+    <th:block th:include="common/user/libuser :: libheader"></th:block>
+</head>
+
+<body>
+<div th:replace="common/user/headerUser :: headerUser"></div>
+    <!-- HERO -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-wrapper">
+                <div class="row align-items-center">
+                    <div class="col-md-7 hero-left">
+                        <h1>Hệ thống quản lý thực tập sinh viên</h1>
+                        <p>
+                            Nền tảng hỗ trợ sinh viên trong toàn bộ quá trình thực tập:
+                            tìm kiếm công ty, đăng ký thực tập, gửi báo cáo tuần và
+                            nộp báo cáo tốt nghiệp trực tuyến.
+                        </p>
+                        <div class="hero-features">
+                            <div><i class="bi bi-check-circle"></i> Quản lý báo cáo tuần</div>
+                            <div><i class="bi bi-check-circle"></i> Đăng ký công ty thực tập</div>
+                            <div><i class="bi bi-check-circle"></i> Theo dõi tiến độ thực tập</div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="login-card">
+                            <i class="bi bi-person-circle login-icon"></i>
+                            <h4>Truy cập hệ thống</h4>
+                            <p>Các chức năng chính</p>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-login">
+                                    <i class="bi bi-box-arrow-in-right"></i>
+                                    Tài liệu
+                                </button>
+                                <button class="btn btn-login">
+                                    <i class="bi bi-box-arrow-in-right"></i>
+                                    Công ty
+                                </button>
+                                <button class="btn btn-login">
+                                    <i class="bi bi-box-arrow-in-right"></i>
+                                    Đăng ký thực tập
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="process-section">
+        <div class="container">
+            <h2 class="section-title">Quy Trình Thực Tập</h2>
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="process-card">
+                        <h5><i class="bi bi-search"></i> Tìm công ty</h5>
+                        <ul>
+                            <li>Xem danh sách công ty</li>
+                            <li>Tìm trên website</li>
+                            <li>Liên hệ công ty</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="process-card">
+                        <h5><i class="bi bi-file-earmark-text"></i> Giấy giới thiệu</h5>
+                        <ul>
+                            <li>Gửi đăng ký</li>
+                            <li>Chờ duyệt</li>
+                            <li>In giấy giới thiệu</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="process-card">
+                        <h5><i class="bi bi-journal-text"></i> Báo cáo tuần</h5>
+                        <ul>
+                            <li>Bắt đầu thực tập</li>
+                            <li>Gửi báo cáo</li>
+                            <li>Chỉnh sửa</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="process-card">
+                        <h5><i class="bi bi-check-circle"></i> Kết thúc</h5>
+                        <ul>
+                            <li>Phiếu chấm điểm</li>
+                            <li>Nhận xét</li>
+                            <li>Nộp báo cáo</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="news-section">
+        <div class="container">
+            <h2 class="section-title">Thông báo</h2>
+            <div th:each="b : ${newBlogs}" class="news-card pointer" th:onclick="|window.location.href = 'blog-detail?id=${b.id}'|">
+                <img th:src="${b.image}" style="width: 15%; border-radius: 8px; min-height: 100%; object-fit: cover">
+                <div class="news-content">
+                    <h5 th:text="${b.title}"></h5>
+                    <div th:text="${b.description}" class="mt-2 mb-2"></div>
+                    <p>
+                        <span><i class="fa fa-calendar"></i> <th:block th:text="${b.createdTime} + ' ' +${b.createdDate}"></th:block></span>
+                        <span class="ms-3"><i class="fa fa-user"></i> <th:block th:text="${b.user.fullname}"></th:block></span>
+                        <span class="ms-3"><i class="fa fa-eye"></i> <th:block th:text="${b.numView}"></th:block></span>
+                    </p>
+                    <p th:text="${b.category.name}" class="badge bg-primary"></p>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center">
+                <a href="/student/blogs" class="btn btn-primary">Xem tất cả thông báo</a>
+            </div>
+        </div>
+    </section>
+    <div th:replace="common/user/footeruser :: footerMain"></div>
+</body>
+</html>

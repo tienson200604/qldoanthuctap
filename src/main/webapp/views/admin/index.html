@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <link rel="icon" type="image/x-icon" href="/image/logo.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia">
+    <link href='https://fonts.googleapis.com/css?family=Quicksand' rel='stylesheet'>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.2/js/toastr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="../../css/styleadmin.css">
+    <script src="../../admin/js/main.js"></script>
+    <script src="../../admin/js/index.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        loadYearOptions("select-event-year");
+        loadYearOptions("select-user-year");
+        thongke();
+        thongKeSuKienThang();
+        thongKeDoanVienMoi();
+    });
+    </script>
+</head>
+<body>
+
+<div id="sidebar"></div>
+
+<header id="top-header"></header>
+
+<div id="main-content">
+    <div class="card p-4 border-0 shadow-sm">
+        <h2>📊 Dashboard Quản Trị Hệ Thống</h2>
+        <p>Chào mừng bạn trở lại hệ thống quản trị.</p>
+    </div>
+    <div class="dashboard-admin-container">
+
+        <!-- Tổng quan -->
+        <div class="row dashboard-admin-summary">
+            <div class="col-md-3">
+                <div class="dashboard-admin-card">
+                    <h6>Số người đang online</h6>
+                    <h3 th:text="${onlineUsers}" class="text-green"></h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-admin-card">
+                    <h6>Sinh viên</h6>
+                    <h3 th:text="${totalStudent}"></h3>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="dashboard-admin-card">
+                    <h6>Đăng ký</h6>
+                    <h3 th:text="${totalRegis}"></h3>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="dashboard-admin-card">
+                    <h6>Doanh nghiệp</h6>
+                    <h3 th:text="${totalCompany}"></h3>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="dashboard-admin-card">
+                    <h6>Đồ án</h6>
+                    <h3 th:text="${totalProject}"></h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-admin-card">
+                    <h6>Tài liệu</h6>
+                    <h3 th:text="${totalDocument}"></h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-admin-card">
+                    <h6>Bài viết</h6>
+                    <h3 th:text="${totalBlog}"></h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-admin-top-student mt-4">
+            <h5 class="dashboard-admin-title">🏆 Top sinh viên xuất sắc</h5>
+
+            <div class="row">
+                <div class="col-md-4"
+                     th:each="s, stat : ${topStudent}">
+
+                    <div class="dashboard-admin-student-card"
+                         th:classappend="${stat.index == 0} ? ' top-1' : ''">
+
+                        <!-- Rank -->
+                        <div class="dashboard-admin-rank">
+                            <span th:text="${stat.index + 1}"></span>
+                        </div>
+
+                        <!-- Avatar -->
+                        <div class="dashboard-admin-avatar">
+                            <img th:src="${s.student.avatar != null ? s.student.avatar : '/image/default-avatar.jpg'}">
+                        </div>
+
+                        <!-- Info -->
+                        <div class="dashboard-admin-info">
+                            <h6 th:text="${s.student.fullname}"></h6>
+                            <span th:text="${s.student.code}"></span>
+                        </div>
+
+                        <!-- Score -->
+                        <div class="dashboard-admin-score">
+                            <span th:text="${#numbers.formatDecimal(s.totalScore,1,2)}"></span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

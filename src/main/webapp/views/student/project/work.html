@@ -1,0 +1,102 @@
+<!DOCTYPE html >
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+</head>
+<body>
+<div th:fragment="work">
+    <div class="teacher-work-wrapper">
+        <div class="teacher-work-header d-flex align-items-center justify-content-between mb-4">
+
+            <!-- LEFT: Search + Sort -->
+            <div class="teacher-work-tools d-flex align-items-center gap-3">
+                <div class="teacher-work-search">
+                    <i class="bi bi-search"></i>
+                    <input onkeyup="loadWork(0)" type="text" placeholder="Tìm kiếm tiến độ..." id="work-search">
+                </div>
+                <select onchange="loadWork(0)" class="form-select teacher-work-sort" id="work-sort">
+                    <option value="id,desc">Mới nhất</option>
+                    <option value="id,asc">Cũ nhất</option>
+                    <option value="deadline,asc">Sắp hết hạn</option>
+                </select>
+            </div>
+        </div>
+        <div id="list-data-work">
+        </div>
+        <nav class="mt-3">
+            <ul id="pagination-work" class="pagination justify-content-center">
+            </ul>
+        </nav>
+    </div>
+    <input class="form-control" id="semesterTeacherId" th:value="${semesterTeacherId}" type="hidden">
+
+    <div class="modal fade" id="modal-send-word" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Cập nhật tiến độ công việc</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input id="idworkstd" type="hidden">
+                    <input id="idStudentRegis" type="hidden">
+                    <input id="idWorkProcess" type="hidden">
+                    <div class="form-floating form-add-user mt-4">
+                        <input class="form-control" id="workstdtitle" placeholder="Deadline">
+                        <label>Tiêu đề</label>
+                    </div>
+                    <div class="range-box mt-4">
+                        <div class="range-header">
+                            <span>% hoàn thành project</span>
+                            <span id="rangeValue">50%</span>
+                        </div>
+                        <input id="percentstdwork" type="range" min="0" max="100" value="50" oninput="updateRange(this)">
+                    </div>
+                    <label class="mt-3"><strong>Mô tả nội dung tiến độ</strong></label>
+                    <textarea id="contentStdTienDo" name="contentTienDo" class="teacher-project-detail"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button onclick="addStudentWork()" type="button" class="btn btn-primary">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-replay-std" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Thông tin phản hồi từ giảng viên</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h4>Ngày phản hồi: <span id="ngayphanhoi"></span></h4>
+                    <div id="noidungphanhoi" class="mt-3">
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $( document ).ready(function() {
+            loadWork(0);
+            updateRange(document.getElementById("percentstdwork"));
+        });
+        function updateRange(el) {
+            const val = el.value;
+            const percent = val + "%";
+
+            el.style.background = `linear-gradient(to right, #4f46e5 ${percent}, #e9ecef ${percent})`;
+            document.getElementById("rangeValue").innerText = percent;
+        }
+    </script>
+
+
+</div>
+</body>
+</html>

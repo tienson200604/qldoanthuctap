@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <th:block th:include="common/user/libuser :: libheader"></th:block>
+</head>
+<body>
+<div th:replace="common/user/headerUser :: headerUser"></div>
+<div class="account-layout content-page-main">
+  <div th:replace="common/user/sidebarUser :: sidebarMain"></div>
+  <div class="account-content">
+    <div class="account-content-inner">
+      <div class="account-project-containers">
+        <div class="account-project-header">
+          <h5 class="account-project-title">
+            <i class="bi bi-journal-text"></i>
+            Các đồ án đã đăng ký
+          </h5>
+        </div>
+        <div class="row g-4">
+          <div class="col-lg-6" th:each="c :${studentRegis}">
+            <div class="account-project-card"
+                 th:attr="onclick=${c.studentRegisStatus.name != 'DANG_CHO' && c.studentRegisStatus.name != 'DA_BI_DUOI'}
+     ? |window.location.href='/student/project-detail/' + ${c.id}|
+     : |swal({
+            icon: 'error',
+            title: 'Thông báo',
+            text: 'Bạn không có quyền truy cập vào đồ án này',
+            confirmButtonText: 'OK'
+        })|">
+              <div class="account-project-top">
+                <div class="account-project-type" th:text="${c.internshipType.displayName}"></div>
+                <div class="account-project-status badge"
+                     th:text="${c.studentRegisStatus.displayName}"
+                     th:style="'background-color: ' + ${c.studentRegisStatus.color}">
+                </div>
+              </div>
+              <div class="account-project-body">
+                <h6 class="account-project-name" th:if="${c.semesterTeacher != null && c.semesterTeacher.projectName != null && c.semesterTeacher.projectName != ''}">
+                  <span th:text="${c.semesterTeacher.projectName}"></span>
+                </h6>
+                <div class="account-project-teacher">
+                  <i class="bi bi-person-badge"></i>
+                  <span th:text="'Sinh viên thực hiện: '+${c.student.fullname}"></span>
+                </div>
+                <div class="account-project-teacher">
+                  <i class="bi bi-person-badge"></i>
+                  <span th:text="'Giảng viên hướng dẫn: '+${c.semesterTeacher.teacher.fullname}+' - Mã giảng viên: '+${c.semesterTeacher.teacher.code}"></span>
+                </div>
+                <div class="account-project-company" th:if="${c.internshipType.name=='TAI_TRUONG'}">
+                  <i class="bi bi-building"></i>
+                  <span>Thực tập tại trường</span>
+                </div>
+                <div class="account-project-company" th:if="${c.internshipType.name=='DOANH_NGHIEP_LIEN_KET'}">
+                  <i class="bi bi-building"></i>
+                  <span>Thực tập tại công ty liên kết</span>
+                </div>
+                <div class="account-project-company" th:if="${c.internshipType.name=='DOANH_NGHIEP_NGOAI'}">
+                  <i class="bi bi-building"></i>
+                  <span>Thực tập tại công ty ngoài</span>
+                </div>
+              </div>
+              <div class="account-project-footer">
+                <div class="account-project-date">
+                  <i class="bi bi-calendar"></i>
+                  <span th:text="${#temporals.format(c.localDateTime, 'HH:mm dd/MM/yy')}">15/03/2026</span>
+                </div>
+                <div class="account-project-score" th:if="${c.totalScore != null}">
+                  ⭐ <span th:text="${c.totalScore}"></span>
+                </div>
+              </div>
+              <div class="account-project-hover" th:if="${c.semesterTeacher != null && c.semesterTeacher.descriptionProject != null && c.semesterTeacher.descriptionProject != ''}">
+                <div class="account-project-hover-content">
+                  <div class="account-project-evaluate" th:text="${c.semesterTeacher.descriptionProject}">
+                    Đồ án có tính ứng dụng cao và đáp ứng tốt yêu cầu thực tế.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div th:replace="common/user/footeruser :: footerMain"></div>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html >
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+</head>
+<body>
+<div th:fragment="studentList">
+  <table id="table-student" class="table table-custome">
+    <thead>
+    <tr>
+      <th>Mã sinh viên</th>
+      <th>Họ tên</th>
+      <th>Liên lạc</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="c : ${studentRegis}" th:if="${c.studentRegisStatus.name != 'DANG_CHO' && c.studentRegisStatus.name != 'DA_BI_DUOI'}">
+      <td th:text="${c.student.code}"></td>
+      <td th:text="${c.student.fullname}"></td>
+      <td>
+        <span class="d-block"><i class="fa fa-envelope"></i> <th:block th:text="${c.student.email}"></th:block></span>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>

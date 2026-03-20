@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Đăng ký thực tập</title>
+  <th:block th:include="common/user/libuser :: libheader"></th:block>
+  <script src="/student/js/request.js"></script>
+  <script src="/student/js/regis-internship.js"></script>
+</head>
+<body>
+<div th:replace="common/user/headerUser :: headerUser"></div>
+<div class="container internship-container content-page-main mt-5">
+  <h3 class="fw-bold mb-3">Đăng ký thực tập</h3>
+  <p class="text-muted mb-4">
+    Chọn hình thức thực tập phù hợp với bạn
+  </p>
+  <div class="row g-4 mb-5">
+    <div class="col-md-4" th:if="${checkTaiTruong != null}">
+      <div class="internship-card" onclick="selectType('TAI_TRUONG')">
+        <div class="icon">🏫</div>
+        <h5>Tại trường</h5>
+        <p>
+          Thực tập tại trường, có sẵn giáo viên và đề tài.
+        </p>
+        <p>Ngày hết hạn: <th:block th:text="${#temporals.format(checkTaiTruong.deadlineRegis, 'HH:mm dd/MM/yy')}"></th:block></p>
+        <p class="badge bg-primary display-block" th:if="${checkTaiTruong.deadlineRegis.isAfter(T(java.time.LocalDateTime).now())}">
+          Còn
+          <th:block th:text="${T(java.time.temporal.ChronoUnit).DAYS.between(T(java.time.LocalDateTime).now(), checkTaiTruong.deadlineRegis)}"></th:block>
+          ngày để đăng ký
+        </p>
+
+        <p class="badge bg-danger display-block" th:if="${checkTaiTruong.deadlineRegis.isBefore(T(java.time.LocalDateTime).now())}">
+          Đã quá hạn đăng ký
+        </p>
+        <span class="badge bg-success">Duyệt tự động</span>
+      </div>
+    </div>
+
+    <div class="col-md-4" th:if="${checkDnLienKet != null}">
+      <div class="internship-card" onclick="selectType('CTY_LIEN_KET')">
+        <div class="icon">🏢</div>
+        <h5>Công ty liên kết</h5>
+        <p>
+          Thực tập tại doanh nghiệp liên kết với trường.
+        </p>
+        <p>Ngày hết hạn: <th:block th:text="${#temporals.format(checkDnLienKet.deadlineRegis, 'HH:mm dd/MM/yy')}"></th:block></p>
+        <p class="badge bg-primary display-block" th:if="${checkDnLienKet.deadlineRegis.isAfter(T(java.time.LocalDateTime).now())}">
+          Còn
+          <th:block th:text="${T(java.time.temporal.ChronoUnit).DAYS.between(T(java.time.LocalDateTime).now(), checkDnLienKet.deadlineRegis)}"></th:block>
+          ngày để đăng ký
+        </p>
+
+        <p class="badge bg-danger display-block" th:if="${checkDnLienKet.deadlineRegis.isBefore(T(java.time.LocalDateTime).now())}">
+          Đã quá hạn đăng ký
+        </p>
+        <span class="badge bg-primary">Duyệt tự động</span>
+      </div>
+    </div>
+
+    <div class="col-md-4" th:if="${checkDnNgoai != null}">
+      <div class="internship-card" onclick="selectType('DOANH_NGHIEP_NGOAI')">
+        <div class="icon">🌍</div>
+        <h5>Doanh nghiệp ngoài</h5>
+        <p>
+          Tự tìm doanh nghiệp, cần nộp giấy giới thiệu.
+        </p>
+        <p>Ngày hết hạn: <th:block th:text="${#temporals.format(checkDnNgoai.deadlineRegis, 'HH:mm dd/MM/yy')}"></th:block></p>
+        <p class="badge bg-primary display-block" th:if="${checkDnNgoai.deadlineRegis.isAfter(T(java.time.LocalDateTime).now())}">
+          Còn
+          <th:block th:text="${T(java.time.temporal.ChronoUnit).DAYS.between(T(java.time.LocalDateTime).now(), checkDnNgoai.deadlineRegis)}"></th:block>
+          ngày để đăng ký
+        </p>
+
+        <p class="badge bg-danger display-block" th:if="${checkDnNgoai.deadlineRegis.isBefore(T(java.time.LocalDateTime).now())}">
+          Đã quá hạn đăng ký
+        </p>
+        <span class="badge bg-warning text-dark">Chờ duyệt</span>
+      </div>
+    </div>
+  </div>
+
+  <div th:if="${checkTaiTruong != null}" id="form-area-taitruong" class="form-area d-none">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+        <div class="mb-3 teacher-area">
+          <h5 class="form-label mb-4">Chọn giáo viên hướng dẫn</h5>
+          <input type="hidden" name="semesterTeacherId" id="semesterTeacherIdTaiTruong">
+          <div class="row g-4">
+
+            <div class="col-md-4" th:each="c : ${taiTruong}">
+              <div class="teacher-card" th:attr="data-id=${c.id}" onclick="selectTeacherTaiTruong(this)" th:classappend="${c.maxStudents == c.currentStudents} ? 'disabled-card'">
+                <div class="teacher-body">
+                  <h6 class="teacher-name" th:text="${c.teacher.fullname} +' - Mã giảng viên: '+ ${c.teacher.code}"></h6>
+                  <div class="project-name" th:text="'Đề tài: ' + ${c.projectName}"></div>
+                  <div class="teacher-stats">
+                    <div> <span class="stat-number text-primary" th:text="${c.maxStudents}"></span><div class="stat-label">Tối đa</div> </div>
+                    <div><span class="stat-number text-success" th:text="${c.currentStudents}"></span><div class="stat-label">Đã đăng ký</div></div>
+                    <div><span class="stat-number text-danger" th:text="${c.maxStudents - c.currentStudents}"></span><div class="stat-label">Còn lại</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="mt-4 text-end">
+          <button class="btn btn-primary btn-register" onclick="regisAction('TAI_TRUONG')">
+            Đăng ký thực tập
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div th:if="${checkDnLienKet != null}" id="form-area-cty-lienket" class="form-area d-none">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+        <div class="mb-3 teacher-area">
+          <h5 class="form-label mb-4">Chọn giáo viên hướng dẫn</h5>
+          <input type="hidden" name="semesterTeacherId" id="semesterTeacherIdLienKet">
+          <div class="row g-4">
+
+            <div class="col-md-4" th:each="c : ${doanhNghiepLienKet}">
+              <div class="teacher-card" th:attr="data-id=${c.id}" onclick="selectTeacherLienKet(this)" th:classappend="${c.maxStudents == c.currentStudents} ? 'disabled-card'">
+                <div class="teacher-body">
+                  <h6 class="teacher-name" th:text="${c.teacher.fullname} +' - Mã giảng viên: '+ ${c.teacher.code}"></h6>
+                  <div class="project-name" th:text="'Đề tài: ' + ${c.projectName}"></div>
+                  <div class="teacher-stats">
+                    <div> <span class="stat-number text-primary" th:text="${c.maxStudents}"></span><div class="stat-label">Tối đa</div> </div>
+                    <div><span class="stat-number text-success" th:text="${c.currentStudents}"></span><div class="stat-label">Đã đăng ký</div></div>
+                    <div><span class="stat-number text-danger" th:text="${c.maxStudents - c.currentStudents}"></span><div class="stat-label">Còn lại</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <h5 class="form-label mt-5 mb-4">Chọn công ty liên kết</h5>
+          <input type="hidden" name="companyId" id="companyId">
+          <div class="row g-4">
+            <div class="col-md-4"
+                 th:each="c : ${semesterCompanies}">
+              <div class="company-card"
+                   th:attr="data-id=${c.id}"
+                   onclick="selectCompany(this)">
+                <!-- banner -->
+                <div class="company-banner">
+                  <img th:src="${c.company.imageBanner}">
+                </div>
+                <div class="company-body">
+                  <h6 class="company-name"
+                      th:text="${c.company.name}">
+                  </h6>
+                  <p class="company-address">
+                    <i class="bi bi-geo-alt"></i>
+                    <span th:text="${c.company.address}"></span>
+                  </p>
+                  <div class="company-stats">
+                    <div>
+                    <span class="stat-number text-primary"
+                          th:text="${c.maxStudent}">
+                    </span>
+                      <div class="stat-label">Chỉ tiêu</div>
+                    </div>
+                    <div>
+                    <span class="stat-number text-success"
+                          th:text="${c.currentStudent}">
+                    </span>
+                      <div class="stat-label">Đã đăng ký</div>
+                    </div>
+                    <div>
+                    <span class="stat-number text-danger"
+                          th:text="${c.maxStudent - c.currentStudent}">
+                    </span>
+                      <div class="stat-label">Còn lại</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4 text-end">
+          <button class="btn btn-primary btn-register" onclick="regisAction('DOANH_NGHIEP_LIEN_KET')">
+            Đăng ký thực tập
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div th:if="${checkDnNgoai != null}" id="form-area-cty-ngoai" class="form-area d-none">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+          <!-- GIÁO VIÊN -->
+          <div class="mb-3 teacher-area">
+            <h5 class="form-label mb-4">Chọn giáo viên hướng dẫn</h5>
+            <input type="hidden" name="semesterTeacherId" id="semesterTeacherIdNgoai">
+            <div class="row g-4">
+
+              <div class="col-md-4" th:each="c : ${doanhNghiepNgoai}">
+                <div class="teacher-card" th:attr="data-id=${c.id}" onclick="selectTeacherNgoai(this)" th:classappend="${c.maxStudents == c.currentStudents} ? 'disabled-card'">
+                  <div class="teacher-body">
+                    <h6 class="teacher-name" th:text="${c.teacher.fullname} +' - Mã giảng viên: '+ ${c.teacher.code}"></h6>
+                    <div class="project-name" th:text="'Đề tài: ' + ${c.projectName}"></div>
+                    <div class="teacher-stats">
+                      <div> <span class="stat-number text-primary" th:text="${c.maxStudents}"></span><div class="stat-label">Tối đa</div> </div>
+                      <div><span class="stat-number text-success" th:text="${c.currentStudents}"></span><div class="stat-label">Đã đăng ký</div></div>
+                      <div><span class="stat-number text-danger" th:text="${c.maxStudents - c.currentStudents}"></span><div class="stat-label">Còn lại</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <!-- CÔNG TY NGOÀI -->
+        <div class="company-area">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="companyName" placeholder="Tên công ty">
+                <label for="companyName">Tên công ty</label>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="taxCode" placeholder="Người liên hệ">
+                <label for="taxCode">Mã số thuế</label>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input type="email" class="form-control" id="companyEmail" placeholder="name@example.com">
+                <label for="companyEmail">Email công ty</label>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input type="tel" class="form-control" id="phoneNumber" placeholder="Số điện thoại">
+                <label for="phoneNumber">Số điện thoại</label>
+              </div>
+            </div>
+
+            <div class="col-md-12">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="companyAddress" placeholder="Địa chỉ công ty">
+                <label for="companyAddress">Địa chỉ công ty</label>
+              </div>
+            </div>
+
+            <div class="col-md-12">
+              <label class="form-label">Upload giấy giới thiệu</label>
+              <input type="hidden" id="giaygioithieu">
+              <input type="file" class="form-control" id="changeGiayGioiThieu" onchange="uploadGiayGioiThieu()">
+              <div id="thongtingiaygioithieu" class="d-none">Đã upload giấy giới thiệu</div>
+            </div>
+          </div>
+        </div>
+          <div class="mt-4 text-end">
+            <button id="btn-submit-dn-ngoai" class="btn btn-primary btn-register" onclick="regisAction('DOANH_NGHIEP_NGOAI')">
+              Đăng ký thực tập
+            </button>
+          </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+<div th:replace="common/user/footeruser :: footerMain"></div>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <th:block th:include="common/user/libuser :: libheader"></th:block>
+</head>
+<body>
+<div th:replace="common/user/headerUser :: headerUser"></div>
+<div class="account-layout content-page-main">
+  <div th:replace="common/user/sidebarUser :: sidebarMain"></div>
+  <div class="account-content">
+    <div class="account-content-inner">
+    </div>
+  </div>
+</div>
+<div th:replace="common/user/footeruser :: footerMain"></div>
+</body>
+</html>

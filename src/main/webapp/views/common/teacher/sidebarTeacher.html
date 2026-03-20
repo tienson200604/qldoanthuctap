@@ -1,0 +1,61 @@
+<!DOCTYPE html >
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+</head>
+<body>
+<div th:fragment="sidebarMain">
+  <div class="account-sidebar">
+    <div class="account-profile">
+      <img th:src="${userLogged.avatar == null || userLogged.avatar == '/image/default-avatar.jpg'?'':userLogged.avatar}" class="account-avatar">
+      <div class="account-name" th:text="${userLogged.fullname}"></div>
+      <div class="account-email" th:text="${userLogged.email}"></div>
+    </div>
+    <div class="account-menu">
+      <a href="/teacher/my-account" class="account-menu-item" data-urls="/teacher/my-account">
+        <i class="bi bi-person"></i>
+        <span>Thông tin tài khoản</span>
+      </a>
+      <a href="/teacher/my-document" class="account-menu-item" data-urls="/teacher/my-document">
+        <i class="bi bi-file-pdf"></i>
+        <span>Tài liệu của tôi</span>
+      </a>
+      <a href="/teacher/project" class="account-menu-item" data-urls="/teacher/project, /teacher/work-student, /teacher/document-student, /teacher/student-dashboard">
+        <i class="bi bi-list"></i>
+        <span>Quản lý đồ án</span>
+      </a>
+      <a href="/teacher/change-password" class="account-menu-item" data-urls="/teacher/change-password">
+        <i class="bi bi-key"></i>
+        <span>Đổi mật khẩu</span>
+      </a>
+      <a href="/teacher/log" class="account-menu-item" data-urls="/student/log">
+        <i class="bi bi-clock-history"></i>
+        <span>Nhật ký hoạt động</span>
+      </a>
+    </div>
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+      let currentPath = window.location.pathname;
+      document.querySelectorAll(".account-menu-item").forEach(item => {
+
+        let urls = item.dataset.urls;
+
+        if(!urls) return;
+
+        let list = urls.split(",");
+
+        list.forEach(url => {
+          if(currentPath.includes(url.trim())){
+            item.classList.add("active");
+          }
+        });
+
+      });
+
+    });
+  </script>
+</div>
+</body>
+</html>

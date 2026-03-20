@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <th:block th:include="common/user/libuser :: libheader"></th:block>
+  <script src="/teacher/js/request.js"></script>
+  <script src="/teacher/js/user.js"></script>
+  <script src="/teacher/js/document.js"></script>
+  <script>
+    window.onload =async function() {
+      loadInit();
+      loadMyDocument(0);
+    }
+  </script>
+</head>
+<body>
+<div th:replace="common/teacher/headerUser :: headerUser"></div>
+<div class="account-layout content-page-main">
+  <div th:replace="common/teacher/sidebarTeacher :: sidebarMain"></div>
+  <div class="account-content">
+    <div class="account-content-inner">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h5 class="fw-bold">Quản lý tài liệu</h5>
+        <div class="d-flex gap-2">
+          <a href="/teacher/upload-document" class="btn btn-primary" >
+            <i class="bi bi-upload"></i> Tải tài liệu mới
+          </a>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-3">
+          <input type="text" id="search" class="form-control" placeholder="Tìm theo tên tài liệu">
+        </div>
+        <div class="col-md-2">
+          <select class="form-select" id="status">
+            <option selected value="">Tất cả trạng thái</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <select class="form-select" id="category">
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button onclick="loadMyDocument(0)" class="btn btn-outline-secondary w-100"><i class="bi bi-funnel"></i> Lọc</button>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle" id="example">
+          <thead class="table-light">
+          <tr>
+            <th>Ảnh</th>
+            <th>ID</th>
+            <th>Tiêu đề</th>
+            <th>Loại tài liệu</th>
+            <th>Ngày tạo</th>
+            <th>Trạng thái</th>
+            <th>Lượt xem</th>
+            <th>Người tạo</th>
+            <th class="text-end">Thao tác</th>
+          </tr>
+          </thead>
+          <tbody id="list-data">
+          </tbody>
+        </table>
+      </div>
+
+      <nav class="mt-3">
+        <ul id="pagination" class="pagination justify-content-center">
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+<div th:replace="common/user/footeruser :: footerMain"></div>
+</body>
+</html>

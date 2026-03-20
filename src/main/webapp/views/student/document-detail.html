@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${detail.name}"></title>
+    <th:block th:include="common/user/libuser :: libheader"></th:block>
+    <script src="/student/js/request.js"></script>
+    <script src="/student/js/document.js"></script>
+</head>
+<body>
+<div th:replace="common/user/headerUser :: headerUser"></div>
+<div class="container content-page-main">
+    <div class="row g-4">
+        <!-- LEFT CONTENT -->
+        <div class="col-lg-8">
+            <!-- DOCUMENT HEADER -->
+            <div class="card border-0 shadow-sm document-detail-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="document-icon me-3">
+                            <i class="bi bi-file-earmark-text"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-bold mb-1" th:text="${detail.name}">
+                            </h4>
+                            <div class="text-muted small">
+                                <span class="me-3">
+                                    <i class="bi bi-person"></i>
+                                    <th:block th:text="${detail.user.fullname}"></th:block>
+                                </span>
+                                <span class="me-3">
+                                    <i class="bi bi-calendar"></i>
+                                    <th:block th:text="${#temporals.format(detail.createdDate, 'HH:mm dd/MM/yy')}"></th:block>
+                                </span>
+                                <span class="badge bg-primary" th:text="${detail.category.name}">
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-muted description-document" th:utext="${detail.description}">
+                    </div>
+                    <div class="document-stats mt-3">
+                        <div class="stat-item">
+                            <i class="bi bi-eye"></i>
+                            <span><span th:text="${detail.numberView}"></span> lượt xem</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="bi bi-download"></i>
+                            <span><th:block th:text="${detail.numberDownload == null?0:detail.numberDownload}"></th:block> lượt tải</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="bi bi-files"></i>
+                            <span><th:block th:text="${detail.documentDetails.size()}"></th:block> file</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- PREVIEW -->
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-header bg-white border-0 fw-semibold">
+                    Xem trước tài liệu
+                </div>
+                <div class="card-body">
+                    <div class="document-preview">
+                        <iframe
+                                src="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- RIGHT SIDEBAR -->
+        <div class="col-lg-4">
+            <!-- DOWNLOAD -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 fw-semibold">
+                    Tải tài liệu
+                </div>
+                <div class="card-body p-0">
+                    <div class="file-item" th:each="d : ${detail.documentDetails}">
+                        <div class="file-icon"
+                             th:classappend="
+                                ${#strings.contains(d.fileType,'pdf')} ? ' pdf' :
+                                (${#strings.contains(d.fileType,'word')} ? ' word' :
+                                (${#strings.contains(d.fileType,'excel')} ? ' excel' :
+                                (${#strings.contains(d.fileType,'zip')} ? ' zip' :
+                                (${#strings.contains(d.fileType,'image')} ? ' image' : ' file'))))">
+
+                                                <i class="bi"
+                                                   th:classappend="
+                                ${#strings.contains(d.fileType,'pdf')} ? ' bi-file-earmark-pdf' :
+                                (${#strings.contains(d.fileType,'word')} ? ' bi-file-earmark-word' :
+                                (${#strings.contains(d.fileType,'excel')} ? ' bi-file-earmark-excel' :
+                                (${#strings.contains(d.fileType,'zip')} ? ' bi-file-earmark-zip' :
+                                (${#strings.contains(d.fileType,'image')} ? ' bi-file-earmark-image' :
+                                ' bi-file-earmark'))))">
+                            </i>
+                        </div>
+                        <div class="file-info">
+                            <div class="file-name" th:text="${d.name}">
+                            </div>
+                            <div class="file-meta">
+                                <th:block th:text="${d.fileType}"></th:block>
+                            </div>
+                        </div>
+                        <a th:href="${d.linkFile}" download onclick="upDownload()" target="_blank" class="btn btn-light download-btn">
+                            <i class="bi bi-download"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- RELATED -->
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-header bg-white border-0 fw-semibold">
+                    Tài liệu liên quan
+                </div>
+                <div class="card-body" th:if="${documentLq.size() > 0}">
+                    <div th:each="c:${documentLq}" class="related-item">
+                        <a th:href="'/student/document-detail?id='+${c.id}" th:text="${c.name}"></a>
+                    </div>
+                </div>
+                <div class="card-body" th:if="${documentLq.size() == 0}">
+                    <div class="empty-icon">
+                        <i class="bi bi-folder2-open"></i>
+                    </div>
+
+                    <div class="empty-title">
+                        Chưa có tài liệu liên quan
+                    </div>
+
+                    <div class="empty-desc">
+                        Hiện tại chưa có tài liệu nào cùng danh mục.
+                        Bạn có thể quay lại sau.
+                    </div>
+                </div>
+                    <a href="/student/documents" class="btn btn-sm btn-outline-primary mt-3">
+                        <i class="bi bi-arrow-left"></i> Xem tất cả tài liệu
+                    </a>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="common/user/footeruser :: footerMain"></div>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <th:block th:include="common/user/libuser :: libheader"></th:block>
+</head>
+<body>
+<div th:replace="common/teacher/headerUser :: headerUser"></div>
+<div class="account-layout content-page-main">
+  <div th:replace="common/teacher/sidebarTeacher :: sidebarMain"></div>
+  <div class="account-content">
+    <div class="account-content-inner">
+      <div class="account-project-containers">
+        <div class="account-project-header">
+          <h5 class="account-project-title">
+            <i class="bi bi-journal-text"></i>
+            Các đồ án đã đăng ký
+          </h5>
+        </div>
+        <div class="row g-4">
+          <div class="col-lg-4" th:each="c : ${semesterTeachers}">
+            <div class="teacher-card" th:onclick="|window.location.href='/teacher/project-detail/' + ${c.id}|">
+              <div class="teacher-card-top">
+                <div class="teacher-type-badge" th:text="${c.semesterType.type.displayName}">
+                </div>
+                <div class="teacher-slot-badge" th:text="${c.currentStudents + '/' + c.maxStudents}">
+                </div>
+              </div>
+              <div class="teacher-card-body">
+                <h5 class="teacher-project-name" th:text="${c.projectName}"></h5>
+                <div class="teacher-info">
+                  <i class="bi bi-person-circle"></i>
+                  <span th:text="${c.teacher.fullname}"></span>
+                  <span class="teacher-code" th:text="${c.teacher.code}"></span>
+                </div>
+                <div class="teacher-company">
+                  <i class="bi bi-building"></i>
+                  <span th:if="${c.semesterType.type.name=='TAI_TRUONG'}">Thực tập tại trường</span>
+                  <span th:if="${c.semesterType.type.name=='DOANH_NGHIEP_LIEN_KET'}">Công ty liên kết</span>
+                  <span th:if="${c.semesterType.type.name=='DOANH_NGHIEP_NGOAI'}">Doanh nghiệp ngoài</span>
+                </div>
+                <div class="teacher-year">
+                  <i class="bi bi-mortarboard"></i>
+                  <span th:text="${c.semesterType.semester.yearName}"></span>
+                </div>
+                <div class="teacher-progress">
+                  <div class="teacher-progress-bar"
+                       th:style="'width:' + (${c.currentStudents} * 100 / ${c.maxStudents}) + '%'">
+                  </div>
+                </div>
+                <div class="teacher-progress-text">
+                  <span th:text="'Đã nhận ' + ${c.currentStudents} + ' / ' + ${c.maxStudents} + ' sinh viên'"></span>
+                </div>
+              </div>
+              <div class="teacher-card-footer">
+                <div class="teacher-date">
+                  <i class="bi bi-clock"></i>
+                  <span th:text="${#temporals.format(c.createdDate, 'HH:mm dd/MM/yyyy')}"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div th:replace="common/user/footeruser :: footerMain"></div>
+</body>
+</html>

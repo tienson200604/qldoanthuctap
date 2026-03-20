@@ -1,0 +1,242 @@
+<!DOCTYPE html >
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+</head>
+<body>
+<div th:fragment="chatContains">
+
+    <div class="chatroom-container container-fluid">
+        <div class="col-12 d-flex flex-column chat-wrapper">
+                <!-- MESSAGE LIST -->
+                <input type="hidden" th:value="${semesterTeacherId}" id="semesterTeacherId">
+                <div class="chat-body" id="chatBody">
+
+                </div>
+                <div class="chat-footer">
+                    <textarea id="editorChat"></textarea>
+                    <button onclick="chatAction()" class="btn btn-primary btn-send">
+                        <i class="fa fa-paper-plane"></i> Gửi
+                    </button>
+                </div>
+            </div>
+        <input type="hidden" id="currentUserId" th:value="${userLogged.id}">
+    </div>
+    <script>
+        $( document ).ready(async function() {
+            await loadMessages();
+            const chatBody = document.getElementById("chatBody");
+            chatBody.scrollTop = chatBody.scrollHeight;
+        });
+    </script>
+
+    <script>
+        tinymce.init({
+            selector: 'textarea#editorChat', // Chọn textarea có id là 'editor'
+            plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak ' +
+                'searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking ' +
+                'table emoticons template paste codesample help',
+            toolbar: 'uploadfile | undo redo | blocks | ' + // Hoàn tác, làm lại, và định dạng khối (Heading 1, 2, Paragraph,...)
+                'bold italic underline strikethrough | forecolor backcolor | ' + // Định dạng chữ: đậm, nghiêng, gạch chân, gạch ngang, màu chữ, màu nền
+                'alignleft aligncenter alignright alignjustify | outdent indent | ' + // Căn lề, lùi dòng
+                'numlist bullist | link image media table | ' + // Danh sách số, danh sách dấu chấm, chèn liên kết, ảnh, video, bảng
+                'charmap emoticons | fullscreen code preview | help', // Ký tự đặc biệt, biểu tượng cảm xúc, chế độ toàn màn hình, xem trước, mã nguồn, trợ giúp
+            height: 200, // Tăng chiều cao của trình soạn thảo
+            menubar: 'file edit view insert format tools table help ', // Hiện thêm menu bar ở trên cùng
+            images_upload_handler: async function (blobInfo, success, failure) {
+                const formData = new FormData();
+                formData.append('file', blobInfo.blob(), blobInfo.filename());
+
+                const res = await fetch('http://localhost:8080/api/public/upload-file', {
+                    method: 'POST',
+                    body: formData
+                });
+                if (res.status < 300) {
+                    var linkImage = await res.text();
+                    success(linkImage);
+                }
+            },
+            setup: function (editor) {
+                editor.ui.registry.addButton('uploadfile', {
+                    text: 'File',
+                    icon: 'upload',
+                    onAction: function () {
+
+                        const input = document.createElement('input');
+                        input.type = 'file';
+
+                        input.onchange = async function () {
+                            const file = input.files[0];
+
+                            const formData = new FormData();
+                            formData.append('file', file);
+
+                            const res = await fetch('http://localhost:8080/api/public/upload-file', {
+                                method: 'POST',
+                                body: formData
+                            });
+
+                            if (res.status < 300) {
+                                const fileUrl = await res.text();
+
+                                editor.insertContent(
+                                    `<p>📎 <a href="${fileUrl}" target="_blank">${file.name}</a></p>`
+                                );
+                            }
+                        };
+
+                        input.click();
+                    }
+                });
+            }
+        });
+    </script>
+
+    <script>
+        function connect() {
+            const socket = new SockJS('/ws');
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function (frame) {
+                console.log('Connected: ' + frame);
+                stompClient.subscribe(`/topic/chat-room/${$("#semesterTeacherId").val()}`, function (notification) {
+                    const data = JSON.parse(notification.body);
+                    appendMessage(data);
+                });
+            }, function (error) {
+                console.error('Connection failed:', error);
+                setTimeout(connect, 5000); // Tự động kết nối lại sau 5 giây
+            });
+        }
+        connect();
+
+        async function chatAction(){
+            var mess = tinyMCE.get('editorChat').getContent()
+            var idSemesterTeacher = document.getElementById("semesterTeacherId").value
+            stompClient.send("/app/chat-room/"+idSemesterTeacher, {}, mess);
+            tinyMCE.get('editorChat').setContent('')
+        }
+
+        function appendMessage(data) {
+            const chatBody = document.getElementById("chatBody");
+
+            const myId = document.getElementById("currentUserId").value;
+            const isMe = data.sender.id == myId;
+
+            const itemClass = isMe ? "chat-item my" : "chat-item other";
+
+            const avatar = data.sender.avatar && data.sender.avatar !== ""
+                ? data.sender.avatar
+                : "/image/default-avatar.jpg";
+
+            const name = isMe ? "Bạn" : data.sender.fullname;
+
+            const time = formatTime(data.createdDate);
+
+            const html = `
+                <div class="${itemClass}">
+                    <img src="${avatar}" class="avatar">
+                    <div class="bubble">
+                        <div class="meta">
+                            <span class="name">${name}</span>
+                            <span class="time">${time}</span>
+                        </div>
+                        <div class="content">${data.content}</div>
+                    </div>
+                </div>
+            `;
+
+            chatBody.insertAdjacentHTML("beforeend", html);
+
+            // auto scroll xuống cuối
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        // function formatTime(dateStr) {
+        //     const date = new Date(dateStr);
+        //     return date.toLocaleTimeString("vi-VN", {
+        //         hour: "2-digit",
+        //         minute: "2-digit"
+        //     });
+        // }
+    </script>
+
+    <script>
+        let currentPage = 0;
+        let isLoading = false;
+        let isLastPage = false;
+        async function loadMessages() {
+            if (isLoading || isLastPage) return;
+
+            isLoading = true;
+
+            const roomId = document.getElementById("semesterTeacherId").value;
+
+            const res = await fetch(`/api/chat/room/${roomId}?page=${currentPage}`);
+            const data = await res.json();
+
+            if (data.length < 4) {
+                isLastPage = true;
+            }
+
+            renderOldMessages(data);
+
+            currentPage++;
+            isLoading = false;
+        }
+
+        function renderOldMessages(messages) {
+            const chatBody = document.getElementById("chatBody");
+
+            // đảo lại để đúng thứ tự thời gian
+            messages.forEach(msg => {
+                const html = buildMessageHTML(msg);
+
+                chatBody.insertAdjacentHTML("afterbegin", html);
+            });
+        }
+
+        function buildMessageHTML(data) {
+            const myId = document.getElementById("currentUserId").value;
+            const isMe = data.sender.id == myId;
+
+            const itemClass = isMe ? "chat-item my" : "chat-item other";
+
+            const avatar = data.sender.avatar && data.sender.avatar !== ""
+                ? data.sender.avatar
+                : "/image/default-avatar.jpg";
+
+            const name = isMe ? "Bạn" : data.sender.fullname;
+
+            const time = formatTime(data.createdDate);
+
+            return `
+                <div class="${itemClass}">
+                    <img src="${avatar}" class="avatar">
+                    <div class="bubble">
+                        <div class="meta">
+                            <span class="name">${name}</span>
+                            <span class="time">${time}</span>
+                        </div>
+                        <div class="content">${data.content}</div>
+                    </div>
+                </div>
+            `;
+            }
+
+        const chatBody = document.getElementById("chatBody");
+
+        chatBody.addEventListener("scroll", async function () {
+            if (chatBody.scrollTop === 0) {
+                const oldHeight = chatBody.scrollHeight;
+
+                await loadMessages();
+
+                // giữ vị trí scroll không bị nhảy
+                const newHeight = chatBody.scrollHeight;
+                chatBody.scrollTop = newHeight - oldHeight;
+            }
+        });
+    </script>
+</div>
+</body>
+</html>

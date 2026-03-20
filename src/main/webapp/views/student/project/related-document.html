@@ -1,0 +1,23 @@
+<!DOCTYPE html >
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+</head>
+<body>
+<div th:fragment="relateDocument">
+  <div class="teacher-work-wrapper">
+    <div class="teacher-work-header d-flex align-items-center justify-content-between mb-4">
+    </div>
+    <div id="list-data-relate-document">
+    </div>
+  </div>
+  <input class="form-control" id="semesterTeacherIdRelate" th:value="${semesterTeacherId}" type="hidden">
+  <script>
+    $( document ).ready(function() {
+      loadRelate();
+    });
+  </script>
+
+</div>
+</body>
+</html>

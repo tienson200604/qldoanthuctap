@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <th:block th:include="common/user/libuser :: libheader"></th:block>
+  <script src="/teacher/js/request.js"></script>
+  <script src="/teacher/js/work.js"></script>
+</head>
+<body>
+
+<div th:replace="common/teacher/headerUser :: headerUser"></div>
+
+<div class="account-layout content-page-main">
+  <div th:replace="common/teacher/sidebarTeacher :: sidebarMain"></div>
+
+  <div class="account-content">
+    <div class="account-content-inner">
+      <div class="row">
+        <div class="col-sm-5">
+          <div class="project-info-card">
+            <div class="project-info-header">
+              <div class="project-title">
+                <div class="d-flex mb-3">
+                  <a th:href="'/teacher/project-detail/'+${semesterTeacherId}+'#tab2'" class="btn btn-sm btn-outline-primary"><i class="bi bi-arrow-left"></i> Quay lại</a>
+                  <h4 th:if="${semesterTeacher.projectName != null && semesterTeacher.projectName != ''}" class="ms-4"><th:block th:text="${semesterTeacher.projectName}"></th:block></h4>
+                </div>
+                <span class="badge bg-success"
+                      th:if="${semesterTeacher.semesterType.semester.endDate.after(#dates.createNow())}">
+                Đang thực hiện
+            </span>
+                <span class="badge bg-error"
+                      th:if="${semesterTeacher.semesterType.semester.endDate.before(#dates.createNow())}">
+                Đã kết thúc
+            </span>
+                <span th:if="${semesterTeacher.semesterType.type.name=='TAI_TRUONG'}" class="badge bg-primary">Nhóm thực tập tại trường</span>
+                <span th:if="${semesterTeacher.semesterType.type.name=='DOANH_NGHIEP_LIEN_KET'}" class="badge bg-primary">Nhóm công ty liên kết</span>
+                <span th:if="${semesterTeacher.semesterType.type.name=='DOANH_NGHIEP_NGOAI'}" class="badge bg-primary">Nhóm doanh nghiệp ngoài</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-7">
+          <div class="info-card mb-3">
+            <div class="info-header">
+              <div class="info-title">
+                <i class="bi bi-clipboard-data"></i>
+                <span th:text="${workProcess.title}">Tên tiến độ</span>
+              </div>
+
+              <div class="info-status">
+      <span class="badge bg-success"
+            th:if="${workProcess.deadline != null and workProcess.deadline.isAfter(T(java.time.LocalDateTime).now())}">
+        Đang mở
+      </span>
+
+                <span class="badge bg-danger"
+                      th:if="${workProcess.deadline != null and workProcess.deadline.isBefore(T(java.time.LocalDateTime).now())}">
+        Đã hết hạn
+      </span>
+              </div>
+            </div>
+
+            <div class="info-body">
+              <div class="info-item">
+                <label>Mô tả:</label>
+                <div th:utext="${workProcess.description}"></div>
+              </div>
+
+              <div class="info-grid">
+                <div>
+                  <label>Ngày tạo</label>
+                  <div th:text="${#temporals.format(workProcess.createdDate, 'dd/MM/yyyy HH:mm')}"></div>
+                </div>
+
+                <div>
+                  <label>Deadline</label>
+                  <div th:text="${#temporals.format(workProcess.deadline, 'dd/MM/yyyy HH:mm')}"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="account-tabs-containers">
+
+        <!-- TAB HEADER -->
+        <div class="account-tabs">
+          <div class="account-tab active" data-tab="tab1">Danh sách sinh viên đã nộp <span class="number-tab" th:text="${submittedSet.size()}"></span></div>
+          <div class="account-tab" data-tab="tab2">Danh sách sinh viên chưa nộp <span class="number-tab" th:text="${notSubmitted.size()}"></span></div>
+          <div class="account-tab-indicator"></div>
+        </div>
+
+        <!-- TAB CONTENT -->
+        <div class="account-tab-content">
+          <div class="account-tab-pane active" id="tab1">
+            <div class="student-list">
+
+              <div class="student-item" th:each="wp : ${workProcessStudents}">
+
+                <!-- HEADER -->
+                <div class="student-row" onclick="toggleStudent(this)">
+
+                  <div class="student-left">
+                    <img th:src="${wp.studentRegis.student.avatar == null || wp.studentRegis.student.avatar == ''
+                        ? '/image/default-avatar.jpg'
+                        : wp.studentRegis.student.avatar}">
+                    <div>
+                      <div class="student-name" th:text="${wp.studentRegis.student.fullname}"></div>
+                      <div class="student-code" th:text="${wp.studentRegis.student.code}"></div>
+
+                      <!-- ngày nộp -->
+                      <div class="student-date">
+                        Nộp lúc:
+                        <span th:text="${#temporals.format(wp.createdDate, 'dd/MM/yyyy HH:mm')}"></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="student-right">
+
+                    <!-- nộp muộn -->
+                    <span class="late-badge"
+                          th:if="${wp.workProcess.deadline != null
+                        and wp.createdDate.isAfter(wp.workProcess.deadline)}"
+                          th:text="'Muộn ' + ${T(java.time.Duration)
+                  .between(wp.workProcess.deadline, wp.createdDate).toDays()} + ' ngày'">
+          </span>
+
+                    <!-- đúng hạn -->
+                    <span class="submitted-badge"
+                          th:if="${wp.workProcess.deadline != null
+                        and !wp.createdDate.isAfter(wp.workProcess.deadline)}">
+              Đúng hạn
+          </span>
+
+                    <i class="bi bi-chevron-down arrow"></i>
+                  </div>
+
+                </div>
+
+                <!-- DROPDOWN -->
+                <div class="student-dropdown">
+
+                  <!-- nội dung nộp -->
+                  <div class="student-content" th:utext="${wp.content}"></div>
+
+                  <!-- file nếu có -->
+                  <div th:if="${wp.file != null && wp.file != ''}" class="mb-2">
+                    <a th:href="${wp.file}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                      📎 Xem file đính kèm
+                    </a>
+                  </div>
+
+                  <!-- phản hồi -->
+                  <div class="feedback-box">
+                    <label class="mb-1 fw-bold">Phản hồi của giảng viên</label>
+
+                    <textarea class="form-control feedback-input"
+                              th:text="${wp.replay != null ? wp.replay : ''}"
+                              placeholder="Nhập phản hồi..."></textarea>
+
+                    <button class="btn btn-primary mt-2"
+                            th:attr="onclick=|sendFeedback(${wp.id}, this)|">
+                      Lưu phản hồi
+                    </button>
+
+                    <!-- hiển thị ngày phản hồi -->
+                    <div class="feedback-date mt-2 text-muted"
+                         th:if="${wp.replayDate != null}">
+                      Đã phản hồi lúc:
+                      <span th:text="${#temporals.format(wp.replayDate, 'dd/MM/yyyy HH:mm')}"></span>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+
+
+          <!--Chưa nộp-->
+          <div class="account-tab-pane" id="tab2">
+            <div class="student-list">
+
+              <div class="student-item not-submitted" th:each="s : ${notSubmitted}">
+                <div class="student-row">
+
+                  <div class="student-left">
+                    <img th:src="${s.student.avatar == null || s.student.avatar == '' ? '/image/default-avatar.jpg' : s.student.avatar}">
+                    <div>
+                      <div class="student-name" th:text="${s.student.fullname}"></div>
+                      <div class="student-code" th:text="${s.student.code}"></div>
+                      <div class="student-code" th:text="${s.student.email}"></div>
+                    </div>
+                  </div>
+
+                  <div class="student-right">
+                    <span class="not-submitted-badge">Chưa nộp</span>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div th:replace="common/user/footeruser :: footerMain"></div>
+<script>
+  function toggleStudent(el) {
+    const parent = el.parentElement;
+    parent.classList.toggle("active");
+  }
+  const tabs = document.querySelectorAll(".account-tab");
+  const panes = document.querySelectorAll(".account-tab-pane");
+  const indicator = document.querySelector(".account-tab-indicator");
+
+  function moveIndicator(tab) {
+    indicator.style.width = tab.offsetWidth + "px";
+    indicator.style.left = tab.offsetLeft + "px";
+  }
+
+  function activateTab(tabId) {
+    const tab = document.querySelector(`.account-tab[data-tab="${tabId}"]`);
+    const pane = document.getElementById(tabId);
+
+    if (tab && pane) {
+      tabs.forEach(t => t.classList.remove("active"));
+      panes.forEach(p => p.classList.remove("active"));
+
+      tab.classList.add("active");
+      pane.classList.add("active");
+
+      moveIndicator(tab);
+    }
+  }
+
+  // CLICK TAB
+  tabs.forEach(tab => {
+    tab.addEventListener("click", function () {
+      const tabId = this.dataset.tab;
+
+      activateTab(tabId);
+
+      // 👉 cập nhật URL mà không reload
+      history.replaceState(null, null, '#' + tabId);
+    });
+  });
+
+  // LOAD PAGE → đọc hash
+  function loadTabFromHash() {
+    const hash = window.location.hash.substring(1);
+
+    if (hash) {
+      activateTab(hash);
+
+      // 👉 kéo lại lên top (nếu bị nhảy)
+      window.scrollTo(0, 0);
+    } else {
+      moveIndicator(document.querySelector(".account-tab.active"));
+    }
+  }
+
+  // chạy khi load
+  loadTabFromHash();
+
+  // optional: khi user bấm back/forward
+  window.addEventListener("hashchange", () => {
+    const hash = window.location.hash.substring(1);
+    activateTab(hash);
+  });
+  document.addEventListener("DOMContentLoaded", function () {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+    $('#table-student').DataTable();
+  });
+
+</script>
+
+</body>
+</html>

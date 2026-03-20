@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <th:block th:include="common/user/libuser :: libheader"></th:block>
+  <script src="/teacher/js/request.js"></script>
+  <script src="/teacher/js/document.js"></script>
+  <script>
+    window.onload =async function() {
+      setInitEditor();
+      await loadCategorySelect();
+      loadADocument();
+    }
+  </script>
+</head>
+<body>
+<div th:replace="common/teacher/headerUser :: headerUser"></div>
+<div class="content-page-main">
+  <div class="card border-0 shadow-sm p-4">
+    <h5 class="fw-bold mb-4">Thêm mới tài liệu</h5>
+    <div id="userForm">
+      <div class="row g-3">
+        <div class="col-md-5">
+          <div class="col-md-12">
+            <div class="form-floating form-add-user">
+              <input class="form-control" id="name" placeholder="Tiêu đề">
+              <label>Tên tài liệu</label>
+            </div>
+          </div>
+          <div class="col-md-12 form-add-user mt-3">
+            <div class="form-floating form-add-user">
+              <select class="form-select" id="category">
+              </select>
+              <input id="avatar" type="hidden">
+            </div>
+          </div>
+          <h4 class="mt-3">Mô tả tài liệu</h4>
+          <div class="col-md-12">
+            <textarea id="editor" name="content"></textarea>
+          </div>
+        </div>
+        <div class="col-sm-7">
+          <div class="row">
+            <div class="col-6 col-md-12 col-lg-12">
+              <button type="button" id="btnchoosefile" onclick="document.getElementById('fileanhdaidientl').click(); return false;" class="btnchonanh" style="background-image: url('/image/backluuanh.png');">
+                <i class="fa fa-camera camera"></i><br><span class="tieudetaianhdd">Tải ảnh cho tài liệu</span>
+              </button>
+            </div>
+            <div class="col-6 col-md-12 col-lg-12">
+              <img id="imgpreviewtl" class="imgpreviewtl">
+            </div>
+            <input onchange="chooseAvatar()" type="file" id="fileanhdaidientl" style="display: none;">
+          </div>
+          <div class="heading-container">
+            <span class="line"></span>
+            <h2 class="title">Chi tiết tài liệu</h2>
+            <span class="line"></span>
+          </div>
+          <button class="btn btn-primary btn-upload-multifile" onclick="chonnhieufile.click()"><i class="fa fa-upload"></i> Chọn nhiều file</button>
+          <input onchange="uploadTaiLieu()" type="file" id="chonnhieufile" multiple style="visibility: hidden;">
+          <table class="table mt-3" id="example">
+            <thead>
+            <tr>
+              <th>Thông tin file</th>
+              <th>Hành động</th>
+            </tr>
+            </thead>
+            <tbody id="list-file">
+
+            </tbody>
+            <thead id="anhdathem" style="display: none;">
+            <tr>
+              <th>File đã thêm</th>
+              <th>Xóa</th>
+            </tr>
+            </thead>
+            <tbody id="list-file-details">
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <hr>
+      <button onclick="saveDocument()" id="btn-submit" class="btn btn-primary">Lưu tài liệu</button>
+    </div>
+  </div>
+</div>
+<div th:replace="common/user/footeruser :: footerMain"></div>
+
+<script src="https://cdn.tiny.cloud/1/ki9cw4sa3ezsjymcgc1p2vpztcc01ou0ctbtjtqbin07c68z/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+  tinymce.init({
+    selector: 'textarea#editor', // Chọn textarea có id là 'editor'
+    // Tăng cường các plugin để hỗ trợ nhiều chức năng hơn
+    plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak ' +
+            'searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking ' +
+            'table emoticons template paste codesample help',
+    // Định nghĩa các nút trên thanh công cụ. Chia thành nhiều dòng để dễ quản lý.
+    toolbar: 'undo redo | blocks | ' + // Hoàn tác, làm lại, và định dạng khối (Heading 1, 2, Paragraph,...)
+            'bold italic underline strikethrough | forecolor backcolor | ' + // Định dạng chữ: đậm, nghiêng, gạch chân, gạch ngang, màu chữ, màu nền
+            'alignleft aligncenter alignright alignjustify | outdent indent | ' + // Căn lề, lùi dòng
+            'numlist bullist | link image media table | ' + // Danh sách số, danh sách dấu chấm, chèn liên kết, ảnh, video, bảng
+            'charmap emoticons | fullscreen code preview | help', // Ký tự đặc biệt, biểu tượng cảm xúc, chế độ toàn màn hình, xem trước, mã nguồn, trợ giúp
+    height: 600, // Tăng chiều cao của trình soạn thảo
+    menubar: 'file edit view insert format tools table help', // Hiện thêm menu bar ở trên cùng
+    images_upload_handler: async function (blobInfo, success, failure) {
+      const formData = new FormData();
+      formData.append('file', blobInfo.blob(), blobInfo.filename());
+
+      const res = await fetch('http://localhost:8080/api/public/upload-file', {
+        method: 'POST',
+        body: formData
+      });
+      if (res.status < 300) {
+        var linkImage = await res.text();
+        success(linkImage);
+      }
+    }
+  });
+</script>
+<script>
+  function setInitEditor(){
+    tinyMCE.get('editor').setContent(`
+        `)
+  }
+</script>
+</body>
+</html>

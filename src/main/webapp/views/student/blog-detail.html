@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${detail.title}"></title>
+    <th:block th:include="common/user/libuser :: libheader"></th:block>
+</head>
+<body>
+<div th:replace="common/user/headerUser :: headerUser"></div>
+<div class="container mt-5 pt-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="/">Trang chủ</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="/blogs">Thông báo</a>
+            </li>
+            <li class="breadcrumb-item active">
+                Chi tiết
+            </li>
+        </ol>
+    </nav>
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="blog-card">
+                <div class="blog-image">
+                    <img th:src="${detail.image}" alt="">
+                </div>
+                <h1 class="blog-title" th:text="${detail.title}">
+                </h1>
+                <div class="blog-meta">
+                    <span>
+                        <i class="bi bi-person"></i>
+                        <span th:text="${detail.user.fullname}"></span>
+                    </span>
+                    <span>
+                        <i class="bi bi-calendar"></i>
+                        <span th:text="${detail.createdDate}"></span>
+                    </span>
+                    <span>
+                        <i class="bi bi-eye"></i>
+                        <span th:text="${detail.numView}"></span> lượt xem
+                    </span>
+                    <span>
+                        <i class="fa fa-list"></i>
+                        <span th:text="${detail.category.name}"></span>
+                    </span>
+                </div>
+                <div class="blog-description" th:text="${detail.description}">
+                </div>
+                <div class="blog-content" th:utext="${detail.content}">
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="sidebar-card">
+                <h5>Thông báo khác</h5>
+                <div class="sidebar-item" th:each="b : ${listBlogNew}">
+                    <a href="#" th:text="${b.title}">
+
+                    </a>
+                </div>
+            </div>
+            <div class="sidebar-card">
+                <h5>Danh mục</h5>
+                <div class="flex-wrap">
+                    <span class="badge bg-primary ms-3 mt-3" th:each="c : ${listCategory}">
+                        <a th:href="'/student/blogs?category='+${c.id}" th:text="${c.name}" class="text-white"></a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="common/user/footeruser :: footerMain"></div>
+</body>
+</html>

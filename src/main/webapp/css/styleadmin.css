@@ -1,0 +1,629 @@
+/* admin-style.css */
+:root {
+    --sidebar-width: 260px;
+    --sidebar-collapsed-width: 70px;
+    --header-height: 70px;
+    --primary: #6366f1;
+    --bg-main: #f8fafc;
+    --dark: #1e293b;
+    --text-inactive: #94a3b8;
+}
+
+body { 
+    font-family: 'Inter', sans-serif; 
+    background: var(--bg-main); 
+    margin: 0;
+}
+
+/* Sidebar */
+#sidebar {
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: var(--dark);
+    position: fixed;
+    top: 0; 
+    left: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    overflow-x: hidden; /* Tránh tràn khi thu gọn */
+}
+
+/* Header */
+#top-header {
+    height: var(--header-height);
+    background: white;
+    position: fixed;
+    top: 0; 
+    left: var(--sidebar-width);
+    right: 0;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    z-index: 999;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Content */
+#main-content {
+    margin-top: var(--header-height);
+    margin-left: var(--sidebar-width);
+    padding: 2rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Navbar Links */
+.menu-item { 
+    color: var(--text-inactive); 
+    padding: 15px 20px; 
+    text-decoration: none; 
+    display: flex; 
+    align-items: center;
+    overflow: hidden; /* Cực kỳ quan trọng để không vỡ layout */
+    white-space: nowrap; /* Ép không xuống dòng */
+    transition: all 0.2s;
+}
+
+.menu-item:hover { color: white; background: #334155; }
+
+/* Icon giữ kích thước cố định */
+.menu-item i { 
+    margin-right: 15px; 
+    min-width: 20px; 
+    text-align: center;
+    flex-shrink: 0; /* Không cho icon bị bóp méo */
+}
+
+.nav-text {
+    opacity: 1;
+    transition: opacity 0.2s ease-in-out;
+}
+
+/* --- TRẠNG THÁI THU GỌN --- */
+#sidebar.collapsed { width: var(--sidebar-collapsed-width); }
+
+#sidebar.collapsed .nav-text {
+    opacity: 0;
+    visibility: hidden;
+    display: none; /* Ẩn hoàn toàn khỏi luồng hiển thị */
+}
+
+#sidebar.collapsed + #top-header { left: var(--sidebar-collapsed-width); }
+#sidebar.collapsed + #top-header + #main-content { margin-left: var(--sidebar-collapsed-width); }
+
+/* Hover để hiện lại chữ khi sidebar đang thu gọn */
+#sidebar.collapsed .menu-item:hover .nav-text {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+    position: absolute;
+    left: 70px;
+    background: var(--dark);
+    padding: 8px 15px;
+    border-radius: 0 5px 5px 0;
+    z-index: 1000;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+}
+
+/* User & Notification */
+.user-profile { cursor: pointer; display: flex; align-items: center; gap: 10px; }
+.notification-icon { position: relative; font-size: 1.2rem; cursor: pointer; }
+.badge-notif { position: absolute; top: -5px; right: -5px; font-size: 0.6rem; }
+/* Sidebar: Sử dụng transform để chuyển động mượt hơn */
+#sidebar {
+    width: var(--sidebar-width);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: width; /* Tối ưu hóa hiệu năng cho trình duyệt */
+}
+
+/* Ẩn chữ mượt mà với opacity và delay */
+.nav-text {
+    opacity: 1;
+    transition: opacity 0.2s ease-in-out, visibility 0.2s;
+    white-space: nowrap;
+}
+
+#sidebar.collapsed .nav-text {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.1s ease-in-out; /* Ẩn nhanh hơn khi thu gọn */
+}
+
+/* Header và Content: Chuyển động đồng bộ */
+#top-header, #main-content {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* Ẩn tiêu đề khi thu gọn */
+#sidebar.collapsed .sidebar-title {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+/* Tùy chọn: Nếu muốn hiện icon nhỏ khi thu gọn thay vì ẩn sạch */
+.sidebar-logo-small {
+    display: none;
+    text-align: center;
+    padding: 15px 0;
+}
+
+#sidebar.collapsed .sidebar-logo-small {
+    display: block;
+}
+.form-add-user{
+    margin-top: 15px;
+}
+.btnchonanh{
+    /* width: 100%; */
+    border: none;
+    padding-top: 50px;
+    padding-bottom: 50px;
+    color: #fff;
+    font-size: 1.2rem;
+}
+#btnchoosefile{
+    background-size: 100%;
+}
+.heading-container {
+    margin-top: 15px;
+    display: flex;
+    align-items: center; /* Giúp căn giữa theo chiều dọc */
+    gap: 15px;           /* Khoảng cách giữa chữ và đường kẻ */
+    width: 100%;         /* Hoặc độ rộng bạn muốn */
+}
+.heading-container .title {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.line {
+  flex-grow: 1;        /* Đường kẻ sẽ chiếm phần không gian còn lại */
+  height: 1px;         /* Độ dày của đường kẻ */
+  background-color: #6daee0; /* Màu sắc của đường kẻ (bạn có thể thay đổi) */
+}
+
+.title {
+  font-size: 24px;     /* Kích thước chữ */
+  color: #333;         /* Màu chữ */
+  white-space: nowrap; /* Đảm bảo chữ không bị xuống dòng */
+}
+
+.upload-box {
+    width: 100%;
+    height: 250px;
+    border: 2px dashed #ced4da;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #fafafa;
+    position: relative;
+    overflow: hidden;
+}
+
+.upload-box:hover {
+    border-color: #0d6efd;
+    background: #f0f7ff;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.upload-box.active {
+    border-style: solid;
+    border-color: #198754;
+    background: #f1fff7;
+}
+
+.upload-content {
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.upload-icon {
+    font-size: 40px;
+    margin-bottom: 10px;
+    transition: transform 0.3s ease;
+}
+
+.upload-box:hover .upload-icon {
+    transform: scale(1.2) rotate(5deg);
+}
+
+.upload-text {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.upload-subtext {
+    font-size: 13px;
+    color: #6c757d;
+}
+
+.file-info {
+    text-align: center;
+    animation: fadeIn 0.3s ease forwards;
+}
+
+.file-name {
+    font-weight: 600;
+    font-size: 14px;
+    word-break: break-all;
+}
+
+.file-size {
+    font-size: 13px;
+    color: #6c757d;
+    margin-top: 4px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.status-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.status-btn {
+    padding: 10px 18px;
+    border-radius: 30px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.25s ease;
+    background: #f8f9fa;
+    position: relative;
+    overflow: hidden;
+}
+
+.status-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+.status-btn.active {
+    color: #fff !important;
+    transform: scale(1.05);
+}
+
+.status-btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 30px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.status-btn.active::after {
+    opacity: 0.15;
+    background: #fff;
+}
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+.table-admin tbody{
+    font-size: 0.9rem;
+}
+.dashboard-card {
+    border: none;
+    border-radius: 16px;
+    transition: 0.3s;
+    overflow: hidden;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+
+.stat-icon {
+    font-size: 40px;
+    opacity: 0.2;
+    position: absolute;
+    right: 15px;
+    bottom: 10px;
+}
+
+.fade-in {
+    animation: fadeInUp 0.8s ease forwards;
+    opacity: 0;
+}
+
+@keyframes fadeInUp {
+    from { transform: translateY(20px); opacity: 0 }
+    to { transform: translateY(0); opacity: 1 }
+}
+
+.chart-card {
+    border-radius: 16px;
+    border: none;
+}
+
+.section-title {
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+/* container table */
+#example{
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+
+/* header */
+#example thead{
+    background: linear-gradient(135deg,#4e73df,#224abe);
+    color: white;
+    font-weight: 600;
+}
+
+#example thead th{
+    border: none;
+    padding: 14px;
+    font-size: 14px;
+    letter-spacing: .3px;
+}
+
+/* body */
+#example tbody tr{
+    border-bottom: 1px solid #f1f1f1;
+    transition: all .25s ease;
+}
+
+/* hover effect */
+#example tbody tr:hover{
+    background: #f8f9ff;
+    transform: scale(1.01);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* cell */
+#example tbody td{
+    padding: 14px;
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+/* avatar image */
+#example img{
+    width: 45px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 8px;
+    transition: .3s;
+}
+
+#example img:hover{
+    transform: scale(1.1);
+}
+
+/* button action */
+.action-btn{
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 13px;
+    transition: .2s;
+}
+
+.action-btn:hover{
+    transform: translateY(-2px);
+}
+
+/* fade animation khi load row */
+.fade-row{
+    animation: fadeInUp .35s ease;
+}
+
+@keyframes fadeInUp{
+    from{
+        opacity:0;
+        transform: translateY(10px);
+    }
+    to{
+        opacity:1;
+        transform: translateY(0);
+    }
+}
+
+
+.btn-upload-multifile{
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 10px 22px;
+    border: none;
+    border-radius: 10px;
+
+    font-size: 14px;
+    font-weight: 500;
+    color: white;
+
+    background: linear-gradient(135deg,#4facfe,#00f2fe);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+
+    cursor: pointer;
+    transition: all .3s ease;
+}
+
+/* icon */
+.btn-upload-multifile i{
+    font-size: 16px;
+    transition: transform .3s;
+}
+
+/* hover */
+.btn-upload-multifile:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.2);
+}
+
+/* icon bay lên khi hover */
+.btn-upload-multifile:hover i{
+    transform: translateY(-2px) scale(1.15);
+}
+
+/* click effect */
+.btn-upload-multifile:active{
+    transform: scale(.96);
+}
+
+/* ánh sáng chạy */
+.btn-upload-multifile::before{
+    content: "";
+    position: absolute;
+    top:0;
+    left:-100%;
+    width:100%;
+    height:100%;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255,255,255,0.4),
+        transparent
+    );
+    transition: .6s;
+}
+
+.btn-upload-multifile:hover::before{
+    left:100%;
+}
+
+.dashboard-admin-container {
+    padding: 20px;
+}
+
+.dashboard-admin-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transition: 0.3s;
+    margin-top: 10px;
+}
+
+.dashboard-admin-card:hover {
+    transform: translateY(-5px);
+}
+
+.dashboard-admin-summary h3 {
+    font-size: 28px;
+    font-weight: bold;
+}
+.text-green{
+    color: green;
+}
+.dashboard-admin-progress {
+    background: #fff;
+    padding: 20px;
+    border-radius: 16px;
+}
+
+.dashboard-admin-progress .progress {
+    height: 20px;
+    border-radius: 10px;
+}
+
+.dashboard-admin-progress .progress-bar {
+    background: linear-gradient(90deg, #00c6ff, #0072ff);
+}
+.dashboard-admin-top-student {
+    background: #fff;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.dashboard-admin-title {
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.dashboard-admin-student-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    border-radius: 14px;
+    background: #f8f9fa;
+    margin-bottom: 15px;
+    transition: 0.3s;
+}
+
+.dashboard-admin-student-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
+/* TOP 1 highlight */
+.dashboard-admin-student-card.top-1 {
+    background: linear-gradient(135deg, #ffd700, #ffb700);
+    color: #fff;
+}
+
+.dashboard-admin-rank {
+    font-size: 22px;
+    font-weight: bold;
+    width: 40px;
+    text-align: center;
+}
+
+.dashboard-admin-avatar img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.dashboard-admin-info {
+    flex: 1;
+}
+
+.dashboard-admin-info h6 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.dashboard-admin-info span {
+    font-size: 13px;
+    color: #888;
+}
+
+.dashboard-admin-student-card.top-1 .dashboard-admin-info span {
+    color: #fff;
+}
+
+.dashboard-admin-score {
+    font-size: 20px;
+    font-weight: bold;
+    color: #28a745;
+}
+
+.dashboard-admin-student-card.top-1 .dashboard-admin-score {
+    color: #fff;
+}

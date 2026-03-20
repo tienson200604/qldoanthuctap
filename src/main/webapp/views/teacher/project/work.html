@@ -1,0 +1,79 @@
+<!DOCTYPE html >
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+</head>
+<body>
+<div th:fragment="work">
+    <div class="teacher-work-wrapper">
+        <div class="teacher-work-header d-flex align-items-center justify-content-between mb-4">
+
+            <!-- LEFT: Search + Sort -->
+            <div class="teacher-work-tools d-flex align-items-center gap-3">
+                <div class="teacher-work-search">
+                    <i class="bi bi-search"></i>
+                    <input onkeyup="loadWork(0)" type="text" placeholder="Tìm kiếm yêu cầu..." id="work-search">
+                </div>
+                <select onchange="loadWork(0)" class="form-select teacher-work-sort" id="work-sort">
+                    <option value="id,desc">Mới nhất</option>
+                    <option value="id,asc">Cũ nhất</option>
+                    <option value="deadline,asc">Sắp hết hạn</option>
+                    <option value="onTimeCount,desc">Đúng hạn nhiều nhất</option>
+                </select>
+            </div>
+            <button onclick="clearDataWork()"
+                    data-bs-toggle="modal" data-bs-target="#modal-add-word"
+                    class="btn teacher-work-btn-add">
+                <i class="bi bi-plus-circle"></i> Thêm yêu cầu
+            </button>
+
+        </div>
+        <div id="list-data-work">
+        </div>
+        <nav class="mt-3">
+            <ul id="pagination-work" class="pagination justify-content-center">
+            </ul>
+        </nav>
+    </div>
+
+    <input type="hidden" id="totalStudent" th:value="${studentRegis.size()}">
+    <div class="modal fade" id="modal-add-word" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Thêm tiến độ công việc</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <input class="form-control" id="semesterTeacherId" th:value="${semesterTeacherId}" type="hidden">
+                        <input class="form-control" id="idwork" type="hidden">
+                        <div class="form-floating form-add-user">
+                            <input class="form-control" id="work-title" placeholder="Tiêu đề">
+                            <label>Tiêu đề</label>
+                        </div>
+                        <div class="form-floating form-add-user mt-4">
+                            <input class="form-control" id="work-deadline" type="datetime-local" placeholder="Deadline">
+                            <label>Deadline</label>
+                        </div>
+                        <label class="mt-3"><strong>Mô tả nội dung tiến độ</strong></label>
+                        <textarea id="contentTienDo" name="contentTienDo" class="teacher-project-detail"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button onclick="addWork()" type="button" class="btn btn-primary">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $( document ).ready(function() {
+            loadWork(0);
+        });
+    </script>
+
+
+</div>
+</body>
+</html>

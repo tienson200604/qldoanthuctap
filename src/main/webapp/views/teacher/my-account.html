@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <th:block th:include="common/user/libuser :: libheader"></th:block>
+    <script src="/teacher/js/request.js"></script>
+    <script src="/teacher/js/user.js"></script>
+</head>
+<body>
+<div th:replace="common/teacher/headerUser :: headerUser"></div>
+<div class="account-layout content-page-main">
+    <div th:replace="common/teacher/sidebarTeacher :: sidebarMain"></div>
+    <div class="account-content">
+        <div class="account-content-inner">
+            <div class="container">
+                <form>
+                    <div class="row g-4">
+                        <div class="col-lg-4">
+                            <div class="account-avatar-box">
+                                <img th:src="${userLogged.avatar == null || userLogged.avatar == '/image/default-avatar.jpg'?'':userLogged.avatar}" class="account-avatar-preview" id="avatarPreview">
+                                <div class="account-avatar-upload">
+                                    <input onchange="chooseAvatar()" type="file" id="avatarInput" hidden>
+                                    <input id="avatar" type="hidden" th:value="${userLogged.avatar}">
+                                    <button type="button" class="btn btn-primary account-avatar-btn"
+                                            onclick="document.getElementById('avatarInput').click()">
+                                        <i class="bi bi-upload"></i> <span id="btn-submit">Cập nhật ảnh</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" th:value="${userLogged.fullname}" class="form-control account-input" id="fullname" placeholder="Họ tên">
+                                        <label>Họ và tên</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" th:value="${userLogged.phone}" class="form-control account-input" id="phone"
+                                               placeholder="Số điện thoại">
+                                        <label>Số điện thoại</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="account-info-box">
+                                        <div class="account-info-label">Tên đăng nhập</div>
+                                        <div class="account-info-value" th:text="${userLogged.username}"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="account-info-box">
+                                        <div class="account-info-label">Mã sinh viên</div>
+                                        <div class="account-info-value" th:text="${userLogged.code}"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="account-info-box">
+                                        <div class="account-info-label">Email</div>
+                                        <div class="account-info-value" th:text="${userLogged.email}">sv123@university.edu</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="account-info-box">
+                                        <div class="account-info-label">Loại tài khoản</div>
+                                        <div class="account-info-value">Sinh viên</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="account-info-box">
+                                        <div class="account-info-label">Ngày tạo</div>
+                                        <div class="account-info-value" th:text="${userLogged.createdDate}">15/03/2026</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="account-info-box">
+                                        <div class="account-info-label">Trạng thái</div>
+                                        <div class="account-info-value text-success">Đang hoạt động</div>
+                                    </div>
+                                </div>
+                                <div class="col-12 text-end mt-3">
+                                    <button type="button" onclick="updateInfor()" class="btn btn-primary account-save-btn">
+                                        <i class="bi bi-save"></i> Cập nhật thông tin
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="common/user/footeruser :: footerMain"></div>
+</body>
+</html>

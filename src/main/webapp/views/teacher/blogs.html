@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Tin tức</title>
+  <th:block th:include="common/user/libuser :: libheader"></th:block>
+  <script src="/teacher/js/request.js"></script>
+  <script src="/teacher/js/blog.js"></script>
+  <script>
+    window.onload = function (){
+      loadBlog(0)
+    }
+  </script>
+</head>
+
+<body>
+<div th:replace="common/teacher/headerUser :: headerUser"></div>
+<div class="container mt-5 pt-5">
+  <h2 class="page-title"> <i class="bi bi-megaphone"></i> Tin tức & Thông báo </h2>
+  <div class="filter-box">
+    <div class="search-box">
+      <i class="bi bi-search"></i>
+      <input type="text" placeholder="Tìm kiếm thông báo..." id="search" onkeyup="loadBlog(0)">
+    </div>
+    <select class="form-select sort-select" id="category" onchange="loadBlog(0)">
+      <option value="">Tất cả danh mục</option>
+      <option th:each="c : ${categories}"
+              th:value="${c.id}"
+              th:selected="${category == c.id}"
+              th:text="${c.name}">
+      </option>
+    </select>
+    <select class="form-select sort-select" id="sort" onchange="loadBlog(0)">
+      <option value="id,desc">Sắp xếp mới nhất</option>
+      <option value="id,asc">Sắp xếp cũ nhất</option>
+      <option value="numView,desc">Sắp xếp nhiều lượt xem</option>
+    </select>
+  </div>
+  <div class="row g-4 mt-2" id="list-data">
+
+  </div>
+
+  <nav class="mt-3">
+    <ul id="pagination" class="pagination justify-content-center">
+    </ul>
+  </nav>
+</div>
+<div th:replace="common/user/footeruser :: footerMain"></div>
+</body>
+
+</html>

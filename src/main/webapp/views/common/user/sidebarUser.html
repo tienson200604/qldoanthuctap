@@ -1,0 +1,58 @@
+<!DOCTYPE html >
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+</head>
+<body>
+<div th:fragment="sidebarMain">
+  <div class="account-sidebar">
+    <div class="account-profile">
+      <img th:src="${userLogged.avatar == null || userLogged.avatar == '/image/default-avatar.jpg'?'':userLogged.avatar}" class="account-avatar">
+      <div class="account-name" th:text="${userLogged.fullname}"></div>
+      <div class="account-email" th:text="${userLogged.email}"></div>
+    </div>
+    <div class="account-menu">
+      <a href="/student/project" class="account-menu-item" data-urls="/student/project">
+        <i class="bi bi-journal-text"></i>
+        <span>Các đồ án đã đăng ký</span>
+      </a>
+      <a href="/student/my-account" class="account-menu-item" data-urls="/student/my-account">
+        <i class="bi bi-person"></i>
+        <span>Thông tin tài khoản</span>
+      </a>
+      <a href="/student/change-password" class="account-menu-item" data-urls="/student/change-password">
+        <i class="bi bi-key"></i>
+        <span>Đổi mật khẩu</span>
+      </a>
+      <a href="/student/log" class="account-menu-item" data-urls="/student/log">
+        <i class="bi bi-clock-history"></i>
+        <span>Nhật ký hoạt động</span>
+      </a>
+    </div>
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+      let currentPath = window.location.pathname;
+
+      document.querySelectorAll(".account-menu-item").forEach(item => {
+
+        let urls = item.dataset.urls;
+
+        if(!urls) return;
+
+        let list = urls.split(",");
+
+        list.forEach(url => {
+          if(currentPath.startsWith(url.trim())){
+            item.classList.add("active");
+          }
+        });
+
+      });
+
+    });
+  </script>
+</div>
+</body>
+</html>

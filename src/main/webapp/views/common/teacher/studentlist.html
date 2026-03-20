@@ -1,0 +1,37 @@
+<!DOCTYPE html >
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+</head>
+<body>
+<div th:fragment="studentList">
+  <table id="table-student" class="table table-custome">
+    <thead>
+    <tr>
+      <th>Ảnh</th>
+      <th>Mã sinh viên</th>
+      <th>Họ tên</th>
+      <th>Liên lạc</th>
+      <th>Công ty đăng ký</th>
+      <th>Trạng thái</th>
+      <th>Hành động</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="c : ${studentRegis}">
+      <td><img th:src="${c.student.avatar == null || c.student.avatar == ''?'\image\default-avatar.jpg':c.student.avatar}"></td>
+      <td th:text="${c.student.code}"></td>
+      <td th:text="${c.student.fullname}"></td>
+      <td>
+        <span class="d-block"><i class="fa fa-phone"></i> <th:block th:text="${c.student.phone}"></th:block></span>
+        <span class="d-block"><i class="fa fa-envelope"></i> <th:block th:text="${c.student.email}"></th:block></span>
+      </td>
+      <td></td>
+      <td><span th:text="${c.studentRegisStatus.displayName}" class="badge" th:style="'background-color:' + ${c.studentRegisStatus.color}"></span></td>
+      <td></td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>

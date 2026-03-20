@@ -1,0 +1,667 @@
+{
+  "info": {
+    "_postman_id": "a742d378-e5e3-4566-b3bf-318c38fdeb53",
+    "name": "qldoan",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "36814011"
+  },
+  "item": [
+    {
+      "name": "login",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"username\":\"admin@gmail.com\",\r\n    \"password\":\"admin\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/api/user/login/email",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "user",
+            "login",
+            "email"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "upload file",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": [
+                "/C:/Users/MT 247/Pictures/tải xuống (5).jpg",
+                "/C:/Users/MT 247/Pictures/tải xuống (6).jpg",
+                "/C:/Users/MT 247/Pictures/tải xuống (7).jpg",
+                "/C:/Users/MT 247/Pictures/tải xuống (8).jpg",
+                "/C:/Users/MT 247/Pictures/tải xuống (9).jpg",
+                "/C:/Users/MT 247/Pictures/tải xuống.jpg"
+              ]
+            }
+          ]
+        },
+        "url": {
+          "raw": "localhost:8080/api/public/upload-multiple-file",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "public",
+            "upload-multiple-file"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "quên mật khẩu",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/api/user/public/init-forgotpasss?email=hieutran02102804@gmail.com",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "user",
+            "public",
+            "init-forgotpasss"
+          ],
+          "query": [
+            {
+              "key": "email",
+              "value": "hieutran02102804@gmail.com"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "đặt lại mật khẩu",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/api/user/public/finish-reset-pass?email=hieutran02102804@gmail.com&key=525421&password=123",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "user",
+            "public",
+            "finish-reset-pass"
+          ],
+          "query": [
+            {
+              "key": "email",
+              "value": "hieutran02102804@gmail.com"
+            },
+            {
+              "key": "key",
+              "value": "525421"
+            },
+            {
+              "key": "password",
+              "value": "123"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "đổi mật khẩu",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzcyNTM3NzM3LCJleHAiOjE3NzMxNDI1MzcsInJvbGVzIjoiW1JPTEVfU1RVREVOVF0ifQ.fJ421rKeg4FAlc-VIYCBAMxbPkmC-PkhMVaJ01MLuIh0sOZTUc8mrveS7o7VKLfGKc7U2xjpmPNueyzKat5Wow",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"oldPass\":\"123\",\r\n    \"newPass\":\"admin\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/api/user/all/change-password",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "user",
+            "all",
+            "change-password"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "import tài khoản excel",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzcyODA5MTg2LCJleHAiOjE3NzM0MTM5ODYsInJvbGVzIjoiW1JPTEVfQURNSU5dIn0.ojFCfmnMCNOUe9aNeBz2HquEtlv1tq9z1YT-0M8Pit1YaB25exRjN5FHsJw-LkQAYDyr96v-qt1efus4xbA1gg",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "uuid": "656b2f4e-070a-4628-951e-9b1f333f799e",
+              "src": "/D:/quanlydoan/user_import_template.xlsx"
+            }
+          ]
+        },
+        "url": {
+          "raw": "localhost:8080/api/user/admin/import-excel",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "user",
+            "admin",
+            "import-excel"
+          ],
+          "query": [
+            {
+              "key": "",
+              "value": null,
+              "type": "text",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "lấy danh sách danh mục",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/api/category/public/all",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "category",
+            "public",
+            "all"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "thêm/ sửa danh mục",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzcyODA5MTg2LCJleHAiOjE3NzM0MTM5ODYsInJvbGVzIjoiW1JPTEVfQURNSU5dIn0.ojFCfmnMCNOUe9aNeBz2HquEtlv1tq9z1YT-0M8Pit1YaB25exRjN5FHsJw-LkQAYDyr96v-qt1efus4xbA1gg",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Kiêm thử\",\r\n  \"categoryType\": \"DOCUMENT\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/api/category/admin/create-update",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "category",
+            "admin",
+            "create-update"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "danh sách thông báo",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/api/blog/public/findAll",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "blog",
+            "public",
+            "findAll"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "thêm thông báo",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzcyODA5MTg2LCJleHAiOjE3NzM0MTM5ODYsInJvbGVzIjoiW1JPTEVfQURNSU5dIn0.ojFCfmnMCNOUe9aNeBz2HquEtlv1tq9z1YT-0M8Pit1YaB25exRjN5FHsJw-LkQAYDyr96v-qt1efus4xbA1gg",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"title\": \"thông báo nghỉ tết 2026\",\r\n  \"description\": \"đây là mô tả oke\",\r\n  \"content\": \"fwgbyeufgwbefwef\",\r\n  \"categoryId\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/api/blog/admin/create-update",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "blog",
+            "admin",
+            "create-update"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "danh sách tài liệu",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/api/document/public/search-public",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "document",
+            "public",
+            "search-public"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "thêm, sửa tài liệu",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2IiwiaWF0IjoxNzcyODEwMzY4LCJleHAiOjE3NzM0MTUxNjgsInJvbGVzIjoiW1JPTEVfVEVBQ0hFUl0ifQ.sl-GS-Pk2h74DraMEDK0IjkyX4e3fYSz4FCkZjKSNt_r7xFbhrwqEGl3mj4_tQpHv7iOw9O1IQ1hKiknpoJtFw",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Tài liệu số 2\",\r\n  \"linkImage\": \"string\",\r\n  \"description\": \"đây là mô tả oke tài liệu 2\",\r\n  \"categoryId\": 2,\r\n  \"status\": \"DANG_HIEN_THI\",\r\n  \"details\": [\r\n    {\r\n      \"name\": \"file số 1\",\r\n      \"fileType\": \"pdf\",\r\n      \"linkFile\": \"http://clod\"\r\n    },\r\n    {\r\n      \"name\": \"file số 2\",\r\n      \"fileType\": \"word\",\r\n      \"linkFile\": \"http://clod\"\r\n    }\r\n  ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/api/document/admin-teacher/create-update",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "document",
+            "admin-teacher",
+            "create-update"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "thêm tài khoản",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzcyODA5MTg2LCJleHAiOjE3NzM0MTM5ODYsInJvbGVzIjoiW1JPTEVfQURNSU5dIn0.ojFCfmnMCNOUe9aNeBz2HquEtlv1tq9z1YT-0M8Pit1YaB25exRjN5FHsJw-LkQAYDyr96v-qt1efus4xbA1gg",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"gv@gmail.com\",\r\n  \"password\": \"12345\",\r\n  \"code\": \"gv01\",\r\n  \"fullname\": \"giảng viên hiếu\",\r\n  \"phone\": \"0976123123\",\r\n  \"authorities\": {\r\n    \"name\": \"ROLE_TEACHER\"\r\n  }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/api/user/admin/addaccount",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "user",
+            "admin",
+            "addaccount"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "danh sách tài liệu bên admin",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzcyODEwNTMzLCJleHAiOjE3NzM0MTUzMzMsInJvbGVzIjoiW1JPTEVfQURNSU5dIn0.nq22bQGS8O6KPe6emmgBFiLyfVuh2epozHD88ycF3yDTcP1linFIscdLuzx_6u6ohGApIu_YZgosU5hTDwAS0Q",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/api/document/admin/all",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "document",
+            "admin",
+            "all"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "update trạng thái tài liệu bên admin",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzcyODEwNTMzLCJleHAiOjE3NzM0MTUzMzMsInJvbGVzIjoiW1JPTEVfQURNSU5dIn0.nq22bQGS8O6KPe6emmgBFiLyfVuh2epozHD88ycF3yDTcP1linFIscdLuzx_6u6ohGApIu_YZgosU5hTDwAS0Q",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/api/document/admin/update-status?id=2&status=DANG_HIEN_THI",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "document",
+            "admin",
+            "update-status"
+          ],
+          "query": [
+            {
+              "key": "id",
+              "value": "2"
+            },
+            {
+              "key": "status",
+              "value": "DANG_HIEN_THI"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "thêm công ty",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzcyODEwNTMzLCJleHAiOjE3NzM0MTUzMzMsInJvbGVzIjoiW1JPTEVfQURNSU5dIn0.nq22bQGS8O6KPe6emmgBFiLyfVuh2epozHD88ycF3yDTcP1linFIscdLuzx_6u6ohGApIu_YZgosU5hTDwAS0Q",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"công ty cộng nghệ aladin\",\r\n  \"imageBanner\": \"http:///\",\r\n  \"address\": \"hoàng mai, hà nội\",\r\n  \"phone\": \"00976126\",\r\n  \"description\": \"đây là mô tả công ty\",\r\n  \"taxCode\": \"932748234\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/api/company/admin/create-update",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "company",
+            "admin",
+            "create-update"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "danh sách công ty",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/api/company/public/find-all",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "company",
+            "public",
+            "find-all"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "danh sách năm học",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:8080/api/semester/public/all",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "semester",
+            "public",
+            "all"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "thêm năm học thực tập",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzcyODEwNTMzLCJleHAiOjE3NzM0MTUzMzMsInJvbGVzIjoiW1JPTEVfQURNSU5dIn0.nq22bQGS8O6KPe6emmgBFiLyfVuh2epozHD88ycF3yDTcP1linFIscdLuzx_6u6ohGApIu_YZgosU5hTDwAS0Q",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"yearName\": \"2025-2026\",\r\n  \"startDate\": \"2024-03-06T15:30:52.575Z\",\r\n  \"endDate\": \"2024-06-06T15:30:52.575Z\",\r\n  \"isActive\": true\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/api/semester/admin/create-update",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "semester",
+            "admin",
+            "create-update"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

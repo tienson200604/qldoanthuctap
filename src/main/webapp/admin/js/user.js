@@ -38,6 +38,7 @@ async function loadUsers(page) {
                     <td>${list[i].code}</td>
                     <td>${list[i].email}</td>
                     <td>${list[i].phone == null?'':list[i].phone}</td>
+                    <td>${list[i].className == null?'':list[i].className}</td>
                     <td>${list[i].authorities.name}</td>
                     <td id="status-${list[i].id}"><span class="badge bg-${list[i].actived === true ? 'success' : 'danger'}">${list[i].actived === true ? 'Đang hoạt động' : 'Đã khóa'}</span></td>
                     <td class="text-end">

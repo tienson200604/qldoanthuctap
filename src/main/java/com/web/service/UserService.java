@@ -308,6 +308,7 @@ public class UserService {
                     String activedStr = getCellValue(row.getCell(6));
                     String authorityName = getCellValue(row.getCell(7));
                     String avatar = getCellValue(row.getCell(8));
+                    String className = getCellValue(row.getCell(9));
                     if(userRepository.findByEmail(email).isPresent()){
                         ++numEmailExist;
                         emailExist.add(email);
@@ -327,6 +328,7 @@ public class UserService {
                     user.setPhone(phone);
                     user.setCode(code);
                     user.setAvatar(avatar);
+                    user.setClassName(className);
 
                     if(activedStr != null){
                         user.setActived(Boolean.parseBoolean(activedStr));

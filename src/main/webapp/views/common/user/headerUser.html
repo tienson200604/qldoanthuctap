@@ -49,6 +49,12 @@
               Đăng ký thực tập
             </a>
           </li>
+            <li>
+                <a href="/student/project"
+                   th:classappend="${currentUrl.startsWith('/student/project')} ? 'active'">
+                    Đợt thực tập
+                </a>
+            </li>
 
         </ul>
         <form class="search-container" action="/student/search">

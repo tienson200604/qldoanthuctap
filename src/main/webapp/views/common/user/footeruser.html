@@ -5,96 +5,44 @@
 </head>
 <body>
 <div id="footer" th:fragment="footerMain">
-    <footer class="main-footer">
-
+    <footer class="main-footer" style="background-color: #1b5498; color: white; padding-top: 40px; padding-bottom: 40px;">
         <div class="container">
-
-            <div class="row">
-
-                <!-- CỘT 1 -->
-                <div class="col-md-3">
-
-                    <h5>Hệ thống thực tập</h5>
-
-                    <p>
-                        Hệ thống quản lý thực tập giúp sinh viên, giảng viên và doanh nghiệp
-                        kết nối với nhau trong quá trình thực tập tốt nghiệp.
-                    </p>
-
-                    <div class="social">
-
-                        <i class="bi bi-facebook"></i>
-                        <i class="bi bi-youtube"></i>
-                        <i class="bi bi-github"></i>
-                        <i class="bi bi-linkedin"></i>
-
-                    </div>
-
+            <div class="row align-items-center">
+                <!-- CỘT 1: Logo -->
+                <div class="col-md-2 text-center mb-4 mb-md-0 d-flex justify-content-center">
+                    <!-- Bạn có thể thay đổi src ảnh ở dòng dưới cho logo của riêng mình -->
+                    <img src="/image/logo_footer.jpg" alt="Logo" style="max-width: 130px; min-height: 120px; min-width: 120px; object-fit: contain; padding: 5px;">
                 </div>
 
-
-                <!-- CỘT 2 -->
-                <div class="col-md-3">
-
-                    <h5>Liên kết nhanh</h5>
-
-                    <ul>
-
-                        <li>Trang chủ</li>
-                        <li>Giấy giới thiệu</li>
-                        <li>Báo cáo tuần</li>
-                        <li>Nộp báo cáo</li>
-                        <li>Khảo sát</li>
-
+                <!-- CỘT 2: CƠ SỞ HÀ NỘI -->
+                <div class="col-md-5 mb-4 mb-md-0 text-center">
+                    <h6 class="font-weight-bold mb-3" style="font-size: 16px; text-transform: uppercase;">CƠ SỞ HÀ NỘI</h6>
+                    <ul class="list-unstyled" style="font-size: 14px; margin-bottom: 0;">
+                        <li style="margin-bottom: 12px;"><i class="bi bi-geo-alt-fill" style="margin-right: 8px;"></i> Số 454-456 Minh Khai, Phường Vĩnh Tuy, TP. Hà Nội</li>
+                        <li style="margin-bottom: 12px;"><i class="bi bi-geo-alt-fill" style="margin-right: 8px;"></i> Số 218 Lĩnh Nam, Phường Hoàng Mai, TP. Hà Nội</li>
+                        <li style="margin-bottom: 15px; display: flex; justify-content: center; gap: 40px; ">
+                            <span><i class="bi bi-telephone-fill" style="margin-right: 8px;"></i> 024.38621504</span>
+                            <span><i class="bi bi-printer-fill" style="margin-right: 8px;"></i> 024.38623938</span>
+                        </li>
+                        <li style="margin-bottom: 0;"><i class="bi bi-envelope-fill" style="margin-right: 8px;"></i> web@uneti.edu.vn</li>
                     </ul>
-
                 </div>
 
-
-                <!-- CỘT 3 -->
-                <div class="col-md-3">
-
-                    <h5>Tài nguyên</h5>
-
-                    <ul>
-
-                        <li>Hướng dẫn thực tập</li>
-                        <li>Biểu mẫu</li>
-                        <li>Quy định thực tập</li>
-                        <li>Câu hỏi thường gặp</li>
-
+                <!-- CỘT 3: CƠ SỞ NAM ĐỊNH -->
+                <div class="col-md-5 text-center">
+                    <h6 class="font-weight-bold mb-3" style="font-size: 16px; text-transform: uppercase;">CƠ SỞ NAM ĐỊNH</h6>
+                    <ul class="list-unstyled" style="font-size: 14px; margin-bottom: 0;">
+                        <li style="margin-bottom: 12px;"><i class="bi bi-geo-alt-fill" style="margin-right: 8px;"></i> Số 353 Trần Hưng Đạo, Phường Nam Định, Tỉnh Nam Định</li>
+                        <li style="margin-bottom: 12px;"><i class="bi bi-geo-alt-fill" style="margin-right: 8px;"></i> Khu xưởng Thực hành, Phường Thành Nam, Tỉnh Nam Định</li>
+                        <li style="margin-bottom: 15px; display: flex; justify-content: center; gap: 30px;">
+                            <span><i class="bi bi-telephone-fill" style="margin-right: 8px;"></i> 0228.3848706</span>
+                            <span><i class="bi bi-printer-fill" style="margin-right: 8px;"></i> 0228.3845747</span>
+                        </li>
+                        <li style="margin-bottom: 0;"><i class="bi bi-envelope-fill" style="margin-right: 8px;"></i> web@uneti.edu.vn</li>
                     </ul>
-
                 </div>
-
-
-                <!-- CỘT 4 -->
-                <div class="col-md-3">
-
-                    <h5>Liên hệ</h5>
-
-                    <ul>
-
-                        <li><i class="bi bi-geo-alt"></i> Hà Nội, Việt Nam</li>
-                        <li><i class="bi bi-envelope"></i> internship@university.edu</li>
-                        <li><i class="bi bi-telephone"></i> 0123 456 789</li>
-
-                    </ul>
-
-                </div>
-
             </div>
-
-            <hr>
-
-            <div class="copyright">
-
-                © 2026 Internship Management System - All Rights Reserved
-
-            </div>
-
         </div>
-
     </footer>
 </div>
 </body>

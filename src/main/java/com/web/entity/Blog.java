@@ -23,8 +23,10 @@ public class Blog {
 
     private String title;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(columnDefinition = "LONGTEXT")
     private String content;
 
     private String image;

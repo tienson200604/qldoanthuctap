@@ -65,8 +65,7 @@ flowchart TD
     Student(["🎓 Sinh viên (Student)"])
 
     %% Nhóm 1: Khởi tạo
-    subgraph Phase1 [1. Giai đoạn Khởi tạo (Admin)]
-        direction TB
+    subgraph Phase1 ["1. Giai đoạn Khởi tạo (Admin)"]
         Admin -->|Thiết lập| A1(Tạo Đợt Thực tập & Niên Khóa)
         A1 -->|Phân công| A2(Thêm Danh sách Công ty\nSEMESTER_COMPANY)
         A1 -->|Phân công| A3(Gán Giảng viên Dẫn dắt\nSEMESTER_TEACHER)
@@ -74,8 +73,7 @@ flowchart TD
     end
 
     %% Nhóm 2: Đăng ký
-    subgraph Phase2 [2. Giai đoạn Đăng ký (Student & Teacher)]
-        direction TB
+    subgraph Phase2 ["2. Giai đoạn Đăng ký (Student & Teacher)"]
         Student -->|Xem danh sách| B1(Chọn Đồ án hoặc Công ty)
         B1 -->|Nộp nguyện vọng| B2{Giảng viên Xét duyệt}
         B2 -->|Từ chối| B1
@@ -83,8 +81,7 @@ flowchart TD
     end
 
     %% Nhóm 3: Thực tập
-    subgraph Phase3 [3. Quá trình Thực tập]
-        direction TB
+    subgraph Phase3 ["3. Quá trình Thực tập"]
         Teacher -->|Giao việc| C1(Tạo Yêu cầu Báo cáo & Giấy tờ)
         C1 -.->|Thông báo tự động| Student
         Student -->|Đính kèm File/Text| C2(Nộp Báo cáo Tuần & Minh chứng)
@@ -94,8 +91,7 @@ flowchart TD
     end
 
     %% Nhóm 4: Đánh giá
-    subgraph Phase4 [4. Đánh giá Kết thúc]
-        direction TB
+    subgraph Phase4 ["4. Đánh giá Kết thúc"]
         Teacher -->|Chấm từng tiêu chí| D1(Vào Điểm Thành phần)
         Teacher -->|Đánh giá thái độ| D2(Ghi nhận xét Feedback)
         D1 --> D3((Kết xuất Điểm Tổng & Đóng đợt))

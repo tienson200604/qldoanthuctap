@@ -58,39 +58,55 @@ Dự án được xây dựng trên mô hình nguyên khối **Monolithic** vớ
 Dưới đây là chuỗi hành động (Sequence) từ lúc Bắt đầu đợt thực tập cho đến lúc Chấm điểm kết thúc. Được mô phỏng bằng ngôn ngữ sơ đồ Mermaid.
 
 ```mermaid
-sequenceDiagram
-    autonumber
-    actor Admin
-    actor Company
-    actor Teacher as Giảng viên
-    actor Student as Sinh viên
-    participant System as Hệ thống (Database)
+flowchart TD
+    %% Khai báo các đối tượng
+    Admin(["👑 Quản trị viên (Admin)"])
+    Teacher(["👨‍🏫 Giảng viên (Teacher)"])
+    Student(["🎓 Sinh viên (Student)"])
 
-    Note over Admin,System: 1. KHỞI TẠO ĐỢT THỰC TẬP
-    Admin->>System: Tạo Niên khóa & Cấu hình Đợt Thực tập (SEMESTER, SEMESTER_TYPE)
-    Admin->>System: Thêm thông tin danh sách Công ty (COMPANY)
-    System->>Company: Liên kết đợt thực tập (SEMESTER_COMPANY)
-    Admin->>System: Phân công Giảng viên phụ trách nhóm (SEMESTER_TEACHER)
-    Admin->>System: Tạo các Cột Điểm Đánh giá (SCORE_RATIO)
+    %% Nhóm 1: Khởi tạo
+    subgraph Phase1 [1. Giai đoạn Khởi tạo (Admin)]
+        direction TB
+        Admin -->|Thiết lập| A1(Tạo Đợt Thực tập & Niên Khóa)
+        A1 -->|Phân công| A2(Thêm Danh sách Công ty\nSEMESTER_COMPANY)
+        A1 -->|Phân công| A3(Gán Giảng viên Dẫn dắt\nSEMESTER_TEACHER)
+        A1 -->|Cấu hình| A4(Tạo Cột Điểm Đánh giá)
+    end
 
-    Note over Teacher,Student: 2. SINH VIÊN ĐĂNG KÝ
-    Student->>System: Xem danh sách Đồ án mở / Công ty đang nhận
-    Student->>System: Gửi Yêu cầu Đăng ký (STUDENT_REGIS)
-    System-->>Teacher: Thông báo có sinh viên xin vào nhóm
-    Teacher->>System: Xét duyệt (Chấp nhận / Từ chối) (Duyệt STUDENT_REGIS)
+    %% Nhóm 2: Đăng ký
+    subgraph Phase2 [2. Giai đoạn Đăng ký (Student & Teacher)]
+        direction TB
+        Student -->|Xem danh sách| B1(Chọn Đồ án hoặc Công ty)
+        B1 -->|Nộp nguyện vọng| B2{Giảng viên Xét duyệt}
+        B2 -->|Từ chối| B1
+        B2 -->|Chấp nhận| B3[Chính thức tham gia Nhóm/Đồ án]
+    end
 
-    Note over Teacher,Student: 3. QUÁ TRÌNH THỰC TẬP
-    Teacher->>System: Tạo Nhiệm vụ / Yêu cầu Giấy tờ (WORK_PROGRESS, RELATED_DOCUMENTS)
-    System-->>Student: Gửi thông báo nhiệm vụ mới
-    Student->>System: Nộp File Báo cáo tuần / Giấy tờ (WORK_PROGRESS_STUDENT, RELATED_DOCUMENT_STUDENT)
-    Student->>System: Nhắn tin trao đổi thắc mắc (CHAT, CHAT_ROOM)
-    Teacher->>System: Đọc và Trả lời tin nhắn / Nhận xét tiến độ
+    %% Nhóm 3: Thực tập
+    subgraph Phase3 [3. Quá trình Thực tập]
+        direction TB
+        Teacher -->|Giao việc| C1(Tạo Yêu cầu Báo cáo & Giấy tờ)
+        C1 -.->|Thông báo tự động| Student
+        Student -->|Đính kèm File/Text| C2(Nộp Báo cáo Tuần & Minh chứng)
+        C2 -->|Đợi phản hồi| Teacher
+        Student <-->|Tin nhắn thời gian thực| C3((Kênh Chat Nhóm / Liên hệ Diễn đàn))
+        Teacher <-->|Trả lời tin nhắn| C3
+    end
 
-    Note over Teacher,Student: 4. ĐÁNH GIÁ & KẾT THÚC
-    Teacher->>System: Chấm điểm thành phần (SCORE_RESULT)
-    Teacher->>System: Viết Nhận xét Tổng quan Cuối kỳ (RATE)
-    System->>System: Tính Điểm Tổng kết (Tổng hợp vào STUDENT_REGIS)
-    System-->>Student: Xem Bảng Điểm & Nhận xét
+    %% Nhóm 4: Đánh giá
+    subgraph Phase4 [4. Đánh giá Kết thúc]
+        direction TB
+        Teacher -->|Chấm từng tiêu chí| D1(Vào Điểm Thành phần)
+        Teacher -->|Đánh giá thái độ| D2(Ghi nhận xét Feedback)
+        D1 --> D3((Kết xuất Điểm Tổng & Đóng đợt))
+        D2 --> D3
+        D3 -.->|Công bố Kết quả| Student
+    end
+
+    %% Mũi tên luồng chính
+    Phase1 ===> Phase2
+    B3 ===> Phase3
+    C2 ===> Phase4
 ```
 
 ---

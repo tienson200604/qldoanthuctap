@@ -95,8 +95,11 @@ $( document ).ready(function() {
         </div>
     </div>
     <div class="d-flex align-items-center gap-4">
-        <div class="notification-icon">
-            <i class="bi bi-bell"></i><span class="badge rounded-pill bg-danger badge-notif">3</span>
+        <div class="d-flex align-items-center gap-3">
+            <i class="bi bi-moon-fill" id="darkModeToggle" title="Bật/Tắt giao diện tối" style="cursor:pointer; font-size: 1.2rem;"></i>
+            <div class="notification-icon">
+                <i class="bi bi-bell"></i><span class="badge rounded-pill bg-danger badge-notif">3</span>
+            </div>
         </div>
         <div class="user-profile">
             <img src="/image/default-avatar.jpg" id="avatar-header" width="40" class="rounded-circle" >
@@ -132,6 +135,30 @@ $( document ).ready(function() {
     //         sidebar.classList.add('collapsed');
     //     }
     // };
+
+    // Dark mode logic
+    const darkModeToggleIcon = document.getElementById("darkModeToggle");
+    if (darkModeToggleIcon) {
+        const isDarkMode = localStorage.getItem("darkMode") === "true";
+        if (isDarkMode) {
+            document.body.classList.add("dark-mode");
+            document.documentElement.setAttribute('data-bs-theme', 'dark');
+            darkModeToggleIcon.classList.replace("bi-moon-fill", "bi-sun-fill");
+        }
+        darkModeToggleIcon.addEventListener("click", function() {
+            document.body.classList.toggle("dark-mode");
+            const isDark = document.body.classList.contains("dark-mode");
+            localStorage.setItem("darkMode", isDark);
+            
+            if (isDark) {
+                document.documentElement.setAttribute('data-bs-theme', 'dark');
+                darkModeToggleIcon.classList.replace("bi-moon-fill", "bi-sun-fill");
+            } else {
+                document.documentElement.removeAttribute('data-bs-theme');
+                darkModeToggleIcon.classList.replace("bi-sun-fill", "bi-moon-fill");
+            }
+        });
+    }
 });
 
 function loadInforHeader() {

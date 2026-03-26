@@ -53,48 +53,314 @@ Dự án được xây dựng trên mô hình nguyên khối **Monolithic** vớ
 
 ---
 
-## 📂 Cấu Trúc Thư Mục Chính
+## 🏗️ Sơ Đồ Luồng Nghiệp Vụ (Business Flow Diagram)
 
-```text
-quanlydoan/
-├── src/main/java/             # Source code cốt lõi Backend (Controller, Service, Repository, Entity, Configuration...)
-├── src/main/resources/        # File cấu hình ứng dụng application.properties, file tĩnh (static)
-├── src/main/webapp/           # Các Frontend Resources (Thymeleaf, CSS, JS)
-│   ├── admin/js/              # Javascript xử lý nội bộ luồng Admin
-│   ├── student/js/            # Javascript xử lý nội bộ luồng Student 
-│   ├── teacher/js/            # Javascript xử lý nội bộ luồng Teacher
-│   ├── css/                   # Stylesheets chung và giao diện Dark/Light mode (main.css, styleadmin.css)
-│   └── views/                 # Chứa tất cả các trang giao diện HTML (.html)
-│       ├── admin/             # Màn hình cho Admin
-│       ├── student/           # Màn hình cho Sinh viên
-│       ├── teacher/           # Màn hình cho Giảng viên
-│       └── common/            # Fragment dùng chung (Header, Footer, Sidebar, Chat layout)
-└── quanlydoan.sql             # Script khởi tạo cơ sở dữ liệu có sẵn
+Dưới đây là chuỗi hành động (Sequence) từ lúc Bắt đầu đợt thực tập cho đến lúc Chấm điểm kết thúc. Được mô phỏng bằng ngôn ngữ sơ đồ Mermaid.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Admin
+    actor Company
+    actor Teacher as Giảng viên
+    actor Student as Sinh viên
+    participant System as Hệ thống (Database)
+
+    Note over Admin,System: 1. KHỞI TẠO ĐỢT THỰC TẬP
+    Admin->>System: Tạo Niên khóa & Cấu hình Đợt Thực tập (SEMESTER, SEMESTER_TYPE)
+    Admin->>System: Thêm thông tin danh sách Công ty (COMPANY)
+    System->>Company: Liên kết đợt thực tập (SEMESTER_COMPANY)
+    Admin->>System: Phân công Giảng viên phụ trách nhóm (SEMESTER_TEACHER)
+    Admin->>System: Tạo các Cột Điểm Đánh giá (SCORE_RATIO)
+
+    Note over Teacher,Student: 2. SINH VIÊN ĐĂNG KÝ
+    Student->>System: Xem danh sách Đồ án mở / Công ty đang nhận
+    Student->>System: Gửi Yêu cầu Đăng ký (STUDENT_REGIS)
+    System-->>Teacher: Thông báo có sinh viên xin vào nhóm
+    Teacher->>System: Xét duyệt (Chấp nhận / Từ chối) (Duyệt STUDENT_REGIS)
+
+    Note over Teacher,Student: 3. QUÁ TRÌNH THỰC TẬP
+    Teacher->>System: Tạo Nhiệm vụ / Yêu cầu Giấy tờ (WORK_PROGRESS, RELATED_DOCUMENTS)
+    System-->>Student: Gửi thông báo nhiệm vụ mới
+    Student->>System: Nộp File Báo cáo tuần / Giấy tờ (WORK_PROGRESS_STUDENT, RELATED_DOCUMENT_STUDENT)
+    Student->>System: Nhắn tin trao đổi thắc mắc (CHAT, CHAT_ROOM)
+    Teacher->>System: Đọc và Trả lời tin nhắn / Nhận xét tiến độ
+
+    Note over Teacher,Student: 4. ĐÁNH GIÁ & KẾT THÚC
+    Teacher->>System: Chấm điểm thành phần (SCORE_RESULT)
+    Teacher->>System: Viết Nhận xét Tổng quan Cuối kỳ (RATE)
+    System->>System: Tính Điểm Tổng kết (Tổng hợp vào STUDENT_REGIS)
+    System-->>Student: Xem Bảng Điểm & Nhận xét
 ```
 
 ---
 
-## 🛠️ Hướng Dẫn Cài Đặt (Setup Guide)
+## 🗄️ Cấu Trúc Cơ Sở Dữ Liệu & ERD Diagram
+
+Hệ thống được thiết kế hoàn chỉnh với 22 bảng (Tables), quy hoạch thành các khối nghiệp vụ như phân quyền, tương tác tiến độ, lưu trữ hành chính và trao đổi thông tin nội bộ.
+
+### Sơ Đồ Thực Thể - Liên Kết (Entity-Relationship Diagram)
+
+```mermaid
+erDiagram
+    AUTHORITY {
+        varchar name PK
+    }
+    
+    USERS {
+        bigint id PK
+        varchar username
+        varchar password
+        varchar fullname
+        varchar email
+        varchar phone
+        varchar code
+        int user_type
+        varchar authority_name FK
+    }
+
+    CATEGORY {
+        bigint id PK
+        varchar name
+        varchar category_type
+    }
+
+    BLOG {
+        bigint id PK
+        varchar title
+        varchar content
+        bigint category_id FK
+        bigint user_id FK
+    }
+
+    DOCUMENT {
+        bigint id PK
+        varchar name
+        varchar status
+        bigint category_id FK
+        bigint user_id FK
+    }
+
+    DOCUMENT_DETAIL {
+        bigint id PK
+        varchar name
+        varchar link_file
+        bigint document_id FK
+    }
+
+    COMPANY {
+        bigint id PK
+        varchar name
+        varchar email
+        varchar tax_code
+        varchar address
+    }
+
+    SEMESTER {
+        bigint id PK
+        varchar year_name
+        date start_date
+        date end_date
+    }
+
+    SEMESTER_TYPE {
+        bigint id PK
+        varchar type
+        bigint semester_id FK
+    }
+
+    SEMESTER_COMPANY {
+        bigint id PK
+        int max_student
+        bigint company_id FK
+        bigint semester_id FK
+    }
+
+    SEMESTER_TEACHER {
+        bigint id PK
+        varchar project_name
+        int max_students
+        bigint semester_type_id FK
+        bigint teacher_id FK
+    }
+
+    STUDENT_REGIS {
+        bigint id PK
+        varchar internship_type
+        varchar student_regis_status
+        float total_score
+        bigint student_id FK
+        bigint semester_teacher_id FK
+        bigint semester_company_id FK
+    }
+
+    SCORE_RATIO {
+        bigint id PK
+        varchar name
+        float percent
+        bigint semester_id FK
+    }
+
+    SCORE_RESULT {
+        bigint id PK
+        float point
+        bigint score_ratio_id FK
+        bigint student_regis_id FK
+    }
+
+    WORK_PROGRESS {
+        bigint id PK
+        varchar title
+        datetime deadline
+        bigint semester_teacher_id FK
+    }
+
+    WORK_PROGRESS_STUDENT {
+        bigint id PK
+        varchar title
+        text content
+        bigint work_process_id FK
+        bigint student_regis_id FK
+    }
+
+    RELATED_DOCUMENTS {
+        bigint id PK
+        varchar name
+        datetime deadline
+        bigint semester_teacher_id FK
+    }
+
+    RELATED_DOCUMENT_STUDENT {
+        bigint id PK
+        varchar file_url
+        bigint related_documents_id FK
+        bigint student_regis_id FK
+    }
+
+    RATE {
+        bigint id PK
+        double avg_score
+        varchar comment
+        bigint student_regis_id FK
+    }
+
+    CHAT {
+        bigint id PK
+        varchar content
+        bigint sender FK
+        bigint receiver FK
+    }
+
+    CHAT_ROOM {
+        bigint id PK
+        varchar content
+        bigint sender FK
+        bigint semester_teacher_id FK
+    }
+
+    NOTIFICATION {
+        bigint id PK
+        varchar title
+        bigint user_id FK
+    }
+
+    %% QUAN HỆ CỐT LÕI (RELATIONSHIPS)
+    AUTHORITY ||--o{ USERS : "phân quyền"
+    USERS ||--o{ BLOG : "đăng tin"
+    USERS ||--o{ DOCUMENT : "tải lên"
+    CATEGORY ||--o{ BLOG : "phân loại"
+    CATEGORY ||--o{ DOCUMENT : "phân loại"
+    DOCUMENT ||--o{ DOCUMENT_DETAIL : "chứa file"
+    
+    USERS ||--o{ SEMESTER_TEACHER : "giảng viên hướng dẫn"
+    USERS ||--o{ STUDENT_REGIS : "đăng ký"
+    
+    SEMESTER ||--o{ SEMESTER_TYPE : "thuộc về"
+    SEMESTER ||--o{ SEMESTER_COMPANY : "mở đăng ký"
+    SEMESTER ||--o{ SCORE_RATIO : "quy định đầu điểm"
+    
+    COMPANY ||--o{ SEMESTER_COMPANY : "tạo đợt nhận"
+    
+    SEMESTER_TYPE ||--o{ SEMESTER_TEACHER : "thuộc vòng"
+    
+    SEMESTER_TEACHER ||--o{ STUDENT_REGIS : "nhận sinh viên"
+    SEMESTER_COMPANY ||--o{ STUDENT_REGIS : "nhận sinh viên"
+    
+    SEMESTER_TEACHER ||--o{ WORK_PROGRESS : "yêu cầu báo cáo"
+    SEMESTER_TEACHER ||--o{ RELATED_DOCUMENTS : "yêu cầu giấy tờ"
+    SEMESTER_TEACHER ||--o{ CHAT_ROOM : "nhóm chung đồ án"
+    
+    STUDENT_REGIS ||--o{ WORK_PROGRESS_STUDENT : "nộp báo cáo"
+    WORK_PROGRESS ||--o{ WORK_PROGRESS_STUDENT : "là báo cáo của"
+    
+    STUDENT_REGIS ||--o{ RELATED_DOCUMENT_STUDENT : "nộp file"
+    RELATED_DOCUMENTS ||--o{ RELATED_DOCUMENT_STUDENT : "file đó của đợt"
+    
+    SCORE_RATIO ||--o{ SCORE_RESULT : "thuộc con điểm"
+    STUDENT_REGIS ||--o{ SCORE_RESULT : "đạt điểm"
+    
+    STUDENT_REGIS ||--o{ RATE : "gửi đánh giá"
+    
+    USERS ||--o{ CHAT : "nhắn riêng (sender)"
+    USERS ||--o{ CHAT : "nhận riêng (receiver)"
+    USERS ||--o{ CHAT_ROOM : "nhắn vào nhóm chung"
+    
+    USERS ||--o{ NOTIFICATION : "nhận thông báo"
+```
+
+### Phân Tích Chức Năng Cốt Lõi Của Database
+
+- **1. Nhóm Quản Trị Hệ Thống (`users`, `authority`):** Lưu trữ tài khoản và phân quyền người dùng (roles).
+- **2. Nhóm Cấu Hình Đợt Thực Tập (`semester`, `semester_type`, `semester_teacher`, `semester_company`, `company`):** Cấu hình thời hạn, quy chế và số lượng sinh viên cho từng Giảng viên hoặc Doanh nghiệp theo niên khóa tương ứng.
+- **3. Nhóm Đăng Ký Của Sinh Viên (`student_regis`):** Đây là bảng cầu nối quan trọng (Core). Mỗi cá nhân sẽ lưu lại lịch sử đăng kí của mình kết nối tới Giảng viên hoặc Công ty. Bao gồm điểm số tổng.
+- **4. Nhóm Báo Cáo, Nộp Tài Liệu (`work_progress`, `work_progress_student`, `related_documents`, `related_document_student`):** Ứng với từng yêu cầu từ Giảng viên, sinh viên sẽ gửi nội dung và file (URL) lên thông qua bảng `..._student`.
+- **5. Nhóm Điểm Số, Đánh Giá (`score_ratio`, `score_result`, `rate`):** Định nghĩa tỷ trọng cột điểm, cho tiết lưu lại điểm trên từng dòng của sinh viên và đánh giá nhận xét sau kết thúc.
+- **6. Nhóm Tương Tác, Giao Tiếp (`chat`, `chat_room`, `notification`, `blog`, `category`, `document`, `document_detail`):** Quản lý luồng trò chuyện 1-1 và làm việc nhóm đồ án. Đồng thời phân loại các bản tin, trang thư viện của nhà trường.
+
+---
+
+## 📂 Cấu Trúc Thư Mục Chuyên Sâu
+
+```text
+quanlydoan/
+├── src/main/java/             # Source code cốt lõi Backend (Controller, Service, Repository, Entity, Configuration...)
+├── src/main/resources/        # File cấu hình ứng dụng application.properties, các file tĩnh (static resources)
+├── src/main/webapp/           # Các Frontend Resources (Dành riêng cho web MVC)
+│   ├── admin/js/              # Javascript xử lý nội bộ luồng Admin
+│   ├── student/js/            # Javascript xử lý nội bộ luồng Student 
+│   ├── teacher/js/            # Javascript xử lý nội bộ luồng Teacher
+│   ├── css/                   # Stylesheets dùng chung, thư viện xử lý Native Dark/Light Mode (main.css, styleadmin.css)
+│   └── views/                 # Chứa tất cả các trang giao diện HTML (.html) được build theo Thymeleaf fragment
+│       ├── admin/             # Các màn quản trị của Admin
+│       ├── student/           # Các màn chức năng cho Sinh viên 
+│       ├── teacher/           # Màn chức năng cho Giảng viên hướng dẫn
+│       └── common/            # Tái sử dụng HTML: Layout header, footer, thanh sidebar, module popup Chat
+└── quanlydoan.sql             # Script Database hoàn thiện (Bao gồm dữ liệu mẫu Seed Data)
+```
+
+---
+
+## 🛠️ Hướng Dẫn Cài Đặt Khởi Chạy (Setup Guide)
 
 1. **Chuẩn bị môi trường:**
     - Cài đặt Java Development Kit (JDK) 17 trở lên.
-    - Cài đặt MySQL Server.
-    - Một IDE tuỳ ý (IntelliJ IDEA, Eclipse, VS Code).
-    - Tạo tài khoản Cloudinary để lấy API Keys (Nếu muốn kiểm thử tính năng Upload File).
+    - Cài đặt MySQL Server / Workbench.
+    - Clone ứng dụng qua Git về IDE của bạn.
+    - Lấy thông tin API Keys từ dịch vụ **Cloudinary** để hỗ trợ upload File PDF, Word, Ảnh qua hệ thống.
 
 2. **Thiết lập Database:**
-    - Tạo một Database rỗng trong MySQL tên `quanlydoan` (hoặc tên theo ý muốn).
-    - Mở SQL Client hoặc MySQL Workbench và chạy script file `quanlydoan.sql` để tạo toàn bộ bảng và Seed dữ liệu mốc.
+    - Truy cập MySQL, khởi tạo một Database rỗng tên `quanlydoan` (hoặc tên theo ý định của bạn).
+    - Import hoặc chạy mã `quanlydoan.sql` để sinh các Table và đổ Database mốc (Data Seeds).
 
-3. **Cấu hình Application:**
+3. **Cấu hình Spring Boot Application:**
     - Đi tới `src/main/resources/application.properties`.
-    - Thay đổi chuỗi kết nối Database `spring.datasource.url`, `username`, `password` tương ứng với máy tính của bạn.
-    - Gắn Auth Keys của Cloudinary.
+    - Điều chỉnh lại chuỗi cấp phép DB: `spring.datasource.url`, `username`, `password` sao cho khớp với Local của bạn.
+    - Thêm Config Auth của Cloudinary.
 
 4. **Biên dịch & Chạy Server:**
-    - Chạy file `QuanlydoanApplication.java` từ IDE của bạn.
-    - Ứng dụng sẽ tự động khởi chạy Web Tomcat trên Port mặc định là `8080`.
-    - Truy cập ứng dụng qua Localhost: `http://localhost:8080`
-
+    - Tìm file Controller main `QuanlydoanApplication.java` và khởi chạy dưới tư cách 1 Spring Boot App.
+    - Server sẽ Start trên port mặc định `8080`.
+    - Mở trình duyệt Web tại Link: `http://localhost:8080`
+    
 ---
-*Dự án được duy trì và phát triển mục đích phục vụ Đồ án / Bài tập lớn cấp trường Đại học.*
+*Dự án thuộc dạng phần mềm học thuật (Academic Project / Capstone) được lên thiết kế theo đúng quy chuẩn ứng dụng Quản lý trường học.*

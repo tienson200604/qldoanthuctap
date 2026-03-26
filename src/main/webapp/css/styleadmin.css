@@ -673,9 +673,17 @@ body.dark-mode .dashboard-admin-student-card,
 [data-bs-theme="dark"] .nav-text,
 [data-bs-theme="dark"] .title,
 [data-bs-theme="dark"] h5,
-[data-bs-theme="dark"] th,
 [data-bs-theme="dark"] td {
     color: #e0e0e0 !important;
+}
+
+[data-bs-theme="dark"] th,
+[data-bs-theme="dark"] .table-light,
+[data-bs-theme="dark"] .table-light th,
+[data-bs-theme="dark"] .table-light td {
+    color: #fff !important;
+    font-weight: bold !important;
+    background-color: transparent !important;
 }
 
 [data-bs-theme="dark"] #example thead {

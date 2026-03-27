@@ -4,6 +4,8 @@ import com.web.entity.StudentRegis;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import org.springframework.data.repository.query.Param;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -26,4 +28,19 @@ public interface StudentRegisRepository extends JpaRepository<StudentRegis, Long
 
     @Query("select s from StudentRegis s where s.semesterTeacher.id = ?1")
     List<StudentRegis> findBySemesterTeacher(Long semesterTeacherId);
+
+    @Query("""
+        SELECT s FROM StudentRegis s
+        WHERE s.semesterTeacher.semesterType.semester.id = :semesterId
+          AND (:teacherId IS NULL OR s.semesterTeacher.teacher.id = :teacherId)
+          AND (:keyword IS NULL OR LOWER(s.student.fullname) LIKE LOWER(CONCAT('%',:keyword,'%'))
+                                OR LOWER(s.student.code) LIKE LOWER(CONCAT('%',:keyword,'%')))
+          AND (:className IS NULL OR LOWER(s.student.className) LIKE LOWER(CONCAT('%',:className,'%')))
+        """)
+    List<StudentRegis> findScoreByFilter(
+        @Param("semesterId") Long semesterId,
+        @Param("teacherId") Long teacherId,
+        @Param("keyword") String keyword,
+        @Param("className") String className
+    );
 }

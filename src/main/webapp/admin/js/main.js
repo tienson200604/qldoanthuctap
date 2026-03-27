@@ -67,8 +67,9 @@ $( document ).ready(function() {
             <i class="bi bi-chevron-down ms-auto nav-text"></i>
         </a>
         <div class="collapse" id="menu9">
-            <a href="score" class="menu-item ps-5"><i class="bi bi-building"></i> <span class="nav-text">Danh sách</span></a>
-            <a href="add-score" class="menu-item ps-5"><i class="bi bi-plus-circle"></i> <span class="nav-text">Thêm mới</span></a>
+            <a href="score" class="menu-item ps-5"><i class="bi bi-building"></i> <span class="nav-text">Danh sách đầu điểm</span></a>
+            <a href="add-score" class="menu-item ps-5"><i class="bi bi-plus-circle"></i> <span class="nav-text">Thêm mới đầu điểm</span></a>
+            <a href="student-score" class="menu-item ps-5"><i class="bi bi-bar-chart-line"></i> <span class="nav-text">Thống kê điểm SV</span></a>
         </div>
 
         <a href="log" class="menu-item"><i class="bi bi-file-earmark-text"></i> <span class="nav-text">Quản lý log</span></a>

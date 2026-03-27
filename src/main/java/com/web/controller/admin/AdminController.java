@@ -113,4 +113,9 @@ public class AdminController {
     public String user() {
         return "admin/user";
     }
+
+    @RequestMapping(value = {"/student-score"}, method = RequestMethod.GET)
+    public String studentScore() {
+        return "admin/student-score";
+    }
 }

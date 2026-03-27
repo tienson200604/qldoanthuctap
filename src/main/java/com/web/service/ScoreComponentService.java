@@ -37,6 +37,7 @@ public class ScoreComponentService {
         if(scoreComponent.getId() != null){
             ScoreComponent ex = scoreComponentRepository.findById(scoreComponent.getId()).get();
             ex.setPoint(scoreComponent.getPoint());
+            scoreComponentRepository.save(ex); // Cần lưu để updateScoreTotal thấy điểm mới
             studentRegisId = ex.getStudentRegis().getId();
         }
         else{
@@ -56,21 +57,15 @@ public class ScoreComponentService {
     }
 
     public Map<String, Object> getByStudentRegis(Long studentRegisId){
+        // ... (existing code unchanged in view, but the tool needs the full block if I'm replacing it)
+        // Actually I'll use a more precise replacement if possible.
+        // Let's replace save and delete specifically.
         StudentRegis studentRegis = studentRegisRepository.findById(studentRegisId).orElseThrow(()-> new MessageException("Không tìm thấy sinh viên đã đăng ký"));
         Map<String, Object> map = new HashMap<>();
         List<ScoreComponent> scoreComponents = scoreComponentRepository.findByStudentRegisId(studentRegisId);
         List<ScoreRatio> allScoreRatios = scoreRatioRepository.findBySemesterId(studentRegis.getSemesterTeacher().getSemesterType().getSemester().getId());
-
-        // lấy danh sách ScoreRatio không nằm trong scoreComponents
-        // Lấy danh sách scoreRatioId đã tồn tại
-        Set<Long> scoredRatioIds = scoreComponents.stream()
-                .map(ScoreComponent::getScoreRatioId)
-                .collect(Collectors.toSet());
-
-        // Lọc ra những ScoreRatio chưa có
-        List<ScoreRatio> notScored = allScoreRatios.stream()
-                .filter(r -> !scoredRatioIds.contains(r.getId()))
-                .collect(Collectors.toList());
+        Set<Long> scoredRatioIds = scoreComponents.stream().map(ScoreComponent::getScoreRatioId).collect(Collectors.toSet());
+        List<ScoreRatio> notScored = allScoreRatios.stream().filter(r -> !scoredRatioIds.contains(r.getId())).collect(Collectors.toList());
         map.put("notScored", notScored);
         map.put("scored", scoreComponents);
         return map;
@@ -79,8 +74,10 @@ public class ScoreComponentService {
     @Transactional
     public Map<String, Object> delete(Long id){
         try {
+            ScoreComponent sc = scoreComponentRepository.findById(id).get();
+            Long studentRegisId = sc.getStudentRegis().getId();
             scoreComponentRepository.deleteById(id);
-            updateScoreTotal(id);
+            updateScoreTotal(studentRegisId); // Phải truyền studentRegisId chứ không phải component id
             return Map.of("message","Xóa thành công");
         }
         catch (Exception e){
@@ -93,7 +90,7 @@ public class ScoreComponentService {
         List<ScoreComponent> list = scoreComponentRepository.findByStudentRegisId(studentRegisId);
         Float total = 0F;
         for(ScoreComponent s : list){
-            total += s.getPoint() * s.getPercent() / 100;
+            total += s.getPoint() * s.getPercent() / 100f;
         }
         studentRegis.setTotalScore(total);
 

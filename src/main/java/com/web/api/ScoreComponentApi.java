@@ -18,6 +18,11 @@ public class ScoreComponentApi {
     @Autowired
     private ScoreComponentService scoreComponentService;
 
+    @GetMapping("/student/find-by-studentRegis")
+    public Map<String, Object> findAllStudent(@RequestParam Long studentRegisId){
+        return scoreComponentService.getByStudentRegis(studentRegisId);
+    }
+
     @PostMapping("/teacher/create-update")
     public ScoreComponent createUpdate(@RequestBody ScoreComponent scoreComponent){
         return scoreComponentService.save(scoreComponent);

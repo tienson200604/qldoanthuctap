@@ -86,6 +86,7 @@
           <div class="account-tab" data-tab="tab1">Thành viên <span class="number-tab" th:text="${studentRegis.size()}"></span></div>
           <div class="account-tab" data-tab="tab2">Báo cáo tiến độ <span class="number-tab" th:text="${workProcesses.size()}"></span></div>
           <div class="account-tab" data-tab="tab3">Nộp giấy tờ <span class="number-tab" th:text="${countRelate}"></span></div>
+          <div class="account-tab" data-tab="tab4">Bảng điểm</div>
           <div class="account-tab" data-tab="tab5">Đánh giá</div>
           <div class="account-tab-indicator"></div>
         </div>
@@ -103,6 +104,9 @@
           </div>
           <div class="account-tab-pane" id="tab3">
             <div th:replace="student/project/related-document :: relateDocument"></div>
+          </div>
+          <div class="account-tab-pane" id="tab4">
+            <div th:replace="student/project/score :: scoreContent"></div>
           </div>
           <div class="account-tab-pane" id="tab5">
             <div th:replace="student/project/rate :: rateContent"></div>

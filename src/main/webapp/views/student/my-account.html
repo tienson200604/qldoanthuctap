@@ -30,17 +30,24 @@
                         </div>
                         <div class="col-lg-8">
                             <div class="row g-3">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="form-floating">
                                         <input type="text" th:value="${userLogged.fullname}" class="form-control account-input" id="fullname" placeholder="Họ tên">
                                         <label>Họ và tên</label>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="form-floating">
                                         <input type="text" th:value="${userLogged.phone}" class="form-control account-input" id="phone"
                                                placeholder="Số điện thoại">
                                         <label>Số điện thoại</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-floating">
+                                        <input type="text" th:value="${userLogged.classname}" class="form-control account-input" id="className"
+                                               placeholder="Lớp">
+                                        <label>Lớp</label>
                                     </div>
                                 </div>
                                 <div class="col-md-6">

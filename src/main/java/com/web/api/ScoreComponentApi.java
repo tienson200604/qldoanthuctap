@@ -43,8 +43,8 @@ public class ScoreComponentApi {
             @RequestParam Long semesterId,
             @RequestParam(required = false) Long teacherId,
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String className) {
-        return scoreComponentService.getStudentScores(semesterId, teacherId, keyword, className);
+            @RequestParam(required = false) String classname) {
+        return scoreComponentService.getStudentScores(semesterId, teacherId, keyword, classname);
     }
 
     @GetMapping("/admin/export-excel")
@@ -52,8 +52,8 @@ public class ScoreComponentApi {
             @RequestParam Long semesterId,
             @RequestParam(required = false) Long teacherId,
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String className,
+            @RequestParam(required = false) String classname,
             HttpServletResponse response) throws IOException {
-        scoreComponentService.exportStudentScoresToExcel(semesterId, teacherId, keyword, className, response);
+        scoreComponentService.exportStudentScoresToExcel(semesterId, teacherId, keyword, classname, response);
     }
 }

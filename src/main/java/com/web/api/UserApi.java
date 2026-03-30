@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -187,17 +188,12 @@ public class UserApi {
     }
 
     @PostMapping("/all/update-infor")
-    public User updateInfor(@RequestBody User user){
-        User u = userUtils.getUserWithAuthority();
-        u.setFullname(user.getFullname());
-        u.setPhone(user.getPhone());
-        u.setAvatar(user.getAvatar());
-        userRepository.save(u);
-        return u;
+    public User updateInfor(@RequestBody UserInfoDto user){
+        return userService.updateProfile(user);
     }
 
     @PostMapping("/admin/create-update")
-    public User createUpdate(@RequestBody UserUpdate update){
+    public User createUpdate(@Valid @RequestBody UserUpdate update){
         User u = userService.updateInfor(update);
         return u;
     }

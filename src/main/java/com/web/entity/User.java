@@ -49,7 +49,8 @@ public class User{
 
     private String avatar;
 
-    private String className;
+    @Column(name = "class_name")
+    private String classname;
 
     @ManyToOne
     @JoinColumn(name = "authority_name")

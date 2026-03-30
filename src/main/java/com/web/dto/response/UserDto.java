@@ -28,6 +28,8 @@ public class UserDto {
 
     private String avatar;
 
+    private String classname;
+
     private Authority authorities;
 }
 

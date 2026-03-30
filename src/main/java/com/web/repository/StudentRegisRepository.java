@@ -35,12 +35,12 @@ public interface StudentRegisRepository extends JpaRepository<StudentRegis, Long
           AND (:teacherId IS NULL OR s.semesterTeacher.teacher.id = :teacherId)
           AND (:keyword IS NULL OR LOWER(s.student.fullname) LIKE LOWER(CONCAT('%',:keyword,'%'))
                                 OR LOWER(s.student.code) LIKE LOWER(CONCAT('%',:keyword,'%')))
-          AND (:className IS NULL OR LOWER(s.student.className) LIKE LOWER(CONCAT('%',:className,'%')))
+          AND (:classname IS NULL OR LOWER(s.student.classname) LIKE LOWER(CONCAT('%',:classname,'%')))
         """)
     List<StudentRegis> findScoreByFilter(
         @Param("semesterId") Long semesterId,
         @Param("teacherId") Long teacherId,
         @Param("keyword") String keyword,
-        @Param("className") String className
+        @Param("classname") String classname
     );
 }

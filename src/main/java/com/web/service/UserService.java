@@ -308,7 +308,7 @@ public class UserService {
                     String activedStr = getCellValue(row.getCell(6));
                     String authorityName = getCellValue(row.getCell(7));
                     String avatar = getCellValue(row.getCell(8));
-                    String className = getCellValue(row.getCell(9));
+                    String classname = getCellValue(row.getCell(9));
                     if(userRepository.findByEmail(email).isPresent()){
                         ++numEmailExist;
                         emailExist.add(email);
@@ -328,7 +328,7 @@ public class UserService {
                     user.setPhone(phone);
                     user.setCode(code);
                     user.setAvatar(avatar);
-                    user.setClassName(className);
+                    user.setClassname(classname);
 
                     if(activedStr != null){
                         user.setActived(Boolean.parseBoolean(activedStr));
@@ -463,6 +463,7 @@ public class UserService {
         user.setPhone(update.getPhone());
         user.setActived(update.getActived());
         user.setAuthorities(update.getAuthorities());
+        user.setClassname(update.getClassname());
         if(update.getPassword() != null && !update.getPassword().equals("")){
             user.setPassword(passwordEncoder.encode(update.getPassword()));
         }
@@ -481,5 +482,15 @@ public class UserService {
 
     public List<User> allTeacher() {
         return userRepository.getUserByRole(Contains.ROLE_TEACHER);
+    }
+
+    @javax.transaction.Transactional
+    public User updateProfile(com.web.dto.request.UserInfoDto dto) {
+        User u = userUtils.getUserWithAuthority();
+        u.setFullname(dto.getFullname());
+        u.setPhone(dto.getPhone());
+        u.setAvatar(dto.getAvatar());
+        u.setClassname(dto.getClassname());
+        return userRepository.saveAndFlush(u);
     }
 }

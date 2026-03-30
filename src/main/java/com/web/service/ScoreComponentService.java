@@ -109,12 +109,12 @@ public class ScoreComponentService {
         studentRegisRepository.save(studentRegis);
     }
 
-    public List<StudentScoreResponse> getStudentScores(Long semesterId, Long teacherId, String keyword, String className) {
+    public List<StudentScoreResponse> getStudentScores(Long semesterId, Long teacherId, String keyword, String classname) {
         List<StudentRegis> list = studentRegisRepository.findScoreByFilter(
             semesterId,
             teacherId,
             (keyword == null || keyword.isBlank()) ? null : keyword,
-            (className == null || className.isBlank()) ? null : className
+            (classname == null || classname.isBlank()) ? null : classname
         );
         List<StudentScoreResponse> result = new ArrayList<>();
         for (StudentRegis s : list) {
@@ -123,7 +123,7 @@ public class ScoreComponentService {
             dto.setStudentCode(s.getStudent().getCode());
             dto.setStudentUsername(s.getStudent().getUsername());
             dto.setStudentName(s.getStudent().getFullname());
-            dto.setClassName(s.getStudent().getClassName());
+            dto.setClassname(s.getStudent().getClassname());
             dto.setSemesterYear(s.getSemesterTeacher().getSemesterType().getSemester().getYearName());
             dto.setTeacherName(s.getSemesterTeacher().getTeacher().getFullname());
             dto.setInternshipType(s.getInternshipType() != null ? s.getInternshipType().name() : "");
@@ -135,14 +135,14 @@ public class ScoreComponentService {
         return result;
     }
 
-    public void exportStudentScoresToExcel(Long semesterId, Long teacherId, String keyword, String className, HttpServletResponse response) throws IOException {
-        List<StudentScoreResponse> list = getStudentScores(semesterId, teacherId, keyword, className);
+    public void exportStudentScoresToExcel(Long semesterId, Long teacherId, String keyword, String classname, HttpServletResponse response) throws IOException {
+        List<StudentScoreResponse> list = getStudentScores(semesterId, teacherId, keyword, classname);
 
         // Lấy StudentRegis IDs để tra chi tiết điểm
         List<Long> regisIds = studentRegisRepository.findScoreByFilter(
             semesterId, teacherId,
             (keyword == null || keyword.isBlank()) ? null : keyword,
-            (className == null || className.isBlank()) ? null : className
+            (classname == null || classname.isBlank()) ? null : classname
         ).stream().map(s -> s.getId()).collect(java.util.stream.Collectors.toList());
 
         try (XSSFWorkbook workbook = new XSSFWorkbook()) {
@@ -187,7 +187,7 @@ public class ScoreComponentService {
                 row.createCell(0).setCellValue(i + 1);
                 row.createCell(1).setCellValue(dto.getStudentCode() != null ? dto.getStudentCode() : "");
                 row.createCell(2).setCellValue(dto.getStudentName() != null ? dto.getStudentName() : "");
-                row.createCell(3).setCellValue(dto.getClassName() != null ? dto.getClassName() : "");
+                row.createCell(3).setCellValue(dto.getClassname() != null ? dto.getClassname() : "");
                 row.createCell(4).setCellValue(dto.getSemesterYear() != null ? dto.getSemesterYear() : "");
                 row.createCell(5).setCellValue(dto.getTeacherName() != null ? dto.getTeacherName() : "");
                 row.createCell(6).setCellValue(dto.getInternshipType() != null ? dto.getInternshipType() : "");
@@ -246,7 +246,7 @@ public class ScoreComponentService {
                 row.createCell(0).setCellValue(i + 1);
                 row.createCell(1).setCellValue(dto.getStudentCode() != null ? dto.getStudentCode() : "");
                 row.createCell(2).setCellValue(dto.getStudentName() != null ? dto.getStudentName() : "");
-                row.createCell(3).setCellValue(dto.getClassName() != null ? dto.getClassName() : "");
+                row.createCell(3).setCellValue(dto.getClassname() != null ? dto.getClassname() : "");
 
                 // Điền điểm vào đúng cột theo scoreRatioId
                 for (ScoreComponent sc : components) {

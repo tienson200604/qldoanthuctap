@@ -3,6 +3,7 @@ async function updateInfor(){
         "fullname":document.getElementById("fullname").value,
         "phone":document.getElementById("phone").value,
         "avatar":document.getElementById("avatar").value,
+        "classname":document.getElementById("className").value,
     }
     var response = await postMethodPayload('/api/user/all/update-infor',payload)
     if(response.status < 300){

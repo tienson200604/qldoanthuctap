@@ -38,7 +38,7 @@ async function loadUsers(page) {
                     <td>${list[i].code}</td>
                     <td>${list[i].email}</td>
                     <td>${list[i].phone == null?'':list[i].phone}</td>
-                    <td>${list[i].className == null?'':list[i].className}</td>
+                    <td>${list[i].classname == null?'':list[i].classname}</td>
                     <td>${list[i].authorities.name}</td>
                     <td id="status-${list[i].id}"><span class="badge bg-${list[i].actived === true ? 'success' : 'danger'}">${list[i].actived === true ? 'Đang hoạt động' : 'Đã khóa'}</span></td>
                     <td class="text-end">
@@ -79,17 +79,48 @@ async function chooseAvatar(){
 async function saveUser() {
     var uls = new URL(document.URL)
     var id = uls.searchParams.get("id");
+    
+    var fullname = document.getElementById("fullName").value;
+    var email = document.getElementById("email").value;
+    var phone = document.getElementById("phone").value;
+    var password = document.getElementById("password").value;
+    var code = document.getElementById("code").value;
+
+    // Client-side validation
+    if (!fullname || fullname.trim().length < 5) {
+        toastr.error("Họ tên không được trống và phải từ 5 ký tự trở lên");
+        return;
+    }
+    if (!email || !email.includes("@")) {
+        toastr.error("Email không hợp lệ");
+        return;
+    }
+    var phoneRegex = /^(0|84)(3|5|7|8|9)[0-9]{8}$/;
+    if (!phone || !phoneRegex.test(phone)) {
+        toastr.error("Số điện thoại không đúng định dạng VN (10 số)");
+        return;
+    }
+    if (!code || code.trim() === "") {
+        toastr.error("Mã sinh viên/giảng viên không được để trống");
+        return;
+    }
+    if (!id && (!password || password.trim().length < 6)) {
+        toastr.error("Mật khẩu là bắt buộc cho tài khoản mới và phải ít nhất 6 ký tự");
+        return;
+    }
+
     var user = {
         id: id,
-        fullname: document.getElementById("fullName").value,
-        email: document.getElementById("email").value,
-        phone: document.getElementById("phone").value,
-        password: document.getElementById("password").value,
-        code: document.getElementById("code").value,
+        fullname: fullname,
+        email: email,
+        phone: phone,
+        password: password,
+        code: code,
         actived: document.getElementById("actived").checked,
         avatar: document.getElementById("avatar").value,
+        classname: document.getElementById("className").value,
         authorities: {
-            name:document.getElementById("roles").value
+            name: document.getElementById("roles").value
         }
     }
     const res = await fetch('http://localhost:8080/api/user/admin/create-update', {
@@ -155,6 +186,7 @@ async function loadAUser() {
             document.getElementById("btnchoosefile").style.backgroundImage = `url('${result.avatar}')`;
         }
         document.getElementById("roles").value = result.authorities.name
+        document.getElementById("className").value = result.classname || ""
         document.getElementById("password").value = " ";
         document.getElementById("password").value = "";
     }

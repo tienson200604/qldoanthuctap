@@ -64,8 +64,8 @@
         <div class="col-md-5">
             <div class="col-md-12">
                 <div class="form-floating form-add-user">
-                    <input type="email" class="form-control" id="email" placeholder="Email">
-                    <label>Email</label>
+                    <input type="email" class="form-control" id="email" placeholder="Email" required>
+                    <label>Email *</label>
                 </div>
             </div>
             <div class="col-md-12">
@@ -88,21 +88,27 @@
             <!-- FullName -->
             <div class="col-md-12">
                 <div class="form-floating form-add-user">
-                    <input class="form-control" id="fullName" placeholder="Họ tên">
-                    <label>Họ tên</label>
+                    <input class="form-control" id="fullName" placeholder="Họ tên" required>
+                    <label>Họ tên *</label>
                 </div>
             </div>
             <!-- Phone -->
             <div class="col-md-12">
                 <div class="form-floating form-add-user">
-                    <input class="form-control" id="phone" placeholder="Phone">
-                    <label>Số điện thoại</label>
+                    <input class="form-control" id="phone" placeholder="Phone" required>
+                    <label>Số điện thoại *</label>
                 </div>
             </div>
             <div class="col-md-12">
                 <div class="form-floating form-add-user">
-                    <input class="form-control" id="code" placeholder="Phone">
-                    <label>Mã sinh viên/ Mã giảng viên</label>
+                    <input class="form-control" id="code" placeholder="Mã" required>
+                    <label>Mã sinh viên/ Mã giảng viên *</label>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-floating form-add-user">
+                    <input class="form-control" id="className" placeholder="Lớp">
+                    <label>Lớp</label>
                 </div>
             </div>
             <input class="form-control" id="avatar" type="hidden">

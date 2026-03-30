@@ -25,5 +25,7 @@ public class UserRequest {
 
     private String tokenFcm;
 
+    private String classname;
+
     private Authority authorities;
 }

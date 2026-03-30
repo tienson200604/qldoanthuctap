@@ -12,4 +12,6 @@ public class UserResponse {
     private String fullname;
 
     private String avatar;
+
+    private String classname;
 }

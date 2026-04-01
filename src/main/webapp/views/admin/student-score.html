@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <title>Thống kê điểm sinh viên</title>
+    <meta name="description" content="Xem, lọc và xuất Excel điểm sinh viên theo học kỳ">
+    <link rel="icon" type="image/x-icon" href="/image/logo.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia">
+    <link href='https://fonts.googleapis.com/css?family=Quicksand' rel='stylesheet'>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.2/js/toastr.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"/>
+    <link href="https://cdn.datatables.net/1.13.2/css/dataTables.bootstrap5.min.css" rel="stylesheet"/>
+    <script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.2/js/dataTables.bootstrap5.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="../../css/styleadmin.css">
+    <script src="../../admin/js/main.js"></script>
+    <script src="../../admin/js/request.js"></script>
+    <script src="../../admin/js/student-score.js"></script>
+</head>
+<body>
+
+<div id="sidebar"></div>
+<header id="top-header"></header>
+
+<div id="main-content">
+    <div class="card border-0 shadow-sm p-4">
+
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h5 class="fw-bold mb-1"><i class="bi bi-bar-chart-line me-2 text-primary"></i>Thống kê điểm sinh viên</h5>
+                <small class="text-muted">Xem, lọc điểm theo học kỳ / giáo viên và xuất Excel</small>
+            </div>
+            <button onclick="exportExcel()" class="btn btn-success">
+                <i class="bi bi-file-earmark-excel me-1"></i> Xuất Excel
+            </button>
+        </div>
+
+        <!-- Bộ lọc -->
+        <div class="row g-3 mb-4 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label fw-semibold small">Học kỳ</label>
+                <select id="filterSemester" class="form-select"></select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-semibold small">Giáo viên hướng dẫn</label>
+                <select id="filterTeacher" class="form-select">
+                    <option value="">-- Tất cả --</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-semibold small">Lớp</label>
+                <input type="text" id="filterClass" class="form-control" placeholder="VD: CNTT01...">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-semibold small">Tìm kiếm (tên / mã SV)</label>
+                <input type="text" id="filterKeyword" class="form-control" placeholder="Nhập để tìm kiếm...">
+            </div>
+            <div class="col-md-3">
+                <button onclick="loadScores()" class="btn btn-primary w-100">
+                    <i class="bi bi-funnel me-1"></i> Lọc
+                </button>
+            </div>
+        </div>
+
+        <!-- Bảng điểm -->
+        <div class="table-responsive">
+            <table class="table table-hover align-middle" id="scoreTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>STT</th>
+                        <th>Mã SV</th>
+                        <th>Họ và tên</th>
+                        <th>Lớp</th>
+                        <th>Học kỳ</th>
+                        <th>Giáo viên HD</th>
+                        <th>Loại TT</th>
+                        <th>Tổng điểm</th>
+                        <th>Xếp loại</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="scoreTableBody">
+                    <tr><td colspan="10" class="text-center text-muted py-4">Vui lòng chọn học kỳ để xem dữ liệu</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal Chi Tiết Điểm -->
+<div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="detailModalLabel">
+                    <i class="bi bi-list-check me-2 text-primary"></i>Chi tiết điểm thành phần
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-sm align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Đầu điểm</th>
+                            <th class="text-center">Tỉ lệ (%)</th>
+                            <th class="text-center">Điểm</th>
+                            <th class="text-center">Điểm quy đổi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detailTableBody">
+                    </tbody>
+                </table>
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Dòng màu xám là đầu điểm <strong>chưa được chấm</strong>.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

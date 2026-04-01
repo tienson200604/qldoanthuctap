@@ -15,4 +15,8 @@ public class RateService {
         rateRepository.save(rate);
         return rate;
     }
+
+    public java.util.List<Rate> findAll(){
+        return rateRepository.findAll();
+    }
 }

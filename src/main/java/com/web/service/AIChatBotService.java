@@ -39,30 +39,30 @@ public class AIChatBotService {
         List<String> keywords = Arrays.asList(msgLower.split("\\s+"));
         List<Blog> relatedBlogs = new ArrayList<>();
         
-        // Chỉ lấy các từ khóa có nghĩa (độ dài > 3 ký tự) để tìm kiếm
+        // Chỉ lấy các từ khóa có nghĩa (độ dài >= 3 ký tự) để tìm kiếm
         for (String word : keywords) {
-            if (word.length() > 3) {
+            if (word.length() >= 3) {
                 relatedBlogs.addAll(blogRepository.search(word));
             }
         }
         
-        // Loại bỏ trùng lặp và lấy tối đa 5 bài liên quan nhất
+        // Loại bỏ trùng lặp và lấy tối đa 3 bài liên quan nhất (để tránh quá dài)
         List<Blog> finalBlogs = relatedBlogs.stream()
                 .distinct()
-                .limit(5)
+                .limit(3)
                 .collect(Collectors.toList());
 
-        // Nếu không tìm thấy bài liên quan, mới lấy 5 bài mới nhất làm dự phòng
+        // Nếu không tìm thấy bài liên quan, mới lấy 3 bài mới nhất làm dự phòng
         if (finalBlogs.isEmpty()) {
             finalBlogs = blogRepository.newBlog();
-            if (finalBlogs.size() > 5) {
-                finalBlogs = finalBlogs.subList(0, 5);
+            if (finalBlogs.size() > 3) {
+                finalBlogs = finalBlogs.subList(0, 3);
             }
         }
 
         String context = finalBlogs.stream()
-                .map(b -> "- " + b.getTitle() + ": " + b.getDescription())
-                .collect(Collectors.joining("\n"));
+                .map(b -> "Tiêu đề: " + b.getTitle() + "\nNội dung: " + b.getContent())
+                .collect(Collectors.joining("\n---\n"));
 
         // 3. Xây dựng System Prompt tối ưu
         String systemPrompt = "Bạn là trợ lý ảo của Hệ thống Quản lý Đồ án. Hãy dùng thông tin sau để trả lời:\n" +

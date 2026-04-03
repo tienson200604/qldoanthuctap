@@ -45,11 +45,18 @@
               <i class="fa fa-envelope"></i>
               <th:block th:text="${c.companyEmail}"></th:block>
             </span>
+          <span class="d-block" th:if="${c.taxCode != null && c.taxCode != ''}">
+              <i class="fa fa-barcode"></i> MST: <th:block th:text="${c.taxCode}"></th:block>
+            </span>
+          <span class="d-block mt-1" th:if="${c.introductionPaper != null && c.introductionPaper != ''}">
+              <i class="fa fa-file-pdf-o text-danger"></i>
+              <a th:href="${c.introductionPaper}" target="_blank" class="text-primary fw-bold">Giấy giới thiệu.pdf</a>
+            </span>
         </div>
         <div th:if="${c.semesterCompany != null}">
             <span class="d-block">
               <i class="fa fa-building"></i>
-              <th:block th:text="${c.semesterCompany.company}"></th:block>
+              <th:block th:text="${c.semesterCompany.company.name}"></th:block>
             </span>
             <span class="d-block">
               <i class="fa fa-map-marker"></i>
@@ -73,8 +80,11 @@
       </td>
       <td><span th:text="${c.studentRegisStatus.displayName}" class="badge" th:style="'background-color:' + ${c.studentRegisStatus.color}"></span></td>
       <td>
-        <a th:href="'/teacher/student-dashboard/'+${c.id}" class="btn btn-sm btn-primary"><i class="fa fa-eye"></i></a>
+        <div class="d-flex gap-1">
+          <a th:href="'/teacher/student-dashboard/'+${c.id}" class="btn btn-sm btn-primary" title="Xem chi tiết"><i class="fa fa-eye"></i></a>
           <button th:data-student-regis="${c.id}" onclick="acceptStudent(this)" class="btn btn-sm btn-outline-primary" th:if="${c.studentRegisStatus.name == 'DANG_CHO' || c.studentRegisStatus.name == 'DA_BI_DUOI'}">Duyệt</button>
+          <button th:data-student-regis="${c.id}" onclick="rejectStudent(this)" class="btn btn-sm btn-outline-danger" th:if="${c.studentRegisStatus.name == 'DANG_CHO'}">Từ chối</button>
+        </div>
       </td>
     </tr>
     </tbody>

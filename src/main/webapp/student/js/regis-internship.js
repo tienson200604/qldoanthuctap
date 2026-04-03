@@ -114,6 +114,9 @@ async function regisAction(type){
         if(payload.companyAddress == '' || payload.companyAddress == null){
             swal('Thông báo','Hãy nhập địa chỉ công ty','error'); return;
         }
+        if(payload.introductionPaper == '' || payload.introductionPaper == null){
+            swal('Thông báo','Hãy upload giấy giới thiệu','error'); return;
+        }
     }
     var response = await postMethodPayload('/api/student-regis/student/create', payload);
     if(response.status < 300){
@@ -127,7 +130,7 @@ async function uploadGiayGioiThieu(){
     const filePath = document.getElementById('changeGiayGioiThieu')
     const formData = new FormData()
     formData.append("file", filePath.files[0])
-    var urlUpload = 'http://localhost:8080/api/public/upload-file';
+    var urlUpload = '/api/public/upload-file';
     const res = await fetch(urlUpload, {
         method: 'POST',
         body: formData

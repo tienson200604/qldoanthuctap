@@ -6,6 +6,7 @@
   <script src="/teacher/js/request.js"></script>
   <script src="/teacher/js/work.js"></script>
   <script src="/teacher/js/score.js"></script>
+  <script src="/teacher/js/student-regis.js"></script>
   <script>
     window.onload = async function(){
       loadScore();
@@ -59,6 +60,48 @@
             <div class="score-box">
               <span>Điểm</span>
               <h1 th:text="${totalScore != null ? totalScore : 'N/A'}"></h1>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- THÔNG TIN ĐĂNG KÝ DOANH NGHIỆP NGOÀI (NẾU CÓ) -->
+      <div class="row mt-4" th:if="${studentRegis.internshipType.name == 'DOANH_NGHIEP_NGOAI'}">
+        <div class="col-12">
+          <div class="card border-0 shadow-sm" style="background: #fff8eb; border-left: 5px solid #f39c12 !important;">
+            <div class="card-body">
+              <h5 class="mb-3" style="color: #856404;"><i class="bi bi-info-circle-fill"></i> Thông tin đăng ký thực tập ngoài</h5>
+              <div class="row">
+                <div class="col-md-3">
+                  <p class="mb-1 text-muted small">Tên công ty:</p>
+                  <p class="fw-bold mb-2" th:text="${studentRegis.companyName}"></p>
+                </div>
+                <div class="col-md-3">
+                  <p class="mb-1 text-muted small">Địa chỉ:</p>
+                  <p class="fw-bold mb-2" th:text="${studentRegis.companyAddress}"></p>
+                </div>
+                <div class="col-md-3">
+                  <p class="mb-1 text-muted small">Mã số thuế:</p>
+                  <p class="fw-bold mb-2" th:text="${studentRegis.taxCode}"></p>
+                </div>
+                <div class="col-md-3">
+                  <p class="mb-1 text-muted small">Số/Email liên hệ:</p>
+                  <p class="fw-bold mb-0" th:text="${studentRegis.companyPhone}"></p>
+                  <p class="fw-bold" th:text="${studentRegis.companyEmail}"></p>
+                </div>
+                <div class="col-md-12 mt-2" th:if="${studentRegis.introductionPaper != null && studentRegis.introductionPaper != ''}">
+                  <p class="mb-1 text-muted small">Giấy giới thiệu:</p>
+                  <a th:href="${studentRegis.introductionPaper}" target="_blank" class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-file-earmark-pdf"></i> Xem Giấy giới thiệu (Student Upload)
+                  </a>
+                </div>
+              </div>
+
+              <!-- Quick actions if pending -->
+              <div class="mt-3 pt-3 border-top d-flex gap-2" th:if="${studentRegis.studentRegisStatus.name == 'DANG_CHO'}">
+                <button th:data-student-regis="${studentRegis.id}" onclick="acceptStudent(this)" class="btn btn-primary">Duyệt đăng ký này</button>
+                <button th:data-student-regis="${studentRegis.id}" onclick="rejectStudent(this)" class="btn btn-outline-danger">Từ chối yêu cầu</button>
+              </div>
             </div>
           </div>
         </div>

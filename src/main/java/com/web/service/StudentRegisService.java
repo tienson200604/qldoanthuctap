@@ -88,7 +88,11 @@ public class StudentRegisService {
         User user = userUtils.getUserWithAuthority();
         Optional<StudentRegis> optional = studentRegisRepository.findByStudentAndSemester(user.getId(), semesterTeacher.getSemesterType().getSemester().getId());
         if(optional.isPresent()){
-            throw new MessageException("Bạn đã đăng ký thực tập "+optional.get().getInternshipType().getDisplayName()+" trước đó rồi");
+            if(optional.get().getStudentRegisStatus().equals(StudentRegisStatus.TU_CHOI)){
+                studentRegisRepository.delete(optional.get());
+            } else {
+                throw new MessageException("Bạn đã đăng ký thực tập "+optional.get().getInternshipType().getDisplayName()+" trước đó rồi");
+            }
         }
         studentRegis.setAccept(true);
         studentRegis.setStudent(user);
@@ -101,6 +105,7 @@ public class StudentRegisService {
             studentRegis.setCompanyPhone(request.getCompanyPhone());
             studentRegis.setCompanyName(request.getCompanyName());
             studentRegis.setTaxCode(request.getTaxCode());
+            studentRegis.setIntroductionPaper(request.getIntroductionPaper());
             studentRegis.setAccept(false);
             studentRegis.setStudentRegisStatus(StudentRegisStatus.DANG_CHO);
         }
@@ -194,7 +199,35 @@ public class StudentRegisService {
     public StudentRegis acceptRequest(Long id) {
         StudentRegis studentRegis = studentRegisRepository.findById(id).orElseThrow(() -> new MessageException("Không tìm thấy dữ liệu"));
         studentRegis.setStudentRegisStatus(StudentRegisStatus.DANG_THUC_HIEN);
+        studentRegis.setAccept(true);
         studentRegisRepository.save(studentRegis);
+        return studentRegis;
+    }
+
+    @Transactional
+    public StudentRegis rejectRequest(Long id) {
+        StudentRegis studentRegis = studentRegisRepository.findById(id).orElseThrow(() -> new MessageException("Không tìm thấy dữ liệu"));
+        if (!studentRegis.getStudentRegisStatus().equals(StudentRegisStatus.DANG_CHO)) {
+            throw new MessageException("Chỉ có thể từ chối yêu cầu đang chờ");
+        }
+        studentRegis.setStudentRegisStatus(StudentRegisStatus.TU_CHOI);
+        studentRegis.setAccept(false);
+        studentRegisRepository.save(studentRegis);
+
+        // Giảm số lượng sinh viên hiện tại của giảng viên
+        SemesterTeacher st = studentRegis.getSemesterTeacher();
+        if (st != null && st.getCurrentStudents() > 0) {
+            st.setCurrentStudents(st.getCurrentStudents() - 1);
+            semesterTeacherRepository.save(st);
+        }
+
+        // Giảm số lượng sinh viên hiện tại của công ty (nếu có)
+        SemesterCompany sc = studentRegis.getSemesterCompany();
+        if (sc != null && sc.getCurrentStudent() > 0) {
+            sc.setCurrentStudent(sc.getCurrentStudent() - 1);
+            semesterCompanyRepository.save(sc);
+        }
+
         return studentRegis;
     }
 }

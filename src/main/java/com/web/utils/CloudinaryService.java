@@ -37,7 +37,7 @@ public class CloudinaryService {
                     )
             );
             uploadedFile.delete();
-            return uploadResult.get("url").toString();
+            return uploadResult.get("secure_url").toString();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

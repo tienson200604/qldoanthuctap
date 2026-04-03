@@ -28,6 +28,11 @@ public class StudentRegisApi {
         return studentRegisService.acceptRequest(id);
     }
 
+    @PostMapping("/teacher/reject")
+    public StudentRegis reject(@RequestParam Long id){
+        return studentRegisService.rejectRequest(id);
+    }
+
     @GetMapping("/public/create")
     public void createss(){
         studentRegisService.createAll();

@@ -13,7 +13,8 @@ public enum StudentRegisStatus {
     DANG_THUC_HIEN("DANG_THUC_HIEN", "Đang thực hiện", "#3498db"),
     DA_HOAN_THANH("DA_HOAN_THANH", "Đã hoàn thành", "#2ecc71"),
     DA_BI_DUOI("DA_BI_DUOI", "Đã bị đuổi", "#e74c3c"),
-    CANH_CAO("CANH_CAO", "Cảnh cáo", "#f39c12");
+    CANH_CAO("CANH_CAO", "Cảnh cáo", "#f39c12"),
+    TU_CHOI("TU_CHOI", "Đã từ chối", "#e74c3c");
 
     private final String name;
     private final String displayName;

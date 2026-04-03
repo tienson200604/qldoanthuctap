@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Tìm kiếm - Giảng viên</title>
+
+  <th:block th:include="common/user/libuser :: libheader"></th:block>
+
+</head>
+
+<body>
+
+<div th:replace="common/teacher/headerUser :: headerUser"></div>
+
+<div class="container search-page content-page-main mt-5" style="min-height: 500px;">
+
+  <!-- TITLE -->
+  <h3 class="search-title mb-4">
+    <i class="bi bi-search"></i>
+    Kết quả tìm kiếm cho "<span th:text="${searchParam}"></span>"
+  </h3>
+
+  <!-- ===================== SINH VIÊN ===================== -->
+  <div class="search-section mb-5">
+    <h5 class="section-subtitle mb-3"><i class="bi bi-people-fill"></i> Danh sách Sinh viên</h5>
+
+    <div class="row g-3" th:if="${students != null && !students.isEmpty()}">
+      <div class="col-md-4" th:each="s : ${students}">
+        <div class="search-card fade-in p-3 border rounded shadow-sm">
+          <div class="search-card-title fw-bold" th:text="${s.fullname}"></div>
+          <div class="search-card-meta small text-muted mt-2">
+            <i class="bi bi-card-text"></i> MSSV: <span th:text="${s.code}"></span>
+          </div>
+          <div class="search-card-meta small text-muted">
+            <i class="bi bi-envelope"></i> Email: <span th:text="${s.email}"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-box p-4 text-center bg-light rounded" th:if="${students == null || students.isEmpty()}">
+      <i class="bi bi-inbox fs-2 text-muted"></i>
+      <p class="mt-2 text-muted">Không tìm thấy sinh viên</p>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ===================== TIN TỨC ===================== -->
+  <div class="search-section mb-5">
+    <h5 class="section-subtitle mb-3"><i class="bi bi-megaphone-fill"></i> Tin tức & Thông báo</h5>
+
+    <div class="row g-3" th:if="${blogs != null && !blogs.isEmpty()}">
+      <div class="col-md-4" th:each="b : ${blogs}">
+        <div class="search-card fade-in p-3 border rounded shadow-sm pointer"
+             th:onclick="|window.location.href='/teacher/blog-detail?id=' + ${b.id}|"
+             style="cursor: pointer;">
+
+          <div class="search-card-title fw-bold text-primary" th:text="${b.title}"></div>
+
+          <div class="search-card-desc small text-truncate mt-2"
+               th:text="${b.description}"></div>
+
+          <div class="search-card-meta small text-muted mt-2">
+            <i class="bi bi-clock"></i>
+            <span><th:block th:text="${b.createdTime} + ' ' +${b.createdDate}"></th:block></span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-box p-4 text-center bg-light rounded" th:if="${blogs == null || blogs.size() == 0}">
+      <i class="bi bi-inbox fs-2 text-muted"></i>
+      <p class="mt-2 text-muted">Không tìm thấy tin tức</p>
+    </div>
+  </div>
+
+
+  <!-- ===================== TÀI LIỆU ===================== -->
+  <div class="search-section mb-5">
+    <h5 class="section-subtitle mb-3"><i class="bi bi-file-earmark-text-fill"></i> Tài nguyên</h5>
+
+    <div class="row g-3">
+      <div class="col-md-4" th:each="d : ${documents}">
+        <div class="search-card fade-in p-3 border rounded shadow-sm pointer"
+             th:onclick="|window.location.href='/teacher/document-detail?id=' + ${d.id}|"
+             style="cursor: pointer;">
+
+          <div class="search-card-title fw-bold text-success" th:text="${d.name}"></div>
+
+          <div class="search-card-desc small text-truncate mt-2"
+               th:utext="${d.description}"></div>
+
+          <div class="search-card-meta small text-muted mt-2">
+            <i class="bi bi-file-earmark"></i> Tài liệu hệ thống
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-box p-4 text-center bg-light rounded" th:if="${documents == null || documents.isEmpty()}">
+      <i class="bi bi-inbox fs-2 text-muted"></i>
+      <p class="mt-2 text-muted">Không tìm thấy tài liệu</p>
+    </div>
+  </div>
+
+
+  <!-- ===================== CÔNG TY ===================== -->
+  <div class="search-section mb-5">
+    <h5 class="section-subtitle mb-3"><i class="bi bi-building-fill"></i> Doanh nghiệp liên kết</h5>
+
+    <div class="row g-3" th:if="${companies != null && !companies.isEmpty()}">
+      <div class="col-md-4" th:each="c : ${companies}">
+        <div class="search-card fade-in p-3 border rounded shadow-sm">
+          <div class="search-card-title fw-bold text-info" th:text="${c.name}"></div>
+          <div class="search-card-meta small text-muted mt-2">
+            <i class="bi bi-geo-alt"></i>
+            <span th:text="${c.address}"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-box p-4 text-center bg-light rounded" th:if="${companies == null || companies.isEmpty()}">
+      <i class="bi bi-inbox fs-2 text-muted"></i>
+      <p class="mt-2 text-muted">Không tìm thấy doanh nghiệp</p>
+    </div>
+  </div>
+
+</div>
+
+<div th:replace="common/user/footeruser :: footerMain"></div>
+
+</body>
+</html>

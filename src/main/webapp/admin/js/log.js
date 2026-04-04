@@ -35,9 +35,11 @@ async function loadLogs(page) {
     }
     var main = '';
     for (i = 0; i < list.length; i++) {
+        let user = list[i].user || {fullname: 'Hệ thống', username: 'system'};
+        let createdDate = new Date(list[i].createdDate).toLocaleString('vi-VN');
         main += ` <tr>
-                    <td>${list[i].createdDate}</td>
-                    <td>${list[i].fullName}<br>${list[i].username}</td>
+                    <td>${createdDate}</td>
+                    <td>${user.fullname}<br><small class="text-muted">${user.username}</small></td>
                     <td>${list[i].actionContent}</td>
                     <td><span class="badge bg-${list[i].logLevel === 'ERROR' ? 'danger' : list[i].logLevel === 'WARNING' ? 'warning' : 'info'}">${list[i].logLevel}</span></td>
                 </tr>`

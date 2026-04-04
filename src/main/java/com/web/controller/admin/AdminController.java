@@ -89,6 +89,11 @@ public class AdminController {
         return "admin/khung";
     }
 
+    @RequestMapping(value = {"/infor"}, method = RequestMethod.GET)
+    public String infor() {
+        return "admin/infor";
+    }
+
     @RequestMapping(value = {"/log"}, method = RequestMethod.GET)
     public String log() {
         return "admin/log";

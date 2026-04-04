@@ -57,7 +57,6 @@ $( document ).ready(function() {
         </a>
         <div class="collapse" id="menu8">
             <a href="semester" class="menu-item ps-5"><i class="bi bi-building"></i> <span class="nav-text">Danh sách</span></a>
-            <a href="add-semester" class="menu-item ps-5"><i class="bi bi-plus-circle"></i> <span class="nav-text">Thêm mới</span></a>
             <a href="company-semester" class="menu-item ps-5"><i class="bi bi-plus-circle"></i> <span class="nav-text">Công ty</span></a>
             <a href="semester-type" class="menu-item ps-5"><i class="bi bi-plus-circle"></i> <span class="nav-text">Loại thực tập</span></a>
         </div>
@@ -68,7 +67,6 @@ $( document ).ready(function() {
         </a>
         <div class="collapse" id="menu9">
             <a href="score" class="menu-item ps-5"><i class="bi bi-building"></i> <span class="nav-text">Danh sách đầu điểm</span></a>
-            <a href="add-score" class="menu-item ps-5"><i class="bi bi-plus-circle"></i> <span class="nav-text">Thêm mới đầu điểm</span></a>
             <a href="student-score" class="menu-item ps-5"><i class="bi bi-bar-chart-line"></i> <span class="nav-text">Thống kê điểm SV</span></a>
             <a href="rate" class="menu-item ps-5"><i class="bi bi-star-fill"></i> <span class="nav-text">Thống kê đánh giá</span></a>
         </div>
@@ -80,7 +78,7 @@ $( document ).ready(function() {
             <i class="bi bi-chevron-down ms-auto nav-text"></i>
         </a>
         <div class="collapse" id="menu4">
-            <a href="doimatkhau" class="menu-item ps-5"><i class="bi bi-key"></i> <span class="nav-text">Đổi mật khẩu</span></a>
+            <a href="doi-mat-khau" class="menu-item ps-5"><i class="bi bi-key"></i> <span class="nav-text">Đổi mật khẩu</span></a>
             <a href="infor" class="menu-item ps-5"><i class="bi bi-person-circle"></i> <span class="nav-text">Thông tin cá nhân</span></a>
             <a href="/logout" class="menu-item ps-5"><i class="bi bi-box-arrow-right"></i> <span class="nav-text">Đăng xuất</span></a>
         </div>
@@ -99,8 +97,20 @@ $( document ).ready(function() {
     <div class="d-flex align-items-center gap-4">
         <div class="d-flex align-items-center gap-3">
             <i class="bi bi-moon-fill" id="darkModeToggle" title="Bật/Tắt giao diện tối" style="cursor:pointer; font-size: 1.2rem;"></i>
-            <div class="notification-icon">
-                <i class="bi bi-bell"></i><span class="badge rounded-pill bg-danger badge-notif">3</span>
+            
+            <div class="dropdown">
+                <i class="bi bi-bell position-relative" id="notificationBell" data-bs-toggle="dropdown" aria-expanded="false" style="cursor:pointer; font-size: 1.2rem;">
+                    <span id="notificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem; display: none;">0</span>
+                </i>
+                <ul class="dropdown-menu dropdown-menu-end p-0 shadow-sm" aria-labelledby="notificationBell" style="width: 320px; max-height: 450px; overflow-y: auto;">
+                    <li class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                        <span class="fw-bold">Thông báo mới</span>
+                        <a href="#" class="text-primary" style="font-size: 0.75rem; text-decoration: none;" onclick="markAllAsRead(event)">Đánh dấu đã xem</a>
+                    </li>
+                    <div id="notificationList">
+                        <li class="p-3 text-center text-muted small">Không có thông báo nào</li>
+                    </div>
+                </ul>
             </div>
         </div>
         <div class="user-profile">
@@ -110,8 +120,20 @@ $( document ).ready(function() {
                 <div class="text-muted" style="font-size: 0.7rem;">Quản trị viên</div>
             </div>
         </div>
-    </div>`
+    </div>
+    <style>
+        .notification-item { cursor: pointer; transition: background 0.2s; border-bottom: 1px solid #f1f1f1; padding: 12px 15px; }
+        .notification-item:hover { background: #f8f9fa; }
+        .notification-item.unread { background: #f0f7ff; border-left: 3px solid #0d6efd; }
+        .dark-mode .notification-item { border-bottom-color: #333; }
+        .dark-mode .notification-item:hover { background: #2c2c2c; }
+        .dark-mode .notification-item.unread { background: #1a2a3a; }
+    </style>`;
     document.getElementById('top-header').innerHTML = topHeader;
+    
+    // Khởi tạo thông báo
+    fetchNotifications();
+    connect();
     const toggleBtn = document.getElementById('toggle-sidebar');
     const sidebar = document.getElementById('sidebar');
     const header = document.getElementById('top-header');
@@ -170,4 +192,101 @@ function logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     window.location.href = "/login";
+}
+
+// Logic thông báo Admin
+let stompClient = null;
+
+function connect() {
+    if (typeof SockJS === 'undefined' || typeof Stomp === 'undefined') {
+        console.warn('Stomp or SockJS not found, loading libraries...');
+        loadScript("https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js", () => {
+            loadScript("https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js", () => {
+                startConnect();
+            });
+        });
+    } else {
+        startConnect();
+    }
+}
+
+function loadScript(url, callback) {
+    let script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = url;
+    script.onload = callback;
+    document.head.appendChild(script);
+}
+
+function startConnect() {
+    const socket = new SockJS('/ws');
+    stompClient = Stomp.over(socket);
+    stompClient.debug = null; // Tắt log debug
+    stompClient.connect({}, function (frame) {
+        stompClient.subscribe('/user/queue/notification', function (message) {
+            const data = JSON.parse(message.body);
+            toastr.info(data.content, data.title);
+            fetchNotifications();
+        });
+    }, function (error) {
+        setTimeout(connect, 5000);
+    });
+}
+
+async function fetchNotifications() {
+    try {
+        const [countRes, topRes] = await Promise.all([
+            fetch('/api/notification/all/count-noti'),
+            fetch('/api/notification/all/top-noti')
+        ]);
+        const count = await countRes.json();
+        const topNotis = await topRes.json();
+        updateBadge(count);
+        renderNotifications(topNotis);
+    } catch (e) {
+        console.error('Failed to fetch notifications', e);
+    }
+}
+
+function updateBadge(count) {
+    const badge = document.getElementById('notificationBadge');
+    if (!badge) return;
+    if (count > 0) {
+        badge.innerText = count > 99 ? '99+' : count;
+        badge.style.display = 'block';
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+function renderNotifications(notis) {
+    const list = document.getElementById('notificationList');
+    if (!list) return;
+    if (!notis || notis.length === 0) {
+        list.innerHTML = '<li class="p-3 text-center text-muted small">Không có thông báo nào</li>';
+        return;
+    }
+    list.innerHTML = notis.map(n => `
+        <li class="p-3 notification-item ${n.isRead ? '' : 'unread'}" onclick="window.location.href='${n.link || '#'}'">
+            <div class="fw-bold small">${n.title}</div>
+            <div class="text-muted" style="font-size: 0.75rem;">${n.content || n.title}</div>
+            <div class="text-end" style="font-size: 0.65rem; color: #999; margin-top: 5px;">
+                ${new Date(n.createdDate).toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})} 
+                ${new Date(n.createdDate).toLocaleDateString('vi-VN')}
+            </div>
+        </li>
+    `).join('');
+}
+
+async function markAllAsRead(e) {
+    if(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    try {
+        await fetch('/api/notification/all/mark-read', { method: 'POST' });
+        fetchNotifications();
+    } catch (e) {
+        console.error('Failed to mark as read', e);
+    }
 }

@@ -78,6 +78,9 @@ public class DocumentService {
             document.setStatus(dto.getStatus());
         }
         Document result = documentRepository.save(document);
+        if(result.getStatus().equals(DocumentStatus.DANG_CHO)){
+            notificationService.save("Tài liệu mới", "/admin/document?status=DANG_CHO", "Có tài liệu mới đang chờ duyệt: "+result.getName());
+        }
         for(DocumentRequest.Detail s : dto.getDetails()){
             DocumentDetail detail = documentMapper.requestToEntity(s);
             detail.setDocument(document);

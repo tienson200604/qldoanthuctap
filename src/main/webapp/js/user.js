@@ -11,7 +11,12 @@ async function login() {
         }),
         body: JSON.stringify(user)
     });
-    var result = await response.json();
+    let result;
+    try {
+        result = await response.json();
+    } catch (e) {
+        result = { defaultMessage: 'Lỗi hệ thống, vui lòng thử lại sau!' };
+    }
     
     if (response.status < 300) {
         localStorage.setItem("user", JSON.stringify(result.user));
@@ -26,9 +31,10 @@ async function login() {
             window.location.href = "/student/index"
         }
     }
-    else{
-        toastr.warning(result.defaultMessage);
-        document.getElementById('message').innerText = result.defaultMessage;
+    else {
+        let msg = result.defaultMessage || result.message || 'Tên đăng nhập hoặc mật khẩu không chính xác!';
+        toastr.warning(msg);
+        document.getElementById('message').innerText = msg;
     }
 }
 

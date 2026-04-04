@@ -42,6 +42,9 @@ public class DocumentService {
     @Autowired
     private DocumentMapper documentMapper;
 
+    @Autowired
+    private NotificationService notificationService;
+
     public Document saveOrUpdate(DocumentRequest dto){
         Category category = categoryRepository.findById(dto.getCategoryId()).orElseThrow(()-> new MessageException("Không tìm thấy danh mục với id: "+dto.getCategoryId()));
         Document document = documentMapper.requestToEntity(dto);
@@ -207,6 +210,9 @@ public class DocumentService {
         Document document = documentRepository.findById(id).orElseThrow(() -> new MessageException("Không tìm thấy tài liệu với id: "+id));
         document.setStatus(status);
         documentRepository.save(document);
+        if(status.equals(DocumentStatus.DANG_HIEN_THI)){
+            notificationService.saveToAll("Tài liệu mới", "/student/document-detail?id="+document.getId(), "Có tài liệu mới: "+document.getName());
+        }
         Map<String, Object> map = new HashMap<>();
         map.put("message", "Cập nhật trạng thái liệu thành công");
         map.put("data", document);

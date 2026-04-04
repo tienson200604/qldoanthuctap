@@ -16,6 +16,9 @@ public class SemesterService {
     @Autowired
     private SemesterRepository repo;
 
+    @Autowired
+    private NotificationService notificationService;
+
     public Semester save(Semester semester) {
         if (semester.getId() == null && repo.existsByYearName(semester.getYearName())) {
             throw new MessageException("Năm học này đã tồn tại");
@@ -31,7 +34,11 @@ public class SemesterService {
                 repo.save(s);
             });
         }
-        return repo.save(semester);
+        Semester result = repo.save(semester);
+        if(semester.getId() == null){
+            notificationService.saveToAll("Đợt thực tập mới", "/student/regis-internship", "Có đợt thực tập mới: "+result.getYearName());
+        }
+        return result;
     }
 
     public List<Semester> getAll() {

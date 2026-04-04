@@ -37,6 +37,9 @@ public class RelatedDocumentsService {
     @Autowired
     private UserUtils userUtils;
 
+    @Autowired
+    private NotificationService notificationService;
+
     public RelatedDocuments save(RelatedDocuments relatedDocuments){
         if(relatedDocuments.getId() == null){
             if(relatedDocumentsRepository.findByNameAndSemesterTeacher(relatedDocuments.getName(), relatedDocuments.getSemesterTeacher().getId()).isPresent()){
@@ -51,8 +54,14 @@ public class RelatedDocumentsService {
             relatedDocuments.setOnTimeCount(ex.getOnTimeCount());
             relatedDocuments.setOutTimeCount(ex.getOutTimeCount());
         }
-        relatedDocumentsRepository.save(relatedDocuments);
-        return relatedDocuments;
+        RelatedDocuments result = relatedDocumentsRepository.save(relatedDocuments);
+        if(relatedDocuments.getId() == null){
+            List<StudentRegis> list = studentRegisRepository.findBySemesterTeacher(relatedDocuments.getSemesterTeacher().getId());
+            for(StudentRegis s : list){
+                notificationService.saveSingle("Yêu cầu nộp giấy tờ", "/student/project", "Giảng viên yêu cầu nộp giấy tờ: "+result.getName(), s.getStudent().getId());
+            }
+        }
+        return result;
     }
 
     public List<RelatedDocuments> findBySemesterTeacher(Long semesterTeacherId){

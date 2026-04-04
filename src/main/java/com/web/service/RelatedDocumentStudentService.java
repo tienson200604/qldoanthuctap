@@ -29,6 +29,9 @@ public class RelatedDocumentStudentService {
     @Autowired
     private StudentRegisRepository studentRegisRepository;
 
+    @Autowired
+    private NotificationService notificationService;
+
     @Transient
     public RelatedDocumentStudent save(RelatedDocumentStudent request){
 
@@ -57,6 +60,8 @@ public class RelatedDocumentStudentService {
         relatedDocumentStudent.setFileType(request.getFileType());
         relatedDocumentStudent.setFileName(request.getFileName());
         relatedDocumentsRepository.save(relatedDocuments);
-        return relatedDocumentStudentRepository.save(relatedDocumentStudent);
+        RelatedDocumentStudent result = relatedDocumentStudentRepository.save(relatedDocumentStudent);
+        notificationService.saveSingle("Sinh viên nộp giấy tờ", "/teacher/project", "Sinh viên "+studentRegis.get().getStudent().getFullname()+" đã nộp giấy tờ: "+relatedDocuments.getName(), relatedDocuments.getSemesterTeacher().getTeacher().getId());
+        return result;
     }
 }

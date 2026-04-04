@@ -47,7 +47,44 @@ public class NotificationService {
             notification.setTitle(title);
             notification.setUser(u);
             notificationRepository.save(notification);
-            simpMessagingTemplate.convertAndSendToUser(u.getEmail(), "/queue/notification", message, map);
+            simpMessagingTemplate.convertAndSendToUser(u.getEmail(), "/queue/notification", map);
+        }
+    }
+
+
+    public void saveToAll(String title, String link, String message){
+        List<User> users = userRepository.findAll();
+        Map<String, Object> map = new HashMap<>();
+        map.put("title", title);
+        map.put("content", message);
+        map.put("link", link);
+        for(User u : users){
+            Notification notification = new Notification();
+            notification.setCreatedDate(LocalDateTime.now());
+            notification.setIsRead(false);
+            notification.setLink(link);
+            notification.setTitle(title);
+            notification.setUser(u);
+            notificationRepository.save(notification);
+            simpMessagingTemplate.convertAndSendToUser(u.getEmail(), "/queue/notification", map);
+        }
+    }
+
+    public void saveToRole(String role, String title, String link, String message){
+        List<User> users = userRepository.getUserByRole(role);
+        Map<String, Object> map = new HashMap<>();
+        map.put("title", title);
+        map.put("content", message);
+        map.put("link", link);
+        for(User u : users){
+            Notification notification = new Notification();
+            notification.setCreatedDate(LocalDateTime.now());
+            notification.setIsRead(false);
+            notification.setLink(link);
+            notification.setTitle(title);
+            notification.setUser(u);
+            notificationRepository.save(notification);
+            simpMessagingTemplate.convertAndSendToUser(u.getEmail(), "/queue/notification", map);
         }
     }
 
@@ -65,7 +102,7 @@ public class NotificationService {
         notification.setTitle(title);
         notification.setUser(user);
         notificationRepository.save(notification);
-        simpMessagingTemplate.convertAndSendToUser(user.getEmail(), "/queue/notification", message, map);
+        simpMessagingTemplate.convertAndSendToUser(user.getEmail(), "/queue/notification", map);
     }
 
     public List<Notification> top5NotificationNotIsReadByUser(){

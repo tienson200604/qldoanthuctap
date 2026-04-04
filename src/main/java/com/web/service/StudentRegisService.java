@@ -37,6 +37,9 @@ public class StudentRegisService {
     @Autowired
     private UserUtils userUtils;
 
+    @Autowired
+    private NotificationService notificationService;
+
     @Transactional
     public StudentRegis create(StudentRegisRequest request){
         SemesterTeacher semesterTeacher = null;
@@ -124,6 +127,15 @@ public class StudentRegisService {
             semesterCompany.setCurrentStudent(semesterCompany.getCurrentStudent() + 1);
             semesterCompanyRepository.save(semesterCompany);
         }
+        String linkStudent = "/student/project";
+        String linkTeacher = "/teacher/project-detail/" + semesterTeacher.getId() + "#tab1";
+        if(studentRegis.getInternshipType().equals(InternshipType.DOANH_NGHIEP_NGOAI)){
+            notificationService.saveSingle("Đăng ký thành công", linkStudent, "Bạn đã đăng ký thực tập doanh nghiệp ngoài thành công, vui lòng chờ duyệt", user.getId());
+            notificationService.saveSingle("Sinh viên đăng ký mới", linkTeacher, "Có sinh viên đăng ký thực tập doanh nghiệp ngoài đang chờ duyệt: "+user.getFullname(), semesterTeacher.getTeacher().getId());
+        } else {
+            notificationService.saveSingle("Đăng ký thành công", linkStudent, "Bạn đã đăng ký thực tập "+studentRegis.getInternshipType().getDisplayName()+" thành công", user.getId());
+            notificationService.saveSingle("Sinh viên đăng ký mới", linkTeacher, "Có sinh viên vừa đăng ký vào lớp của bạn: "+user.getFullname(), semesterTeacher.getTeacher().getId());
+        }
         return studentRegis;
     }
 
@@ -201,6 +213,7 @@ public class StudentRegisService {
         studentRegis.setStudentRegisStatus(StudentRegisStatus.DANG_THUC_HIEN);
         studentRegis.setAccept(true);
         studentRegisRepository.save(studentRegis);
+        notificationService.saveSingle("Yêu cầu đã được duyệt", "/student/project", "Yêu cầu thực tập ngoài của bạn đã được duyệt", studentRegis.getStudent().getId());
         return studentRegis;
     }
 
@@ -228,6 +241,7 @@ public class StudentRegisService {
             semesterCompanyRepository.save(sc);
         }
 
+        notificationService.saveSingle("Yêu cầu bị từ chối", "/student/project", "Yêu cầu thực tập ngoài của bạn đã bị từ chối", studentRegis.getStudent().getId());
         return studentRegis;
     }
 }

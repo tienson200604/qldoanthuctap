@@ -35,6 +35,9 @@ public class BlogService {
     @Autowired
     private BlogMapper blogMapper;
 
+    @Autowired
+    private NotificationService notificationService;
+
     public BlogResponse saveOrUpdate(BlogRequest blogRequest) {
         Category category = categoryRepository.findById(blogRequest.getCategoryId()).orElseThrow(()-> new MessageException("Không tìm thấy danh mục với id: "+blogRequest.getCategoryId()));
         Blog blog = blogMapper.requestToBlog(blogRequest);
@@ -50,6 +53,9 @@ public class BlogService {
             blog.setNumView(ex.getNumView());
         }
         Blog result = blogRepository.save(blog);
+        if(blogRequest.getId() == null){
+            notificationService.saveToAll("Bài viết mới", "/student/blog-detail?id="+result.getId(), "Có bài viết mới: "+result.getTitle());
+        }
         return blogMapper.blogToResponse(result);
     }
 

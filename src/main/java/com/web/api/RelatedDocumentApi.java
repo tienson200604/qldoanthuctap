@@ -1,18 +1,12 @@
 package com.web.api;
 
-import com.web.dto.request.WorkProcessRequest;
 import com.web.dto.response.RelatedDocumentsResponse;
 import com.web.entity.RelatedDocuments;
-import com.web.entity.WorkProcess;
 import com.web.service.RelatedDocumentsService;
-import com.web.service.WorkProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/related_document")

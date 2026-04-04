@@ -120,7 +120,11 @@ async function regisAction(type){
     }
     var response = await postMethodPayload('/api/student-regis/student/create', payload);
     if(response.status < 300){
-        swal('Chúc mừng','Bạn đã đăng ký thực tập thành công','success');
+        if(type === "DOANH_NGHIEP_NGOAI"){
+            swal('Chúc mừng','Bạn đã đăng ký thực tập thành công, vui lòng chờ giảng viên duyệt','success');
+        } else {
+            swal('Chúc mừng','Bạn đã đăng ký thực tập thành công','success');
+        }
     }
 }
 

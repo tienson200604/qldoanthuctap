@@ -36,6 +36,9 @@ public class WorkProcessStudentService {
     @Autowired
     private UserUtils userUtils;
 
+    @Autowired
+    private NotificationService notificationService;
+
 
     @Transient
     public WorkProcessStudent save(WorkProcessStudentRequest request){
@@ -71,7 +74,9 @@ public class WorkProcessStudentService {
         workProcessStudent.setStudentRegis(studentRegis.get());
         workProcessStudent.setWorkProcess(workProcess);
         workProcessRepository.save(workProcess);
-        return workProcessStudentRepository.save(workProcessStudent);
+        WorkProcessStudent result = workProcessStudentRepository.save(workProcessStudent);
+        notificationService.saveSingle("Sinh viên nộp báo cáo", "/teacher/project", "Sinh viên "+studentRegis.get().getStudent().getFullname()+" đã nộp báo cáo: "+workProcess.getTitle(), workProcess.getSemesterTeacher().getTeacher().getId());
+        return result;
     }
 
 

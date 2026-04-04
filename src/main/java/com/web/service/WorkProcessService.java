@@ -44,6 +44,12 @@ public class WorkProcessService {
     @Autowired
     private UserUtils userUtils;
 
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private StudentRegisRepository studentRegisRepo;
+
 
     public WorkProcess save(WorkProcessRequest request){
 
@@ -66,7 +72,14 @@ public class WorkProcessService {
         workProcess.setDeadline(request.getDeadline());
         workProcess.setSemesterTeacher(semesterTeacher);
 
-        return workProcessRepository.save(workProcess);
+        WorkProcess result = workProcessRepository.save(workProcess);
+        if(request.getId() == null){
+            List<StudentRegis> studentRegisList = studentRegisRepo.findBySemesterTeacher(semesterTeacher.getId());
+            for(StudentRegis s : studentRegisList){
+                notificationService.saveSingle("Yêu cầu nộp báo cáo", "/student/project", "Giảng viên yêu cầu nộp báo cáo tiến độ: "+result.getTitle(), s.getStudent().getId());
+            }
+        }
+        return result;
     }
 
 

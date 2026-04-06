@@ -84,6 +84,7 @@
           <a th:href="'/teacher/student-dashboard/'+${c.id}" class="btn btn-sm btn-primary" title="Xem chi tiết"><i class="fa fa-eye"></i></a>
           <button th:data-student-regis="${c.id}" onclick="acceptStudent(this)" class="btn btn-sm btn-outline-primary" th:if="${c.studentRegisStatus.name == 'DANG_CHO' || c.studentRegisStatus.name == 'DA_BI_DUOI'}">Duyệt</button>
           <button th:data-student-regis="${c.id}" onclick="rejectStudent(this)" class="btn btn-sm btn-outline-danger" th:if="${c.studentRegisStatus.name == 'DANG_CHO'}">Từ chối</button>
+          <button th:data-student-regis="${c.id}" onclick="completeStudent(this)" class="btn btn-sm btn-outline-success" th:if="${c.studentRegisStatus.name == 'DANG_THUC_HIEN' || c.studentRegisStatus.name == 'CANH_CAO'}">Hoàn thành</button>
         </div>
       </td>
     </tr>

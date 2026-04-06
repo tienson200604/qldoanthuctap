@@ -49,3 +49,29 @@ async function rejectStudent(e){
         }
     });
 }
+
+async function completeStudent(e){
+    var idStudentRegis = e.getAttribute("data-student-regis")
+    swal({
+        title: "Xác nhận",
+        text: "Bạn có chắc chắn muốn đánh dấu sinh viên này đã hoàn thành thực tập?",
+        type: "success",
+        showCancelButton: true,
+        confirmButtonColor: "#28a745",
+        confirmButtonText: "Hoàn thành",
+        cancelButtonText: "Hủy",
+        closeOnConfirm: false
+    }, async function() {
+        var response = await postMethod(`/api/student-regis/teacher/complete?id=${idStudentRegis}`)
+        if(response.status < 300){
+            swal({
+                    title: "Thông báo",
+                    text: 'Đã cập nhật trạng thái hoàn thành',
+                    type: "success"
+                },
+                function() {
+                    window.location.reload()
+                });
+        }
+    });
+}

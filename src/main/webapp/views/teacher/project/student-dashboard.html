@@ -102,6 +102,9 @@
                 <button th:data-student-regis="${studentRegis.id}" onclick="acceptStudent(this)" class="btn btn-primary">Duyệt đăng ký này</button>
                 <button th:data-student-regis="${studentRegis.id}" onclick="rejectStudent(this)" class="btn btn-outline-danger">Từ chối yêu cầu</button>
               </div>
+              <div class="mt-3 pt-3 border-top d-flex gap-2" th:if="${studentRegis.studentRegisStatus.name == 'DANG_THUC_HIEN' || studentRegis.studentRegisStatus.name == 'CANH_CAO'}">
+                <button th:data-student-regis="${studentRegis.id}" onclick="completeStudent(this)" class="btn btn-success">Đánh dấu hoàn thành</button>
+              </div>
             </div>
           </div>
         </div>

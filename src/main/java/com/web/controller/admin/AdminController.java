@@ -128,4 +128,9 @@ public class AdminController {
     public String rate() {
         return "admin/rate";
     }
+
+    @RequestMapping(value = {"/intern-students"}, method = RequestMethod.GET)
+    public String internStudents() {
+        return "admin/intern-students";
+    }
 }

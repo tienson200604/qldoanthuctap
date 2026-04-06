@@ -1,6 +1,7 @@
 package com.web.repository;
 
 import com.web.entity.StudentRegis;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -9,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface StudentRegisRepository extends JpaRepository<StudentRegis, Long> {
+public interface StudentRegisRepository extends JpaRepository<StudentRegis, Long>, JpaSpecificationExecutor<StudentRegis> {
 
     @Query("select s from StudentRegis s where s.student.id = ?1 and s.semesterTeacher.semesterType.semester.id = ?2")
     Optional<StudentRegis> findByStudentAndSemester(Long studentId, Long semesterId);

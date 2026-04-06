@@ -52,13 +52,14 @@ $( document ).ready(function() {
         </div>
 
         <a href="#" class="menu-item" data-bs-toggle="collapse" data-bs-target="#menu8">
-            <i class="bi bi-calendar-event"></i> <span class="nav-text">Quản lý năm học</span> 
+            <i class="bi bi-calendar-event"></i> <span class="nav-text">Quản lý Thực tập</span>
             <i class="bi bi-chevron-down ms-auto nav-text"></i>
         </a>
         <div class="collapse" id="menu8">
-            <a href="semester" class="menu-item ps-5"><i class="bi bi-building"></i> <span class="nav-text">Danh sách</span></a>
+            <a href="semester" class="menu-item ps-5"><i class="bi bi-building"></i> <span class="nav-text">Danh sách đợt thực tập</span></a>
             <a href="company-semester" class="menu-item ps-5"><i class="bi bi-plus-circle"></i> <span class="nav-text">Công ty</span></a>
             <a href="semester-type" class="menu-item ps-5"><i class="bi bi-plus-circle"></i> <span class="nav-text">Loại thực tập</span></a>
+            <a href="intern-students" class="menu-item ps-5"><i class="bi bi-mortarboard"></i> <span class="nav-text">Sinh viên thực tập</span></a>
         </div>
 
         <a href="#" class="menu-item" data-bs-toggle="collapse" data-bs-target="#menu9">

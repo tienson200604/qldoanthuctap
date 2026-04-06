@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <th:block th:include="common/user/libuser :: libheader"></th:block>
+  <script src="/student/js/request.js"></script>
+  <script src="/student/js/private-chat.js"></script>
+</head>
+<body>
+<div th:replace="common/user/headerUser :: headerUser"></div>
+<div class="account-layout content-page-main">
+  <div th:replace="common/user/sidebarUser :: sidebarMain"></div>
+  <div class="account-content">
+    <div class="account-content-inner">
+      <div class="card border-0 shadow-sm p-0 private-chat-card">
+        <div class="private-chat-sidebar">
+          <div class="private-chat-sidebar-header">
+            <div>
+              <h5 class="fw-bold mb-1">Tin nhắn cá nhân</h5>
+              <div class="text-muted small">Tìm giảng viên hoặc sinh viên để bắt đầu trò chuyện</div>
+            </div>
+            <div class="input-group mt-3">
+              <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+              <input type="text" class="form-control border-start-0" id="chatSearch" placeholder="Tìm theo tên, email, mã..." onkeyup="handleChatSearch(event)">
+            </div>
+          </div>
+          <div class="private-chat-contact-list" id="contactList"></div>
+        </div>
+
+        <div class="private-chat-main">
+          <div class="private-chat-empty" id="chatEmptyState">
+            <i class="bi bi-chat-square-text"></i>
+            <h5>Chọn một người để bắt đầu chat</h5>
+            <p>Lịch sử hội thoại và tin nhắn mới sẽ hiển thị ở đây.</p>
+          </div>
+
+          <div class="private-chat-content d-none" id="chatContent">
+            <div class="private-chat-header">
+              <div class="d-flex align-items-center gap-3">
+                <img src="/image/default-avatar.jpg" id="selectedUserAvatar" class="private-chat-avatar">
+                <div>
+                  <div class="fw-bold" id="selectedUserName"></div>
+                  <div class="text-muted small" id="selectedUserMeta"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="private-chat-messages" id="chatMessages"></div>
+
+            <div class="private-chat-form">
+              <textarea id="chatMessageInput" class="form-control" rows="3" placeholder="Nhập nội dung tin nhắn..."></textarea>
+              <input type="file" id="chatFileInput" hidden onchange="sendPrivateFile(this)">
+              <div class="d-flex justify-content-between align-items-center gap-3 mt-3 flex-wrap">
+                <div class="text-muted small" id="chatUploadStatus"></div>
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-outline-primary px-4" onclick="document.getElementById('chatFileInput').click()">
+                    <i class="bi bi-paperclip"></i> Đính kèm
+                  </button>
+                <button type="button" class="btn btn-primary px-4" onclick="sendPrivateMessage()">
+                  <i class="bi bi-send"></i> Gửi
+                </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <input type="hidden" id="currentUserId" th:value="${userLogged.id}">
+      <input type="hidden" id="currentUsername" th:value="${userLogged.username}">
+    </div>
+  </div>
+</div>
+<div th:replace="common/user/footeruser :: footerMain"></div>
+
+<style>
+  .private-chat-card { min-height: 720px; display: grid; grid-template-columns: 360px 1fr; overflow: hidden; border-radius: 24px; }
+  .private-chat-sidebar { border-right: 1px solid #e9eef5; background: linear-gradient(180deg, #f9fbff 0%, #ffffff 100%); display: flex; flex-direction: column; }
+  .private-chat-sidebar-header { padding: 24px; border-bottom: 1px solid #eef2f7; }
+  .private-chat-contact-list { flex: 1; overflow-y: auto; padding: 10px 0; }
+  .private-chat-contact { display: flex; align-items: center; gap: 14px; padding: 14px 24px; cursor: pointer; transition: background 0.2s ease; }
+  .private-chat-contact:hover, .private-chat-contact.active { background: #eef5ff; }
+  .private-chat-contact-avatar, .private-chat-avatar { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; background: #eef2f7; flex-shrink: 0; }
+  .private-chat-contact-title { font-weight: 600; color: #1f2937; }
+  .private-chat-contact-meta, .private-chat-contact-last { font-size: 13px; color: #6b7280; }
+  .private-chat-contact-last { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px; }
+  .private-chat-main { background: linear-gradient(180deg, #f5f8fc 0%, #ffffff 100%); display: flex; min-width: 0; }
+  .private-chat-empty, .private-chat-content { width: 100%; }
+  .private-chat-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #64748b; gap: 10px; }
+  .private-chat-empty i { font-size: 48px; color: #2563eb; }
+  .private-chat-content { display: flex; flex-direction: column; }
+  .private-chat-header, .private-chat-form { background: #ffffff; padding: 20px 24px; }
+  .private-chat-header { border-bottom: 1px solid #eef2f7; }
+  .private-chat-messages { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+  .private-chat-message { display: flex; gap: 12px; max-width: 78%; }
+  .private-chat-message.mine { margin-left: auto; flex-direction: row-reverse; }
+  .private-chat-bubble { background: #ffffff; border-radius: 18px; padding: 14px 16px; box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08); }
+  .private-chat-message.mine .private-chat-bubble { background: linear-gradient(135deg, #1d72f3, #2fa7ff); color: #ffffff; }
+  .private-chat-message-meta { display: flex; gap: 8px; font-size: 12px; color: #6b7280; margin-bottom: 6px; }
+  .private-chat-message.mine .private-chat-message-meta { color: rgba(255,255,255,0.85); }
+  .private-chat-message-content { word-break: break-word; }
+  .private-chat-message-content img { max-width: 280px; border-radius: 14px; display: block; margin-top: 6px; }
+  .private-chat-file-link { display: inline-flex; align-items: center; gap: 8px; font-weight: 500; }
+  .private-chat-form textarea { resize: none; border-radius: 16px; }
+  .private-chat-contact-empty { padding: 28px 24px; text-align: center; color: #6b7280; }
+  @media (max-width: 991px) {
+    .private-chat-card { grid-template-columns: 1fr; min-height: auto; }
+    .private-chat-sidebar { border-right: none; border-bottom: 1px solid #e9eef5; }
+    .private-chat-message { max-width: 100%; }
+  }
+</style>
+</body>
+</html>

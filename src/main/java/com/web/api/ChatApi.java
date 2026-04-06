@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/chat")
@@ -44,17 +45,19 @@ public class ChatApi {
 
     @GetMapping("/all/getAllUserChat")
     public ResponseEntity<?> getAllUserChat(@RequestParam(value = "search", required = false) String search){
-        if(search == null){
-            search = "";
+        User currentUser = userUtils.getUserWithAuthority();
+        String normalizedSearch = search == null ? "" : search.trim();
+        String searchParam = "%" + normalizedSearch + "%";
+
+        Set<User> users = new LinkedHashSet<>(userRepository.getAllUserChat(currentUser.getId(), searchParam));
+        if(!normalizedSearch.isBlank()){
+            users.addAll(userRepository.searchChatCandidates(currentUser.getId(), searchParam));
         }
-        search = "%"+search +"%";
-        Set<User> list = userRepository.getAllUserChat(userUtils.getUserWithAuthority().getId(), search);
-        Set<ChatDto> chatDtoList = new HashSet<>();
-        for(User u : list){
-//            Chatting chatting = chatRepository.findLastChatting(u.getId());
-            ChatDto chatDto = new ChatDto(userMapper.userToUserDto(u),"","0 min", new Timestamp(System.currentTimeMillis())," ");
-            chatDtoList.add(chatDto);
-        }
+
+        List<ChatDto> chatDtoList = users.stream()
+                .map(user -> toChatDto(currentUser.getId(), user))
+                .sorted(Comparator.comparing(ChatDto::getTimestamp, Comparator.nullsLast(Timestamp::compareTo)).reversed())
+                .collect(Collectors.toList());
         return new ResponseEntity<>(chatDtoList, HttpStatus.OK);
     }
 
@@ -92,5 +95,23 @@ public class ChatApi {
             return x.toString() + " day";
         }
         return "0 min";
+    }
+
+    private ChatDto toChatDto(Long currentUserId, User user) {
+        Chatting lastChatting = chatRepository.findLastChattingBetweenUsers(currentUserId, user.getId());
+        if(lastChatting == null){
+            return new ChatDto(userMapper.userToUserDto(user), "", "", new Timestamp(0), "");
+        }
+
+        String lastContent = Boolean.TRUE.equals(lastChatting.getIsFile())
+                ? "Da gui tep dinh kem"
+                : Optional.ofNullable(lastChatting.getContent()).orElse("");
+        return new ChatDto(
+                userMapper.userToUserDto(user),
+                lastContent,
+                calculateTime(lastChatting.getCreatedDate()),
+                lastChatting.getCreatedDate(),
+                ""
+        );
     }
 }

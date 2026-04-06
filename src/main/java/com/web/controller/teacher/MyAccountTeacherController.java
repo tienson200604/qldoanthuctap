@@ -23,4 +23,9 @@ public class MyAccountTeacherController {
     public String log(Model model) {
         return "teacher/log";
     }
+
+    @RequestMapping(value = {"/private-chat"}, method = RequestMethod.GET)
+    public String privateChat(Model model) {
+        return "teacher/private-chat";
+    }
 }

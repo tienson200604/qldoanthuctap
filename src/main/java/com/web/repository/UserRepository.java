@@ -52,6 +52,11 @@ public interface UserRepository extends JpaRepository<User,Long>, JpaSpecificati
             "WHERE (?1 IN (c.sender, c.receiver)) AND u.id != ?1 and u.email like ?2", nativeQuery = true)
     public Set<User> getAllUserChat(Long myUserId, String param);
 
+    @Query("select u from User u where u.id <> ?1 and u.actived = true and (" +
+            "lower(u.code) like lower(?2) or lower(u.email) like lower(?2) or " +
+            "lower(u.fullname) like lower(?2) or lower(u.username) like lower(?2))")
+    Set<User> searchChatCandidates(Long myUserId, String param);
+
 
     @Query(value = "SELECT u.*\n" +
             "FROM users u\n" +

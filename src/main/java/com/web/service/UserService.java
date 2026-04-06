@@ -35,10 +35,15 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class UserService {
+
+    private static final long RESET_PASSWORD_TOKEN_TTL_MILLIS = TimeUnit.MINUTES.toMillis(15);
+    private static final long RESET_PASSWORD_REQUEST_COOLDOWN_MILLIS = TimeUnit.MINUTES.toMillis(1);
 
     @Autowired
     private UserRepository userRepository;
@@ -169,12 +174,15 @@ public class UserService {
 
     public void changePass(String oldPass, String newPass) {
         User user = userUtils.getUserWithAuthority();
-//        if (user.getUserType().equals(UserType.GOOGLE)) {
-//            throw new MessageException("Xin lỗi, chức năng này không hỗ trợ đăng nhập bằng google");
-//        }
-//        if(isValidPassword(newPass) == false){
-//            throw new MessageException("Mật khẩu phải có ít nhất 1 chữ hoa, ký tự đặc biệt và chữ viết thường");
-//        }
+        if(oldPass == null || oldPass.trim().isEmpty()){
+            throw new MessageException("Mật khẩu hiện tại không được để trống");
+        }
+        if(newPass == null || newPass.trim().isEmpty()){
+            throw new MessageException("Mật khẩu mới không được để trống");
+        }
+        if(isValidPassword(newPass) == false){
+            throw new MessageException("Mật khẩu mới phải có ít nhất 8 ký tự, gồm chữ hoa, chữ thường và ký tự đặc biệt");
+        }
         if(passwordEncoder.matches(oldPass, user.getPassword())){
             if(passwordEncoder.matches(newPass, user.getPassword())){
                 throw new MessageException("Mật khẩu mới không được trùng với mật khảu cũ");
@@ -188,34 +196,36 @@ public class UserService {
     }
 
     public boolean isValidPassword(String password) {
-        String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?\":{}|<>])\\S{8,}$";
+        String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*(),.?\":{}|<>])\\S{8,}$";
         return password.matches(regex);
     }
 
     public void forgotPassword(String email) {
-        Optional<User> users = userRepository.findByEmail(email);
-        // check infor user
-        checkUser(users);
-        String randomPass = userUtils.randomPass();
-        users.get().setPassword(passwordEncoder.encode(randomPass));
-        userRepository.save(users.get());
-        mailService.sendEmail(email, "Quên mật khẩu","Cảm ơn bạn đã tin tưởng và xử dụng dịch vụ của chúng tôi:<br>" +
-                "Chúng tôi đã tạo một mật khẩu mới từ yêu cầu của bạn<br>" +
-                "Tuyệt đối không được chia sẻ mật khẩu này với bất kỳ ai. Bạn hãy thay đổi mật khẩu ngay sau khi đăng nhập<br><br>" +
-                "<a style=\"background-color: #2f5fad; padding: 10px; color: #fff; font-size: 18px; font-weight: bold;\">"+randomPass+"</a>",false, true);
-
+        guiYeuCauQuenMatKhau(email);
     }
 
     public void guiYeuCauQuenMatKhau(String email) {
         Optional<User> user = userRepository.findByEmail(email);
-        checkUser(user);
-        String random = userUtils.randomKey();
+        if(user.isEmpty()){
+            return;
+        }
+        if(Boolean.FALSE.equals(user.get().getActived()) || user.get().getActivation_key() != null){
+            return;
+        }
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        Timestamp lastRequestAt = user.get().getLastResetPasswordRequestAt();
+        if(lastRequestAt != null && now.getTime() - lastRequestAt.getTime() < RESET_PASSWORD_REQUEST_COOLDOWN_MILLIS){
+            return;
+        }
+        String random = UUID.randomUUID().toString();
         user.get().setRememberKey(random);
+        user.get().setRememberKeyExpiredAt(new Timestamp(now.getTime() + RESET_PASSWORD_TOKEN_TTL_MILLIS));
+        user.get().setLastResetPasswordRequestAt(now);
         userRepository.save(user.get());
 
         mailService.sendEmail(email, "Đặt lại mật khẩu","Cảm ơn bạn đã tin tưởng và xử dụng dịch vụ của chúng tôi:<br>" +
-                "Chúng tôi đã tạo một mật khẩu mới từ yêu cầu của bạn<br>" +
-                "Hãy lick vào bên dưới để đặt lại mật khẩu mới của bạn<br><br>" +
+                "Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn.<br>" +
+                "Liên kết dưới đây sẽ hết hạn sau 15 phút.<br><br>" +
                 "<a href='"+feUrl+"/datlaimatkhau?email="+email+"&key="+random+"' style=\"background-color: #2f5fad; padding: 10px; color: #fff; font-size: 18px; font-weight: bold;\">Đặt lại mật khẩu</a>",false, true);
 
     }
@@ -223,13 +233,29 @@ public class UserService {
     public void xacNhanDatLaiMatKhau(String email, String password, String key) {
         Optional<User> user = userRepository.findByEmail(email);
         checkUser(user);
-        if(user.get().getRememberKey().equals(key)){
-            user.get().setPassword(passwordEncoder.encode(password));
+        if(user.get().getRememberKey() == null || key == null || !user.get().getRememberKey().equals(key)){
+            throw new MessageException("Yêu cầu đặt lại mật khẩu không hợp lệ");
+        }
+        if(user.get().getRememberKeyExpiredAt() == null || user.get().getRememberKeyExpiredAt().before(new Timestamp(System.currentTimeMillis()))){
+            user.get().setRememberKey(null);
+            user.get().setRememberKeyExpiredAt(null);
             userRepository.save(user.get());
+            throw new MessageException("Liên kết đặt lại mật khẩu đã hết hạn");
         }
-        else{
-            throw new MessageException("Mã xác thực không chính xác");
+        if(password == null || password.trim().isEmpty()){
+            throw new MessageException("Mật khẩu không được để trống");
         }
+        if(passwordEncoder.matches(password, user.get().getPassword())){
+            throw new MessageException("Mật khẩu mới không được trùng với mật khẩu cũ");
+        }
+        if(!isValidPassword(password)){
+            throw new MessageException("Mật khẩu phải có ít nhất 8 ký tự, gồm chữ hoa, chữ thường và ký tự đặc biệt");
+        }
+
+        user.get().setPassword(passwordEncoder.encode(password));
+        user.get().setRememberKey(null);
+        user.get().setRememberKeyExpiredAt(null);
+        userRepository.save(user.get());
     }
 
     public TokenDto loginWithGoogle(GoogleIdToken.Payload payload) {

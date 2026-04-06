@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -104,10 +105,12 @@ public class StudentRegisService {
         studentRegis.setTotalScore(0F);
         studentRegis.setInternshipType(request.getInternshipType());
         if(request.getInternshipType().equals(InternshipType.DOANH_NGHIEP_NGOAI)){
+            validateExternalCompanyRequest(request);
             studentRegis.setCompanyAddress(request.getCompanyAddress());
             studentRegis.setCompanyPhone(request.getCompanyPhone());
+            studentRegis.setCompanyEmail(normalizeBlank(request.getCompanyEmail()));
             studentRegis.setCompanyName(request.getCompanyName());
-            studentRegis.setTaxCode(request.getTaxCode());
+            studentRegis.setTaxCode(normalizeBlank(request.getTaxCode()));
             studentRegis.setIntroductionPaper(request.getIntroductionPaper());
             studentRegis.setAccept(false);
             studentRegis.setStudentRegisStatus(StudentRegisStatus.DANG_CHO);
@@ -243,5 +246,40 @@ public class StudentRegisService {
 
         notificationService.saveSingle("Yêu cầu bị từ chối", "/student/project", "Yêu cầu thực tập ngoài của bạn đã bị từ chối", studentRegis.getStudent().getId());
         return studentRegis;
+    }
+
+    private void validateExternalCompanyRequest(StudentRegisRequest request) {
+        if(isBlank(request.getCompanyName())){
+            throw new MessageException("Tên công ty không được để trống");
+        }
+        if(request.getCompanyName().trim().length() < 3){
+            throw new MessageException("Tên công ty phải có ít nhất 3 ký tự");
+        }
+        if(isBlank(request.getCompanyAddress())){
+            throw new MessageException("Địa chỉ công ty không được để trống");
+        }
+        if(request.getCompanyAddress().trim().length() < 10){
+            throw new MessageException("Địa chỉ công ty phải có ít nhất 10 ký tự");
+        }
+        if(isBlank(request.getCompanyEmail())){
+            throw new MessageException("Email công ty không được để trống");
+        }
+        if(isBlank(request.getCompanyPhone())){
+            throw new MessageException("Số điện thoại công ty không được để trống");
+        }
+        if(isBlank(request.getTaxCode())){
+            throw new MessageException("Mã số thuế không được để trống");
+        }
+        if(isBlank(request.getIntroductionPaper())){
+            throw new MessageException("Vui lòng upload giấy giới thiệu");
+        }
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
+    }
+
+    private String normalizeBlank(String value) {
+        return value == null ? null : value.trim();
     }
 }

@@ -75,15 +75,68 @@ function selectCompany(card){
     document.getElementById("companyId").value = id;
 }
 
+function getTrimmedValue(id){
+    return document.getElementById(id).value.trim();
+}
+
+function isValidEmail(value){
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+function isValidPhoneNumber(value){
+    return /^0\d{9,10}$/.test(value);
+}
+
+function isValidTaxCode(value){
+    return /^(\d{10}|\d{13})$/.test(value);
+}
+
+function validateExternalCompanyForm(payload){
+    if(payload.companyName === ''){
+        return 'Hãy nhập tên công ty';
+    }
+    if(payload.companyName.length < 3){
+        return 'Tên công ty phải có ít nhất 3 ký tự';
+    }
+    if(payload.taxCode === ''){
+        return 'Hãy nhập mã số thuế';
+    }
+    if(!isValidTaxCode(payload.taxCode)){
+        return 'Mã số thuế phải gồm 10 hoặc 13 chữ số';
+    }
+    if(payload.companyEmail === ''){
+        return 'Hãy nhập email công ty';
+    }
+    if(!isValidEmail(payload.companyEmail)){
+        return 'Email công ty không hợp lệ';
+    }
+    if(payload.companyPhone === ''){
+        return 'Hãy nhập số điện thoại công ty';
+    }
+    if(!isValidPhoneNumber(payload.companyPhone)){
+        return 'Số điện thoại phải bắt đầu bằng số 0 và có 10-11 chữ số';
+    }
+    if(payload.companyAddress === ''){
+        return 'Hãy nhập địa chỉ công ty';
+    }
+    if(payload.companyAddress.length < 10){
+        return 'Địa chỉ công ty phải có ít nhất 10 ký tự';
+    }
+    if(payload.introductionPaper === '' || payload.introductionPaper == null){
+        return 'Hãy upload giấy giới thiệu';
+    }
+    return null;
+}
+
 async function regisAction(type){
     var payload = {
         semesterTeacherId:null,
         semesterCompanyId:null,
-        companyName:document.getElementById("companyName").value,
-        companyAddress:document.getElementById("companyAddress").value,
-        companyPhone:document.getElementById("phoneNumber").value,
-        companyEmail:document.getElementById("companyEmail").value,
-        taxCode:document.getElementById("taxCode").value,
+        companyName:getTrimmedValue("companyName"),
+        companyAddress:getTrimmedValue("companyAddress"),
+        companyPhone:getTrimmedValue("phoneNumber"),
+        companyEmail:getTrimmedValue("companyEmail"),
+        taxCode:getTrimmedValue("taxCode"),
         introductionPaper:document.getElementById("giaygioithieu").value,
         internshipType:type,
     }
@@ -108,14 +161,9 @@ async function regisAction(type){
         if(payload.semesterTeacherId == null || payload.semesterTeacherId == ''){
             swal('Thông báo','Hãy chọn giảng viên hướng dẫn','error'); return;
         }
-        if(payload.companyName == '' || payload.companyName == null){
-            swal('Thông báo','Hãy nhập tên công ty','error'); return;
-        }
-        if(payload.companyAddress == '' || payload.companyAddress == null){
-            swal('Thông báo','Hãy nhập địa chỉ công ty','error'); return;
-        }
-        if(payload.introductionPaper == '' || payload.introductionPaper == null){
-            swal('Thông báo','Hãy upload giấy giới thiệu','error'); return;
+        var validateMessage = validateExternalCompanyForm(payload);
+        if(validateMessage != null){
+            swal('Thông báo', validateMessage,'error'); return;
         }
     }
     var response = await postMethodPayload('/api/student-regis/student/create', payload);
@@ -129,11 +177,27 @@ async function regisAction(type){
 }
 
 async function uploadGiayGioiThieu(){
+    const fileInput = document.getElementById('changeGiayGioiThieu');
+    const file = fileInput.files[0];
+    if(!file){
+        return;
+    }
+    var allowedExtensions = ['pdf', 'doc', 'docx'];
+    var extension = file.name.split('.').pop().toLowerCase();
+    if(!allowedExtensions.includes(extension)){
+        swal('Thông báo','Chỉ chấp nhận file PDF, DOC hoặc DOCX','error');
+        fileInput.value = '';
+        return;
+    }
+    if(file.size > 10 * 1024 * 1024){
+        swal('Thông báo','Dung lượng giấy giới thiệu không được vượt quá 10MB','error');
+        fileInput.value = '';
+        return;
+    }
     document.getElementById("btn-submit-dn-ngoai").disabled = true
     document.getElementById("btn-submit-dn-ngoai").innerText = "Đang tải file..."
-    const filePath = document.getElementById('changeGiayGioiThieu')
     const formData = new FormData()
-    formData.append("file", filePath.files[0])
+    formData.append("file", file)
     var urlUpload = '/api/public/upload-file';
     const res = await fetch(urlUpload, {
         method: 'POST',
@@ -144,6 +208,10 @@ async function uploadGiayGioiThieu(){
         document.getElementById("giaygioithieu").value = linkImage;
         document.getElementById("thongtingiaygioithieu").classList.remove('d-none');
         // document.getElementById("imgpreview").src = linkImage
+    } else {
+        swal('Thông báo','Upload giấy giới thiệu thất bại','error');
+        document.getElementById("giaygioithieu").value = '';
+        document.getElementById("thongtingiaygioithieu").classList.add('d-none');
     }
     document.getElementById("btn-submit-dn-ngoai").disabled = false
     document.getElementById("btn-submit-dn-ngoai").innerText = "Đăng ký thực tập"

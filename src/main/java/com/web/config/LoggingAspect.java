@@ -1,5 +1,6 @@
 package com.web.config;
 
+import com.web.exception.MessageException;
 import com.web.enums.LogLevel;
 import com.web.service.AppLogService;
 import org.aspectj.lang.JoinPoint;
@@ -40,7 +41,11 @@ public class LoggingAspect {
     public void logAfterThrowing(JoinPoint joinPoint, Throwable exception) {
         String methodName = joinPoint.getSignature().getName();
         String className = joinPoint.getTarget().getClass().getSimpleName();
-        appLogService.addLog("Lỗi tại " + className + "." + methodName + ": " + exception.getMessage(), LogLevel.ERROR);
+        String errorMessage = exception.getMessage();
+        if ((errorMessage == null || errorMessage.trim().isEmpty()) && exception instanceof MessageException) {
+            errorMessage = ((MessageException) exception).getDefaultMessage();
+        }
+        appLogService.addLog("Lỗi tại " + className + "." + methodName + ": " + errorMessage, LogLevel.ERROR);
     }
 
     private String getActionDescription(String className, String methodName) {

@@ -21,12 +21,12 @@ public class MessageException extends RuntimeException {
     }
 
     public MessageException(String msg) {
+        super(msg);
         this.defaultMessage = msg;
-//        super(msg);
     }
 
     public MessageException(String message, int errorCode) {
-        super();
+        super(message);
         this.errorCode = errorCode;
         this.defaultMessage = message;
     }

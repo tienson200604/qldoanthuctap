@@ -9,6 +9,7 @@ import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.sql.Time;
 import java.util.*;
 
@@ -40,6 +41,10 @@ public class User{
     private String activation_key;
 
     private String rememberKey;
+
+    private Timestamp rememberKeyExpiredAt;
+
+    private Timestamp lastResetPasswordRequestAt;
 
     private Date createdDate;
 

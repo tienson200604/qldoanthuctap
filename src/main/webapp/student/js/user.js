@@ -32,12 +32,30 @@ async function chooseAvatar(){
 }
 
 async function changePassword(){
-    if(document.getElementById("newPassword").value != document.getElementById("confirmPassword").value){
-        swal('Lỗi','Mật khẩu mới không chính xác','error'); return;
+    var currentPassword = document.getElementById("currentPassword").value.trim();
+    var newPassword = document.getElementById("newPassword").value.trim();
+    var confirmPassword = document.getElementById("confirmPassword").value.trim();
+    var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])\S{8,}$/;
+
+    if(currentPassword === ''){
+        swal('Lỗi','Vui lòng nhập mật khẩu hiện tại','error'); return;
+    }
+    if(newPassword === ''){
+        swal('Lỗi','Vui lòng nhập mật khẩu mới','error'); return;
+    }
+    if(confirmPassword === ''){
+        swal('Lỗi','Vui lòng nhập xác nhận mật khẩu','error'); return;
+    }
+    if(newPassword !== confirmPassword){
+        swal('Lỗi','Xác nhận mật khẩu không khớp','error'); return;
+    }
+    if(!passwordRegex.test(newPassword)){
+        swal('Lỗi','Mật khẩu mới phải có ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt','error'); return;
     }
     var payload = {
-        "oldPass":document.getElementById("currentPassword").value,
-        "newPass":document.getElementById("newPassword").value,
+        "oldPass":currentPassword,
+        "newPass":newPassword,
+        "confirmPass":confirmPassword,
     }
     var response = await postMethodPayload('/api/user/all/change-password', payload)
     if(response.status < 300){

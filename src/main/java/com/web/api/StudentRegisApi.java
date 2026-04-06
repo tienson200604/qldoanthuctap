@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -19,7 +20,7 @@ public class StudentRegisApi {
     private StudentRegisService studentRegisService;
 
     @PostMapping("/student/create")
-    public StudentRegis create(@RequestBody StudentRegisRequest request){
+    public StudentRegis create(@Valid @RequestBody StudentRegisRequest request){
         return studentRegisService.create(request);
     }
 

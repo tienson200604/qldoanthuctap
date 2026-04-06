@@ -100,7 +100,7 @@ public class UserApi {
     }
 
     @PostMapping("/all/change-password")
-    public ResponseEntity<?> changePassword(@RequestBody PasswordDto passwordDto){
+    public ResponseEntity<?> changePassword(@Valid @RequestBody PasswordDto passwordDto){
         userService.changePass(passwordDto.getOldPass(), passwordDto.getNewPass());
         return new ResponseEntity<>("Success", HttpStatus.OK);
     }
@@ -108,7 +108,7 @@ public class UserApi {
     @PostMapping("/forgot-password")
     public ResponseEntity<?> changePassword(@RequestParam String email){
         userService.forgotPassword(email);
-        return new ResponseEntity<>("Success", HttpStatus.OK);
+        return new ResponseEntity<>("Nếu email tồn tại trong hệ thống, hướng dẫn đặt lại mật khẩu đã được gửi", HttpStatus.OK);
     }
 
     @GetMapping("/admin/get-user-by-role")
@@ -172,7 +172,7 @@ public class UserApi {
     @PostMapping("/public/init-forgotpasss")
     public ResponseEntity<?> quenMatKhau(@RequestParam String email) throws URISyntaxException {
         userService.guiYeuCauQuenMatKhau(email);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("Nếu email tồn tại trong hệ thống, hướng dẫn đặt lại mật khẩu đã được gửi", HttpStatus.OK);
     }
 
     @PostMapping("/public/finish-reset-pass")

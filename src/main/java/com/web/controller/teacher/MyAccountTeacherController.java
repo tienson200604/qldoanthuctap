@@ -18,4 +18,9 @@ public class MyAccountTeacherController {
     public String changePass(Model model) {
         return "teacher/change-password";
     }
+
+    @RequestMapping(value = {"/log"}, method = RequestMethod.GET)
+    public String log(Model model) {
+        return "teacher/log";
+    }
 }

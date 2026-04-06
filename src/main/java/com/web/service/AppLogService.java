@@ -43,4 +43,12 @@ public class AppLogService {
     public Page<AppLog> findAll(String keyword, LogLevel logLevel, LocalDateTime from, LocalDateTime to, Pageable pageable) {
         return appLogRepository.findAllLogs(keyword, logLevel, from, to, pageable);
     }
+
+    public Page<AppLog> findMyLogs(String keyword, LogLevel logLevel, LocalDateTime from, LocalDateTime to, Pageable pageable) {
+        User user = userUtils.getUserWithAuthority();
+        if (user == null) {
+            throw new RuntimeException("Không xác định được người dùng hiện tại");
+        }
+        return appLogRepository.findMyLogs(user.getId(), keyword, logLevel, from, to, pageable);
+    }
 }

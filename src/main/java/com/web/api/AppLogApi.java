@@ -31,4 +31,15 @@ public class AppLogApi {
         Page<AppLog> result = appLogService.findAll(keyword, logLevel, from, to, pageable);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+    @GetMapping("/all/my-logs")
+    public ResponseEntity<Page<AppLog>> findMyLogs(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) LogLevel logLevel,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
+            Pageable pageable) {
+        Page<AppLog> result = appLogService.findMyLogs(keyword, logLevel, from, to, pageable);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 }

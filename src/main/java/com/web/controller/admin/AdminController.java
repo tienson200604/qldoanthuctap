@@ -38,6 +38,11 @@ public class AdminController {
         return "admin/add-score";
     }
 
+    @RequestMapping(value = {"/add-semester-teacher"}, method = RequestMethod.GET)
+    public String addSemesterTeacher() {
+        return "admin/add-semester-teacher";
+    }
+
     @RequestMapping(value = {"/add-semester"}, method = RequestMethod.GET)
     public String addSemester() {
         return "admin/add-semester";
@@ -107,6 +112,11 @@ public class AdminController {
     @RequestMapping(value = {"/semester"}, method = RequestMethod.GET)
     public String semester() {
         return "admin/semester";
+    }
+
+    @RequestMapping(value = {"/semester-teacher"}, method = RequestMethod.GET)
+    public String semesterTeacher() {
+        return "admin/semester-teacher";
     }
 
     @RequestMapping(value = {"/semester-type"}, method = RequestMethod.GET)

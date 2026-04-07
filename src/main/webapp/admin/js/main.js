@@ -59,6 +59,7 @@ $( document ).ready(function() {
             <a href="semester" class="menu-item ps-5"><i class="bi bi-building"></i> <span class="nav-text">Danh sách đợt thực tập</span></a>
             <a href="company-semester" class="menu-item ps-5"><i class="bi bi-plus-circle"></i> <span class="nav-text">Công ty</span></a>
             <a href="semester-type" class="menu-item ps-5"><i class="bi bi-plus-circle"></i> <span class="nav-text">Loại thực tập</span></a>
+            <a href="semester-teacher" class="menu-item ps-5"><i class="bi bi-person-workspace"></i> <span class="nav-text">Giảng viên hướng dẫn</span></a>
             <a href="intern-students" class="menu-item ps-5"><i class="bi bi-mortarboard"></i> <span class="nav-text">Sinh viên thực tập</span></a>
         </div>
 

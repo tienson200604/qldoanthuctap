@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <link rel="icon" type="image/x-icon" href="/image/logo.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia">
+    <link href='https://fonts.googleapis.com/css?family=Quicksand' rel='stylesheet'>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.2/js/toastr.min.js"></script>
+    <link rel="stylesheet" href="../../css/styleadmin.css">
+    <script src="../../admin/js/main.js"></script>
+    <script src="../../admin/js/request.js"></script>
+    <script src="../../admin/js/semester-teacher.js"></script>
+    <script>
+        window.onload = async function() {
+            await loadSemesterOptions();
+            await loadSemesterTypeOptions();
+            await loadSemesterTeachers();
+        }
+    </script>
+</head>
+<body>
+<div id="sidebar"></div>
+<header id="top-header"></header>
+
+<div id="main-content">
+    <div class="card border-0 shadow-sm p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="fw-bold">Quản lý giảng viên hướng dẫn</h5>
+            <a href="add-semester-teacher" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i> Thêm mới
+            </a>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <select class="form-select" id="semester" onchange="loadSemesterTypeOptions()"></select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="semesterTypeId"></select>
+            </div>
+            <div class="col-md-3">
+                <input type="text" id="keyword" class="form-control" placeholder="Tên GV, mã GV, đề tài">
+            </div>
+            <div class="col-md-3">
+                <button onclick="loadSemesterTeachers()" class="btn btn-outline-secondary w-100">
+                    <i class="bi bi-funnel"></i> Lọc
+                </button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Giảng viên</th>
+                    <th>Mã GV</th>
+                    <th>Đợt thực tập</th>
+                    <th>Loại thực tập</th>
+                    <th>Đề tài</th>
+                    <th>Tối đa</th>
+                    <th>Đã đăng ký</th>
+                    <th>Hạn đăng ký</th>
+                    <th class="text-end">Thao tác</th>
+                </tr>
+                </thead>
+                <tbody id="list-data"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -185,7 +185,209 @@ $( document ).ready(function() {
             }
         });
     }
+        
+        // Khởi tạo Global Search sau khi load xong DOM tĩnh
+        setTimeout(initGlobalSearch, 100);
 });
+
+function initGlobalSearch() {
+    const searchBarContainer = document.querySelector('.search-bar');
+    const inputElement = document.querySelector('.search-bar input');
+
+    if (!searchBarContainer || !inputElement) return;
+
+    // 1. Chèn DOM Dropdown và chỉnh sửa Input
+    inputElement.id = 'global-search-input';
+    inputElement.placeholder = 'Tìm kiếm tài khoản, công ty, chức năng...';
+    inputElement.setAttribute('autocomplete', 'off');
+    searchBarContainer.classList.add('position-relative');
+    searchBarContainer.style.width = '350px';
+
+    const dropdownHtml = `
+        <div id="global-search-dropdown" class="dropdown-menu w-100 shadow px-0 border-0" style="max-height: 500px; overflow-y: auto; margin-top: 5px; display: none; position: absolute;">
+            <div class="p-3 text-center text-muted small" id="global-search-empty">Gõ từ khóa để tìm kiếm...</div>
+            <div id="global-search-results"></div>
+        </div>
+    `;
+    searchBarContainer.insertAdjacentHTML('beforeend', dropdownHtml);
+
+    // 2. Chèn CSS Runtime
+    const styleId = 'global-search-style';
+    if (!document.getElementById(styleId)) {
+        const styleHtml = `
+            <style id="global-search-style">
+                .global-search-group { background: #f8f9fa; padding: 5px 15px; font-weight: bold; font-size: 0.75rem; color: #6c757d; text-transform: uppercase; border-top: 1px solid #eee; border-bottom: 1px solid #eee; }
+                .global-search-group:first-child { border-top: none; }
+                .dark-mode .global-search-group { background: #212529; color: #adb5bd; border-color: #333; }
+                .global-search-item { cursor: pointer; padding: 10px 15px; transition: all 0.2s; display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; }
+                .global-search-item:hover { background-color: #e9ecef; color: inherit; }
+                .dark-mode .global-search-item:hover { background-color: #2c2c2c; color: inherit; text-decoration: none; }
+                #global-search-dropdown.show { display: block !important; }
+            </style>
+        `;
+        document.head.insertAdjacentHTML('beforeend', styleHtml);
+    }
+
+    // 3. Logic Event
+    const searchDropdown = document.getElementById('global-search-dropdown');
+    const searchEmpty = document.getElementById('global-search-empty');
+    const searchResults = document.getElementById('global-search-results');
+
+    const navigationMenus = [
+        { name: "Dashboard (Bảng điều khiển)", url: "index", icon: "bi-speedometer2" },
+        { name: "Quản lý tài khoản (Danh sách)", url: "user", icon: "bi-person-badge" },
+        { name: "Thêm tài khoản mới", url: "add-user", icon: "bi-person-plus" },
+        { name: "Quản lý danh mục", url: "category", icon: "bi-diagram-3" },
+        { name: "Thêm danh mục mới", url: "add-category", icon: "bi-plus-circle" },
+        { name: "Quản lý bài viết / Tin tức", url: "blog", icon: "bi-calendar-event" },
+        { name: "Thêm tin tức / Bài viết mới", url: "add-blog", icon: "bi-plus-circle" },
+        { name: "Quản lý công ty (Doanh nghiệp)", url: "company", icon: "bi-building" },
+        { name: "Thêm công ty / doanh nghiệp mới", url: "add-company", icon: "bi-plus-circle" },
+        { name: "Quản lý tài liệu biểu mẫu", url: "document", icon: "bi-file-earmark-text" },
+        { name: "Thêm tài liệu mới", url: "add-document", icon: "bi-plus-circle" },
+        { name: "Danh sách các đợt thực tập", url: "semester", icon: "bi-calendar-range" },
+        { name: "Quản lý sinh viên thực tập", url: "intern-students", icon: "bi-mortarboard" },
+        { name: "Quản lý điểm sv / Thống kê điểm", url: "student-score", icon: "bi-bar-chart-line" },
+        { name: "Thống kê đánh giá", url: "rate", icon: "bi-star-fill" },
+        { name: "Quản lý log (Lịch sử hoạt động)", url: "log", icon: "bi-file-earmark-text" },
+        { name: "Đổi mật khẩu", url: "doi-mat-khau", icon: "bi-key" },
+        { name: "Cập nhật Thông tin cá nhân", url: "infor", icon: "bi-person-circle" }
+    ];
+
+    let typingTimer;
+    const doneTypingInterval = 300;
+
+    inputElement.addEventListener('focus', () => {
+        searchDropdown.classList.add('show');
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!inputElement.contains(e.target) && !searchDropdown.contains(e.target)) {
+            searchDropdown.classList.remove('show');
+        }
+    });
+
+    inputElement.addEventListener('keyup', () => {
+        clearTimeout(typingTimer);
+        const keyword = inputElement.value.trim().toLowerCase();
+        
+        if (keyword.length === 0) {
+            searchEmpty.style.display = 'block';
+            searchResults.innerHTML = '';
+            searchEmpty.innerHTML = 'Gõ từ khóa để tìm kiếm...';
+            return;
+        }
+
+        searchEmpty.style.display = 'block';
+        searchEmpty.innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status" style="width: 1rem; height: 1rem;"></div> <span class="ms-2">Đang tìm...</span>';
+        searchResults.innerHTML = '';
+        
+        typingTimer = setTimeout(async () => {
+            await performSearch(keyword);
+        }, doneTypingInterval);
+    });
+
+    function removeAccents(str) {
+        return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    }
+
+    async function performSearch(keyword) {
+        const unaccentedKeyword = removeAccents(keyword);
+        const matchedMenus = navigationMenus.filter(m => {
+            return removeAccents(m.name).includes(unaccentedKeyword);
+        }).slice(0, 4);
+        
+        try {
+            const tokenToUse = localStorage.getItem('token');
+            const [usersRes, companiesRes] = await Promise.all([
+                fetch(`/api/user/admin/search?keyword=${encodeURIComponent(keyword)}&size=5`, {
+                    headers: { 'Authorization': 'Bearer ' + tokenToUse }
+                }),
+                fetch(`/api/company/public/find-all?search=${encodeURIComponent(keyword)}&size=3`)
+            ]);
+
+            const usersData = await usersRes.json();
+            const companiesData = await companiesRes.json();
+
+            renderResults(matchedMenus, usersData.content || [], companiesData.content || []);
+        } catch (error) {
+            console.error("Lỗi khi tìm kiếm:", error);
+            searchEmpty.style.display = 'block';
+            searchEmpty.innerHTML = '<span class="text-danger">Có lỗi kết nối API khi tìm kiếm.</span>';
+        }
+    }
+
+    function renderResults(menus, users, companies) {
+        searchEmpty.style.display = 'none';
+        searchResults.innerHTML = '';
+
+        if (menus.length === 0 && users.length === 0 && companies.length === 0) {
+            searchEmpty.style.display = 'block';
+            searchEmpty.innerHTML = 'Không tìm thấy thông tin nào phù hợp.';
+            return;
+        }
+
+        let html = '';
+
+        if (menus.length > 0) {
+            html += `<div class="global-search-group">Tính năng & Trang</div>`;
+            menus.forEach(m => {
+                html += `
+                    <a href="${m.url}" class="global-search-item">
+                        <div class="bg-primary bg-opacity-10 text-primary p-2 rounded d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;"><i class="bi ${m.icon}"></i></div>
+                        <div>
+                            <div class="fw-bold small text-body">${m.name}</div>
+                            <div class="text-muted" style="font-size: 11px;">Chuyển hướng nhanh</div>
+                        </div>
+                    </a>
+                `;
+            });
+        }
+
+        if (users.length > 0) {
+            html += `<div class="global-search-group">Hồ sơ người dùng</div>`;
+            users.forEach(u => {
+                const avatar = u.avatar || '/image/default-avatar.jpg';
+                const codeDesc = u.code ? ` - ${u.code}` : '';
+                const emailStr = u.email || 'Thêm email: Cập nhật sau';
+                let roleDesc = "Người dùng";
+                if(u.authorities && u.authorities.length > 0) {
+                     roleDesc = u.authorities[0].name === "ROLE_ADMIN" ? "Admin" : (u.authorities[0].name === "ROLE_TEACHER" ? "Giảng viên" : "Sinh viên");
+                }
+                const badgeColor = roleDesc === "Admin" ? "bg-danger" : (roleDesc === "Giảng viên" ? "bg-primary" : "bg-info text-dark");
+
+                html += `
+                    <a href="user" class="global-search-item">
+                        <img src="${avatar}" width="36" height="36" class="rounded-circle shadow-sm" style="object-fit: cover;">
+                        <div style="flex: 1; min-width: 0;">
+                            <div class="fw-bold small text-body text-truncate">${u.fullName || u.username}${codeDesc}</div>
+                            <div class="text-muted text-truncate" style="font-size: 11px;">
+                                <span class="badge ${badgeColor} me-1" style="font-size: 9px;">${roleDesc}</span> ${emailStr}
+                            </div>
+                        </div>
+                    </a>
+                `;
+            });
+        }
+
+        if (companies.length > 0) {
+            html += `<div class="global-search-group">Danh sách Công ty</div>`;
+            companies.forEach(c => {
+                html += `
+                    <a href="company" class="global-search-item">
+                        <div class="bg-success bg-opacity-10 text-success p-2 rounded d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;"><i class="bi bi-building"></i></div>
+                        <div style="flex: 1; min-width: 0;">
+                            <div class="fw-bold small text-body text-truncate">${c.name}</div>
+                            <div class="text-muted text-truncate" style="font-size: 11px;">${c.address || 'Chưa cập nhật địa chỉ'}</div>
+                        </div>
+                    </a>
+                `;
+            });
+        }
+
+        searchResults.innerHTML = html;
+    }
+}
 
 function loadInforHeader() {
 }

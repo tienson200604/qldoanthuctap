@@ -389,6 +389,20 @@ function initGlobalSearch() {
     }
 }
 
+// Global Auto Focus
+document.addEventListener("DOMContentLoaded", function() {
+    setTimeout(() => {
+        const firstInput = document.querySelector('input:not([type="hidden"]):not([type="search"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([readonly]):not([disabled]):not([name="search"]):not(#global-search-input), textarea:not([readonly]):not([disabled]), select:not([readonly]):not([disabled])');
+        if (firstInput) firstInput.focus();
+    }, 500);
+
+    if (typeof $ !== 'undefined') {
+        $(document).on('shown.bs.modal', '.modal', function () {
+            $(this).find('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([readonly]):not([disabled]), textarea:not([readonly]):not([disabled]), select:not([readonly]):not([disabled])').first().focus();
+        });
+    }
+});
+
 function loadInforHeader() {
 }
 

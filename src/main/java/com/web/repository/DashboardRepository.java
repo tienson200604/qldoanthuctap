@@ -27,6 +27,6 @@ public interface DashboardRepository extends JpaRepository<StudentRegis, Long> {
     @Query("SELECT COUNT(st) FROM Blog st")
     long countBlog();
 
-    @Query(value = "select s.* from student_regis s order by s.total_score desc limit 10", nativeQuery = true)
+    @Query(value = "select s.* from student_regis s where s.total_score > 0 order by s.total_score desc limit 10", nativeQuery = true)
     List<StudentRegis> topStudent();
 }

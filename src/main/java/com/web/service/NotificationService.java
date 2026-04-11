@@ -45,6 +45,7 @@ public class NotificationService {
             notification.setIsRead(false);
             notification.setLink(link);
             notification.setTitle(title);
+            notification.setContent(message);
             notification.setUser(u);
             notificationRepository.save(notification);
             simpMessagingTemplate.convertAndSendToUser(u.getEmail(), "/queue/notification", map);
@@ -64,6 +65,7 @@ public class NotificationService {
             notification.setIsRead(false);
             notification.setLink(link);
             notification.setTitle(title);
+            notification.setContent(message);
             notification.setUser(u);
             notificationRepository.save(notification);
             simpMessagingTemplate.convertAndSendToUser(u.getEmail(), "/queue/notification", map);
@@ -82,6 +84,7 @@ public class NotificationService {
             notification.setIsRead(false);
             notification.setLink(link);
             notification.setTitle(title);
+            notification.setContent(message);
             notification.setUser(u);
             notificationRepository.save(notification);
             simpMessagingTemplate.convertAndSendToUser(u.getEmail(), "/queue/notification", map);
@@ -100,6 +103,7 @@ public class NotificationService {
         notification.setIsRead(false);
         notification.setLink(link);
         notification.setTitle(title);
+        notification.setContent(message);
         notification.setUser(user);
         notificationRepository.save(notification);
         simpMessagingTemplate.convertAndSendToUser(user.getEmail(), "/queue/notification", map);

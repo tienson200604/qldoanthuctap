@@ -1,6 +1,7 @@
 package com.web.controller.student;
 
 import com.web.entity.*;
+import com.web.enums.StudentRegisStatus;
 import com.web.exception.MessageException;
 import com.web.repository.*;
 import com.web.utils.UserUtils;
@@ -50,6 +51,15 @@ public class ProjectController {
     @RequestMapping(value = {"/project-detail/{studentRegisId}"}, method = RequestMethod.GET)
     public String projectDetail(@PathVariable("studentRegisId") Long studentRegisId, Model model) {
         StudentRegis studentRegis = studentRegisRepository.findById(studentRegisId).orElseThrow(() -> new MessageException("Không tìm thấy đăng ký"));
+        User user = userUtils.getUserWithAuthority();
+        if (studentRegis.getStudent() == null || !studentRegis.getStudent().getId().equals(user.getId())) {
+            return "redirect:/student/project";
+        }
+        if (studentRegis.getStudentRegisStatus() == StudentRegisStatus.DANG_CHO ||
+                studentRegis.getStudentRegisStatus() == StudentRegisStatus.TU_CHOI ||
+                studentRegis.getStudentRegisStatus() == StudentRegisStatus.DA_BI_DUOI) {
+            return "redirect:/student/project";
+        }
         SemesterTeacher semesterTeacher = studentRegis.getSemesterTeacher();
         model.addAttribute("semesterTeacher",semesterTeacher);
         List<StudentRegis> listStudentRegis = studentRegisRepository.findBySemesterTeacher(semesterTeacher.getId());

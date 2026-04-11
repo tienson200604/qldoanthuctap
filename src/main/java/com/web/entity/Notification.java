@@ -19,6 +19,9 @@ public class Notification {
 
     private String title;
 
+    @Column(columnDefinition = "TEXT")
+    private String content;
+
     private LocalDateTime createdDate;
 
     private Boolean isRead = false;

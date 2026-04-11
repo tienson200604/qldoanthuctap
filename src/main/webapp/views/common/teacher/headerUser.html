@@ -141,7 +141,7 @@
         list.innerHTML = notis.map(n => `
             <li class="p-3 notification-item ${n.isRead ? '' : 'unread'}" onclick="window.location.href='${n.link || '#'}'">
                 <div class="fw-bold small">${n.title}</div>
-                <div class="text-muted" style="font-size: 0.75rem;">${n.title}</div>
+                <div class="text-muted" style="font-size: 0.75rem;">${n.content || n.title}</div>
                 <div class="text-end" style="font-size: 0.65rem; color: #999;">${new Date(n.createdDate).toLocaleDateString('vi-VN')}</div>
             </li>
         `).join('');

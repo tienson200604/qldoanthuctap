@@ -27,17 +27,25 @@ async function acceptStudent(e){
 async function rejectStudent(e){
     var idStudentRegis = e.getAttribute("data-student-regis")
     swal({
-        title: "Xác nhận",
-        text: "Bạn có chắc chắn muốn từ chối yêu cầu đăng ký này?",
-        type: "warning",
+        title: "Lý do từ chối",
+        text: "Sinh viên sẽ nhận được thông báo kèm lý do này",
+        type: "input",
         showCancelButton: true,
         confirmButtonColor: "#DD6B55",
         confirmButtonText: "Từ chối",
         cancelButtonText: "Hủy",
-        closeOnConfirm: false
-    }, async function() {
-        var response = await postMethod(`/api/student-regis/teacher/reject?id=${idStudentRegis}`)
-        if(response.status < 300){
+        closeOnConfirm: false,
+        inputPlaceholder: "Nhập lý do từ chối"
+    }, async function(inputValue) {
+        if (inputValue === false) {
+            return false;
+        }
+        if (!inputValue || !inputValue.trim()) {
+            swal.showInputError("Vui lòng nhập lý do từ chối");
+            return false;
+        }
+        var response = await postMethodTextPlan(`/api/student-regis/teacher/reject?id=${idStudentRegis}`, inputValue.trim())
+        if(response != null && response.status < 300){
             swal({
                 title: "Thông báo",
                 text: 'Đã từ chối yêu cầu đăng ký',

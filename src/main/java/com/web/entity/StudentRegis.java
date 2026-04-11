@@ -40,6 +40,8 @@ public class StudentRegis {
 
     private String rate;
 
+    @Column(columnDefinition = "TEXT")
+    private String rejectReason;
 
 
     @Enumerated(EnumType.STRING)

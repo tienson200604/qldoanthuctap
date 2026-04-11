@@ -20,12 +20,12 @@
         <div class="row g-4">
           <div class="col-lg-6" th:each="c :${studentRegis}">
             <div class="account-project-card"
-                 th:attr="onclick=${c.studentRegisStatus.name != 'DANG_CHO' && c.studentRegisStatus.name != 'DA_BI_DUOI'}
+                 th:attr="onclick=${c.studentRegisStatus.name != 'DANG_CHO' && c.studentRegisStatus.name != 'TU_CHOI' && c.studentRegisStatus.name != 'DA_BI_DUOI'}
      ? |window.location.href='/student/project-detail/' + ${c.id}|
      : |swal({
-            icon: 'error',
             title: 'Thông báo',
-            text: 'Bạn không có quyền truy cập vào đồ án này',
+            text: 'Bạn không có quyền truy cập vào đợt thực tập',
+            type: 'error',
             confirmButtonText: 'OK'
         })|">
               <div class="account-project-top">
@@ -58,6 +58,15 @@
                 <div class="account-project-company" th:if="${c.internshipType.name=='DOANH_NGHIEP_NGOAI'}">
                   <i class="bi bi-building"></i>
                   <span>Thực tập tại công ty ngoài</span>
+                </div>
+                <div class="mt-3 p-3 rounded-3"
+                     style="background: #fff4f2; border: 1px solid #f5c2c7;"
+                     th:if="${c.studentRegisStatus.name == 'TU_CHOI' && c.rejectReason != null && c.rejectReason != ''}">
+                  <div class="fw-bold text-danger mb-1">
+                    <i class="bi bi-x-octagon"></i>
+                    Lý do giảng viên từ chối
+                  </div>
+                  <div class="text-muted" th:text="${c.rejectReason}"></div>
                 </div>
               </div>
               <div class="account-project-footer">

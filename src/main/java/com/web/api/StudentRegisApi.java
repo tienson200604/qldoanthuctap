@@ -37,8 +37,8 @@ public class StudentRegisApi {
     }
 
     @PostMapping("/teacher/reject")
-    public StudentRegis reject(@RequestParam Long id){
-        return studentRegisService.rejectRequest(id);
+    public StudentRegis reject(@RequestParam Long id, @RequestBody(required = false) String reason){
+        return studentRegisService.rejectRequest(id, reason);
     }
 
     @PostMapping("/teacher/complete")

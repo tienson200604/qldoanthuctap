@@ -224,22 +224,25 @@ public class StudentRegisService {
     }
 
     public StudentRegis acceptRequest(Long id) {
-        StudentRegis studentRegis = studentRegisRepository.findById(id).orElseThrow(() -> new MessageException("Không tìm thấy dữ liệu"));
+        StudentRegis studentRegis = getTeacherOwnedStudentRegis(id);
         studentRegis.setStudentRegisStatus(StudentRegisStatus.DANG_THUC_HIEN);
         studentRegis.setAccept(true);
+        studentRegis.setRejectReason(null);
         studentRegisRepository.save(studentRegis);
         notificationService.saveSingle("Yêu cầu đã được duyệt", "/student/project", "Yêu cầu thực tập ngoài của bạn đã được duyệt", studentRegis.getStudent().getId());
         return studentRegis;
     }
 
     @Transactional
-    public StudentRegis rejectRequest(Long id) {
-        StudentRegis studentRegis = studentRegisRepository.findById(id).orElseThrow(() -> new MessageException("Không tìm thấy dữ liệu"));
+    public StudentRegis rejectRequest(Long id, String reason) {
+        StudentRegis studentRegis = getTeacherOwnedStudentRegis(id);
         if (!studentRegis.getStudentRegisStatus().equals(StudentRegisStatus.DANG_CHO)) {
             throw new MessageException("Chỉ có thể từ chối yêu cầu đang chờ");
         }
+        String normalizedReason = normalizeRejectReason(reason);
         studentRegis.setStudentRegisStatus(StudentRegisStatus.TU_CHOI);
         studentRegis.setAccept(false);
+        studentRegis.setRejectReason(normalizedReason);
         studentRegisRepository.save(studentRegis);
 
         // Giảm số lượng sinh viên hiện tại của giảng viên
@@ -256,7 +259,12 @@ public class StudentRegisService {
             semesterCompanyRepository.save(sc);
         }
 
-        notificationService.saveSingle("Yêu cầu bị từ chối", "/student/project", "Yêu cầu thực tập ngoài của bạn đã bị từ chối", studentRegis.getStudent().getId());
+        notificationService.saveSingle(
+                "Yêu cầu bị từ chối",
+                "/student/project",
+                "Yêu cầu thực tập ngoài của bạn đã bị từ chối. Lý do: " + normalizedReason,
+                studentRegis.getStudent().getId()
+        );
         return studentRegis;
     }
 
@@ -399,6 +407,17 @@ public class StudentRegisService {
         return value == null ? "" : value;
     }
 
+    private StudentRegis getTeacherOwnedStudentRegis(Long id) {
+        StudentRegis studentRegis = studentRegisRepository.findById(id)
+                .orElseThrow(() -> new MessageException("Không tìm thấy dữ liệu"));
+        User teacher = userUtils.getUserWithAuthority();
+        if (studentRegis.getSemesterTeacher() == null || studentRegis.getSemesterTeacher().getTeacher() == null ||
+                !studentRegis.getSemesterTeacher().getTeacher().getId().equals(teacher.getId())) {
+            throw new MessageException("Bạn không có quyền xử lý sinh viên này");
+        }
+        return studentRegis;
+    }
+
     private void validateExternalCompanyRequest(StudentRegisRequest request) {
         if(isBlank(request.getCompanyName())){
             throw new MessageException("Tên công ty không được để trống");
@@ -432,5 +451,12 @@ public class StudentRegisService {
 
     private String normalizeBlank(String value) {
         return value == null ? null : value.trim();
+    }
+
+    private String normalizeRejectReason(String reason) {
+        if (reason == null || reason.trim().isEmpty()) {
+            throw new MessageException("Vui lòng nhập lý do từ chối");
+        }
+        return reason.trim();
     }
 }

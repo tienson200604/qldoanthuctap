@@ -1,6 +1,7 @@
 package com.web.api;
 
 import com.web.dto.request.SemesterTeacherAdminRequest;
+import com.web.dto.response.SemesterTeacherDetailDto;
 import com.web.entity.SemesterTeacher;
 import com.web.service.SemesterTeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,11 @@ public class SemesterTeacherApi {
     @GetMapping("/admin/{id}")
     public SemesterTeacher findById(@PathVariable Long id) {
         return semesterTeacherService.findById(id);
+    }
+
+    @GetMapping("/admin/detail/{id}")
+    public SemesterTeacherDetailDto detail(@PathVariable Long id) {
+        return semesterTeacherService.getAdminDetail(id);
     }
 
     @PostMapping("/admin/create-update")

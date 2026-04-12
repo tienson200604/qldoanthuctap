@@ -90,9 +90,9 @@
                   <p class="fw-bold" th:text="${studentRegis.companyEmail}"></p>
                 </div>
                 <div class="col-md-12 mt-2" th:if="${studentRegis.introductionPaper != null && studentRegis.introductionPaper != ''}">
-                  <p class="mb-1 text-muted small">Giấy giới thiệu:</p>
-                  <a th:href="${studentRegis.introductionPaper}" target="_blank" class="btn btn-sm btn-outline-danger">
-                    <i class="bi bi-file-earmark-pdf"></i> Xem Giấy giới thiệu (Student Upload)
+                  <p class="mb-1 text-muted small">Hồ sơ giới thiệu:</p>
+                  <a th:href="'/teacher/student-dashboard/' + ${studentRegis.id} + '/introduction-paper'" target="_blank" class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-paperclip"></i> Xem hồ sơ đã upload
                   </a>
                 </div>
               </div>

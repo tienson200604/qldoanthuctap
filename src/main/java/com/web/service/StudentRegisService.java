@@ -53,6 +53,9 @@ public class StudentRegisService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private com.web.utils.CloudinaryService cloudinaryService;
+
     @Transactional
     public StudentRegis create(StudentRegisRequest request){
         SemesterTeacher semesterTeacher = null;
@@ -240,6 +243,14 @@ public class StudentRegisService {
             throw new MessageException("Chỉ có thể từ chối yêu cầu đang chờ");
         }
         String normalizedReason = normalizeRejectReason(reason);
+        if (!isBlank(studentRegis.getIntroductionPaper())) {
+            try {
+                cloudinaryService.deleteFileByUrl(studentRegis.getIntroductionPaper());
+                studentRegis.setIntroductionPaper(null);
+            } catch (RuntimeException e) {
+                throw new MessageException("Không thể xóa hồ sơ giới thiệu trên Cloudinary");
+            }
+        }
         studentRegis.setStudentRegisStatus(StudentRegisStatus.TU_CHOI);
         studentRegis.setAccept(false);
         studentRegis.setRejectReason(normalizedReason);

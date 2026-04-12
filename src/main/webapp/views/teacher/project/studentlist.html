@@ -49,8 +49,8 @@
               <i class="fa fa-barcode"></i> MST: <th:block th:text="${c.taxCode}"></th:block>
             </span>
           <span class="d-block mt-1" th:if="${c.introductionPaper != null && c.introductionPaper != ''}">
-              <i class="fa fa-file-pdf-o text-danger"></i>
-              <a th:href="${c.introductionPaper}" target="_blank" class="text-primary fw-bold">Giấy giới thiệu.pdf</a>
+              <i class="fa fa-paperclip text-danger"></i>
+              <a th:href="'/teacher/student-dashboard/' + ${c.id} + '/introduction-paper'" target="_blank" class="text-primary fw-bold">Xem hồ sơ giới thiệu</a>
             </span>
         </div>
         <div th:if="${c.semesterCompany != null}">

@@ -253,10 +253,16 @@
             </div>
 
             <div class="col-md-12">
-              <label class="form-label">Upload giấy giới thiệu</label>
+              <label class="form-label">Upload hồ sơ giới thiệu</label>
               <input type="hidden" id="giaygioithieu">
-              <input type="file" class="form-control" id="changeGiayGioiThieu" accept=".pdf,.doc,.docx" onchange="uploadGiayGioiThieu()">
-              <div id="thongtingiaygioithieu" class="d-none">Đã upload giấy giới thiệu</div>
+              <input type="file" class="form-control" id="changeGiayGioiThieu" accept=".pdf,.doc,.docx,.zip,.rar,.7z" onchange="uploadGiayGioiThieu()">
+              <div class="form-text text-warning mt-2">
+                Chấp nhận `PDF`, `DOC`, `DOCX` hoặc file nén `ZIP`, `RAR`, `7Z`. Khuyến nghị nén hồ sơ thành 1 file nếu cần gửi nhiều tài liệu.
+              </div>
+              <div class="form-text text-muted">
+                Dung lượng tối đa 20MB.
+              </div>
+              <div id="thongtingiaygioithieu" class="alert alert-success mt-2 d-none mb-0"></div>
             </div>
           </div>
         </div>

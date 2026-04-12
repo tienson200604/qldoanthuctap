@@ -3,6 +3,7 @@ package com.web.controller.teacher;
 import com.web.entity.*;
 import com.web.exception.MessageException;
 import com.web.repository.*;
+import com.web.utils.CloudinaryService;
 import com.web.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -41,6 +42,9 @@ public class ProjectTeacherController {
 
     @Autowired
     private UserUtils userUtils;
+
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     @RequestMapping(value = {"/project"}, method = RequestMethod.GET)
     public String project(Model model) {
@@ -138,9 +142,7 @@ public class ProjectTeacherController {
     public String studentDashboard(Model model,
                                    @PathVariable("studentRegisId") Long studentRegisId) {
 
-        // 1. Lấy sinh viên
-        StudentRegis studentRegis = studentRegisRepository.findById(studentRegisId)
-                .orElseThrow(() -> new MessageException("Không tìm thấy sinh viên"));
+        StudentRegis studentRegis = getTeacherOwnedStudentRegis(studentRegisId);
 
         model.addAttribute("studentRegis", studentRegis);
 
@@ -198,5 +200,25 @@ public class ProjectTeacherController {
         model.addAttribute("semesterTeacher",studentRegis.getSemesterTeacher());
 
         return "teacher/project/student-dashboard";
+    }
+
+    @GetMapping("/student-dashboard/{studentRegisId}/introduction-paper")
+    public String downloadIntroductionPaper(@PathVariable("studentRegisId") Long studentRegisId) {
+        StudentRegis studentRegis = getTeacherOwnedStudentRegis(studentRegisId);
+        if (studentRegis.getIntroductionPaper() == null || studentRegis.getIntroductionPaper().trim().isEmpty()) {
+            throw new MessageException("Sinh viên chưa upload hồ sơ giới thiệu");
+        }
+        return "redirect:" + cloudinaryService.buildSignedDownloadUrl(studentRegis.getIntroductionPaper());
+    }
+
+    private StudentRegis getTeacherOwnedStudentRegis(Long studentRegisId) {
+        StudentRegis studentRegis = studentRegisRepository.findById(studentRegisId)
+                .orElseThrow(() -> new MessageException("Không tìm thấy sinh viên"));
+        User teacher = userUtils.getUserWithAuthority();
+        if (studentRegis.getSemesterTeacher() == null || studentRegis.getSemesterTeacher().getTeacher() == null ||
+                !studentRegis.getSemesterTeacher().getTeacher().getId().equals(teacher.getId())) {
+            throw new MessageException("Bạn không có quyền truy cập hồ sơ này");
+        }
+        return studentRegis;
     }
 }

@@ -1,3 +1,6 @@
+const INTRODUCTION_FILE_EXTENSIONS = ['pdf', 'doc', 'docx', 'zip', 'rar', '7z'];
+const INTRODUCTION_FILE_MAX_SIZE = 20 * 1024 * 1024;
+
 function selectType(type){
 
     var taiTruong = document.getElementById("form-area-taitruong");
@@ -179,23 +182,32 @@ async function regisAction(type){
 async function uploadGiayGioiThieu(){
     const fileInput = document.getElementById('changeGiayGioiThieu');
     const file = fileInput.files[0];
+    const infoElement = document.getElementById("thongtingiaygioithieu");
     if(!file){
+        document.getElementById("giaygioithieu").value = '';
+        infoElement.classList.add('d-none');
+        infoElement.innerText = '';
         return;
     }
-    var allowedExtensions = ['pdf', 'doc', 'docx'];
     var extension = file.name.split('.').pop().toLowerCase();
-    if(!allowedExtensions.includes(extension)){
-        swal('Thông báo','Chỉ chấp nhận file PDF, DOC hoặc DOCX','error');
+    if(!INTRODUCTION_FILE_EXTENSIONS.includes(extension)){
+        swal('Thông báo','Chỉ chấp nhận file PDF, DOC, DOCX hoặc file nén ZIP, RAR, 7Z','error');
         fileInput.value = '';
+        document.getElementById("giaygioithieu").value = '';
+        infoElement.classList.add('d-none');
+        infoElement.innerText = '';
         return;
     }
-    if(file.size > 10 * 1024 * 1024){
-        swal('Thông báo','Dung lượng giấy giới thiệu không được vượt quá 10MB','error');
+    if(file.size > INTRODUCTION_FILE_MAX_SIZE){
+        swal('Thông báo','Dung lượng hồ sơ giới thiệu không được vượt quá 20MB','error');
         fileInput.value = '';
+        document.getElementById("giaygioithieu").value = '';
+        infoElement.classList.add('d-none');
+        infoElement.innerText = '';
         return;
     }
     document.getElementById("btn-submit-dn-ngoai").disabled = true
-    document.getElementById("btn-submit-dn-ngoai").innerText = "Đang tải file..."
+    document.getElementById("btn-submit-dn-ngoai").innerText = "Đang tải tệp..."
     const formData = new FormData()
     formData.append("file", file)
     var urlUpload = '/api/public/upload-file';
@@ -206,12 +218,13 @@ async function uploadGiayGioiThieu(){
     if (res.status < 300) {
         const linkImage = await res.text();
         document.getElementById("giaygioithieu").value = linkImage;
-        document.getElementById("thongtingiaygioithieu").classList.remove('d-none');
-        // document.getElementById("imgpreview").src = linkImage
+        infoElement.classList.remove('d-none');
+        infoElement.innerText = 'Đã upload: ' + file.name;
     } else {
-        swal('Thông báo','Upload giấy giới thiệu thất bại','error');
+        swal('Thông báo','Upload hồ sơ giới thiệu thất bại','error');
         document.getElementById("giaygioithieu").value = '';
-        document.getElementById("thongtingiaygioithieu").classList.add('d-none');
+        infoElement.classList.add('d-none');
+        infoElement.innerText = '';
     }
     document.getElementById("btn-submit-dn-ngoai").disabled = false
     document.getElementById("btn-submit-dn-ngoai").innerText = "Đăng ký thực tập"

@@ -75,7 +75,7 @@ public class CloudinaryService {
         return new File(originalFileName).getName();
     }
 
-    private String stripExtension(String fileName) {
+    private static String stripExtension(String fileName) {
         int extensionIndex = fileName.lastIndexOf('.');
         if (extensionIndex <= 0) {
             return fileName;
@@ -83,7 +83,7 @@ public class CloudinaryService {
         return fileName.substring(0, extensionIndex);
     }
 
-    private String getFileExtension(String fileName) {
+    private static String getFileExtension(String fileName) {
         int extensionIndex = fileName.lastIndexOf('.');
         if (extensionIndex < 0 || extensionIndex == fileName.length() - 1) {
             return "";

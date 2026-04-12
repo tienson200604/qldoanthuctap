@@ -207,8 +207,11 @@ public class UserApi {
     }
 
     @GetMapping("/admin/search")
-    public Page<User> searchUsers(@RequestParam(required = false) String keyword, @RequestParam(required = false) String authority, @RequestParam(required = false) Boolean actived,Pageable pageable) {
-        return userService.searchUsers(keyword,authority,actived,pageable);
+    public Page<User> searchUsers(@RequestParam(required = false) String keyword,
+                                  @RequestParam(required = false) String authority,
+                                  @RequestParam(required = false) Boolean actived,
+                                  Pageable pageable) {
+        return userService.searchUsers(keyword, authority, actived, pageable);
     }
 
     @GetMapping("/admin/{id}")

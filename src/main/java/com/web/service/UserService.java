@@ -433,7 +433,11 @@ public class UserService {
 
                         cb.like(cb.lower(root.get("fullname")), pattern),
 
-                        cb.like(cb.lower(root.get("phone")), pattern)
+                        cb.like(cb.lower(root.get("phone")), pattern),
+
+                        cb.like(cb.lower(root.get("code")), pattern),
+
+                        cb.like(cb.lower(root.get("classname")), pattern)
 
                 ));
             }

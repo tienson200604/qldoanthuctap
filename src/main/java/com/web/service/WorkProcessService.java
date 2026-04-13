@@ -56,9 +56,10 @@ public class WorkProcessService {
         SemesterTeacher semesterTeacher = semesterTeacherRepository.findById(request.getSemesterTeacherId())
                 .orElseThrow(() -> new MessageException("Không tìm thấy giảng viên hướng dẫn"));
 
+        boolean isCreate = request.getId() == null;
         WorkProcess workProcess;
 
-        if(request.getId() == null){
+        if(isCreate){
             workProcess = new WorkProcess();
             workProcess.setCreatedDate(LocalDateTime.now());
         }
@@ -73,10 +74,11 @@ public class WorkProcessService {
         workProcess.setSemesterTeacher(semesterTeacher);
 
         WorkProcess result = workProcessRepository.save(workProcess);
-        if(request.getId() == null){
+        if(isCreate){
             List<StudentRegis> studentRegisList = studentRegisRepo.findBySemesterTeacher(semesterTeacher.getId());
             for(StudentRegis s : studentRegisList){
-                notificationService.saveSingle("Yêu cầu nộp báo cáo", "/student/project", "Giảng viên yêu cầu nộp báo cáo tiến độ: "+result.getTitle(), s.getStudent().getId());
+                String link = "/student/project-detail/" + s.getId() + "#tab2";
+                notificationService.saveSingle("Yêu cầu nộp báo cáo", link, "Giảng viên yêu cầu nộp báo cáo tiến độ: "+result.getTitle(), s.getStudent().getId());
             }
         }
         return result;

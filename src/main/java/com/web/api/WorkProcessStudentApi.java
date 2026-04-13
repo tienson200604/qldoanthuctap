@@ -39,6 +39,11 @@ public class WorkProcessStudentApi {
         return workProcessStudentService.findById(id);
     }
 
+    @GetMapping("/student/find-my-feedback")
+    public WorkProcessStudent findMyFeedback(@RequestParam Long id){
+        return workProcessStudentService.findMyFeedbackById(id);
+    }
+
     @GetMapping("/student-teacher/find-by-workprocess-id")
     public Map<String, Object> findByWorkProcess(@RequestParam Long workProcessId){
         return workProcessStudentService.findByWorkProcess(workProcessId);

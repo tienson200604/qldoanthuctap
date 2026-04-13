@@ -41,7 +41,8 @@ public class RelatedDocumentsService {
     private NotificationService notificationService;
 
     public RelatedDocuments save(RelatedDocuments relatedDocuments){
-        if(relatedDocuments.getId() == null){
+        boolean isCreate = relatedDocuments.getId() == null;
+        if(isCreate){
             if(relatedDocumentsRepository.findByNameAndSemesterTeacher(relatedDocuments.getName(), relatedDocuments.getSemesterTeacher().getId()).isPresent()){
                 throw new MessageException("Loại giấy tờ này đã được tạo");
             }
@@ -55,10 +56,11 @@ public class RelatedDocumentsService {
             relatedDocuments.setOutTimeCount(ex.getOutTimeCount());
         }
         RelatedDocuments result = relatedDocumentsRepository.save(relatedDocuments);
-        if(relatedDocuments.getId() == null){
+        if(isCreate){
             List<StudentRegis> list = studentRegisRepository.findBySemesterTeacher(relatedDocuments.getSemesterTeacher().getId());
             for(StudentRegis s : list){
-                notificationService.saveSingle("Yêu cầu nộp giấy tờ", "/student/project", "Giảng viên yêu cầu nộp giấy tờ: "+result.getName(), s.getStudent().getId());
+                String link = "/student/project-detail/" + s.getId() + "#tab3";
+                notificationService.saveSingle("Yêu cầu nộp giấy tờ", link, "Giảng viên yêu cầu nộp giấy tờ: "+result.getName(), s.getStudent().getId());
             }
         }
         return result;

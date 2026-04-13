@@ -1,4 +1,5 @@
 var listWork = [];
+var feedbackModalOpened = false;
 async function loadWork(page) {
     var size = 10;
     var sort = document.getElementById("work-sort").value
@@ -61,16 +62,83 @@ async function loadWork(page) {
         mainpage += `<li onclick="loadWork(${(Number(i) - 1)})" class="page-item ${Number(i)-1 == page?'active':''}"><a class="page-link" href="#">${i}</a></li>`
     }
     document.getElementById("pagination-work").innerHTML = mainpage
+    openFeedbackFromUrl();
 }
 
 function viewReplay(workProcessStudentId){
     for(i=0 ;i<listWork.length; i++){
         if(listWork[i].workProcessStudentResponse != null){
             if(listWork[i].workProcessStudentResponse.id == workProcessStudentId){
-                document.getElementById("ngayphanhoi").innerHTML = listWork[i].workProcessStudentResponse.replayDate
-                document.getElementById("noidungphanhoi").innerHTML = listWork[i].workProcessStudentResponse.replay
+                renderReplayModal(listWork[i].workProcessStudentResponse);
             }
         }
+    }
+}
+
+function renderReplayModal(workProcessStudentResponse){
+    document.getElementById("ngayphanhoi").innerHTML = formatReplayDate(workProcessStudentResponse.replayDate);
+    document.getElementById("noidungphanhoi").innerHTML = workProcessStudentResponse.replay || "Chưa có nội dung phản hồi";
+}
+
+function formatReplayDate(replayDate){
+    if(replayDate == null){
+        return "";
+    }
+    if(Array.isArray(replayDate)){
+        const date = new Date(
+            replayDate[0],
+            replayDate[1] - 1,
+            replayDate[2],
+            replayDate[3] || 0,
+            replayDate[4] || 0,
+            replayDate[5] || 0
+        );
+        return date.toLocaleString("vi-VN");
+    }
+    const date = new Date(replayDate);
+    if(!isNaN(date.getTime())){
+        return date.toLocaleString("vi-VN");
+    }
+    return replayDate;
+}
+
+function clearFeedbackQueryParam(){
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.delete("feedbackId");
+    history.replaceState(null, "", currentUrl.pathname + currentUrl.search + currentUrl.hash);
+}
+
+async function openFeedbackFromUrl(){
+    if(feedbackModalOpened){
+        return;
+    }
+    const currentUrl = new URL(window.location.href);
+    const feedbackId = currentUrl.searchParams.get("feedbackId");
+    if(!feedbackId){
+        return;
+    }
+
+    for (let i = 0; i < listWork.length; i++) {
+        const response = listWork[i].workProcessStudentResponse;
+        if(response != null && String(response.id) === String(feedbackId)){
+            feedbackModalOpened = true;
+            renderReplayModal(response);
+            new bootstrap.Modal(document.getElementById("modal-replay-std")).show();
+            clearFeedbackQueryParam();
+            return;
+        }
+    }
+
+    const response = await getMethod(`/api/work-process-student/student/find-my-feedback?id=${feedbackId}`);
+    if(response == null){
+        return;
+    }
+    const result = await response.json();
+    if(result != null){
+        feedbackModalOpened = true;
+        renderReplayModal(result);
+        new bootstrap.Modal(document.getElementById("modal-replay-std")).show();
+        clearFeedbackQueryParam();
     }
 }
 

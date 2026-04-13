@@ -61,7 +61,8 @@ public class RelatedDocumentStudentService {
         relatedDocumentStudent.setFileName(request.getFileName());
         relatedDocumentsRepository.save(relatedDocuments);
         RelatedDocumentStudent result = relatedDocumentStudentRepository.save(relatedDocumentStudent);
-        notificationService.saveSingle("Sinh viên nộp giấy tờ", "/teacher/project", "Sinh viên "+studentRegis.get().getStudent().getFullname()+" đã nộp giấy tờ: "+relatedDocuments.getName(), relatedDocuments.getSemesterTeacher().getTeacher().getId());
+        String teacherLink = "/teacher/project-detail/" + relatedDocuments.getSemesterTeacher().getId() + "#tab3";
+        notificationService.saveSingle("Sinh viên nộp giấy tờ", teacherLink, "Sinh viên "+studentRegis.get().getStudent().getFullname()+" đã nộp giấy tờ: "+relatedDocuments.getName(), relatedDocuments.getSemesterTeacher().getTeacher().getId());
         return result;
     }
 }

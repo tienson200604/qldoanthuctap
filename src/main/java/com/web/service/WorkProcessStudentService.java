@@ -75,7 +75,8 @@ public class WorkProcessStudentService {
         workProcessStudent.setWorkProcess(workProcess);
         workProcessRepository.save(workProcess);
         WorkProcessStudent result = workProcessStudentRepository.save(workProcessStudent);
-        notificationService.saveSingle("Sinh viên nộp báo cáo", "/teacher/project", "Sinh viên "+studentRegis.get().getStudent().getFullname()+" đã nộp báo cáo: "+workProcess.getTitle(), workProcess.getSemesterTeacher().getTeacher().getId());
+        String teacherLink = "/teacher/project-detail/" + workProcess.getSemesterTeacher().getId() + "#tab2";
+        notificationService.saveSingle("Sinh viên nộp báo cáo", teacherLink, "Sinh viên "+studentRegis.get().getStudent().getFullname()+" đã nộp báo cáo: "+workProcess.getTitle(), workProcess.getSemesterTeacher().getTeacher().getId());
         return result;
     }
 
@@ -128,10 +129,30 @@ public class WorkProcessStudentService {
         return map;
     }
 
+    public WorkProcessStudent findMyFeedbackById(Long id) {
+        User user = userUtils.getUserWithAuthority();
+        WorkProcessStudent workProcessStudent = workProcessStudentRepository.findById(id)
+                .orElseThrow(() -> new MessageException("Không tìm thấy phản hồi"));
+        if(workProcessStudent.getStudentRegis() == null || workProcessStudent.getStudentRegis().getStudent() == null ||
+                !workProcessStudent.getStudentRegis().getStudent().getId().equals(user.getId())){
+            throw new MessageException("Bạn không có quyền xem phản hồi này");
+        }
+        return workProcessStudent;
+    }
+
     public WorkProcessStudent replay(Long id, String replay) {
         WorkProcessStudent workProcessStudent = workProcessStudentRepository.findById(id).orElseThrow(() -> new MessageException("KhÔng tìm thấy dữ liệu"));
         workProcessStudent.setReplay(replay);
-        workProcessStudent.setCreatedDate(LocalDateTime.now());
-        return workProcessStudentRepository.save(workProcessStudent);
+        workProcessStudent.setReplayDate(LocalDateTime.now());
+        WorkProcessStudent result = workProcessStudentRepository.save(workProcessStudent);
+        String studentLink = "/student/project-detail/" + workProcessStudent.getStudentRegis().getId()
+                + "?feedbackId=" + workProcessStudent.getId() + "#tab2";
+        notificationService.saveSingle(
+                "Giảng viên đã phản hồi báo cáo",
+                studentLink,
+                "Bạn có phản hồi mới cho báo cáo tiến độ: " + workProcessStudent.getWorkProcess().getTitle(),
+                workProcessStudent.getStudentRegis().getStudent().getId()
+        );
+        return result;
     }
 }

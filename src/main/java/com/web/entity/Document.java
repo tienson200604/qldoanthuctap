@@ -36,6 +36,7 @@ public class Document {
 
     private Integer numberDownload;
 
+    @Column(columnDefinition = "LONGTEXT")
     private String description;
 
     @Enumerated(EnumType.STRING)

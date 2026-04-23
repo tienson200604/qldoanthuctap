@@ -17,8 +17,14 @@ public interface BlogRepository extends JpaRepository<Blog,Long> {
     @Query(value = "select b.* from blog b order by b.id desc limit 10", nativeQuery = true)
     List<Blog> newBlog();
 
+    @Query(value = "select b from Blog b where b.targetRole in :roles order by b.id desc")
+    List<Blog> newBlog(List<String> roles, org.springframework.data.domain.Pageable pageable);
+
     @Query(value = "select b.* from blog b where b.id != ?1 order by b.id desc limit 10", nativeQuery = true)
     List<Blog> newBlogAndNotId(Long id);
+
+    @Query(value = "select b from Blog b where b.id != :id and b.targetRole in :roles order by b.id desc")
+    List<Blog> newBlogAndNotId(Long id, List<String> roles, org.springframework.data.domain.Pageable pageable);
 
     Page<Blog> findByCategoryId(Long id, Pageable pageable);
 

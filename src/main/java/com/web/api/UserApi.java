@@ -188,8 +188,9 @@ public class UserApi {
     }
 
     @PostMapping("/all/update-infor")
-    public User updateInfor(@RequestBody UserInfoDto user){
-        return userService.updateProfile(user);
+    public ResponseEntity<?> updateInfor(@RequestBody UserInfoDto user){
+        userService.updateProfile(user);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/admin/create-update")

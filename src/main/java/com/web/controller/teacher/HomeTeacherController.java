@@ -14,9 +14,18 @@ public class HomeTeacherController {
     @Autowired
     private BlogRepository blogRepository;
 
+    @Autowired
+    private com.web.utils.UserUtils userUtils;
+
     @RequestMapping(value = {"/index"}, method = RequestMethod.GET)
     public String home(Model model) {
-        model.addAttribute("newBlogs", blogRepository.newBlog());
+        java.util.List<String> roles = new java.util.ArrayList<>();
+        roles.add("ALL");
+        com.web.entity.User user = userUtils.getUserWithAuthority();
+        if (user != null) {
+            roles.add(user.getAuthorities().getName());
+        }
+        model.addAttribute("newBlogs", blogRepository.newBlog(roles, org.springframework.data.domain.PageRequest.of(0, 10)));
         return "teacher/index";
     }
 

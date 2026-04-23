@@ -26,9 +26,9 @@ public class DocumentApi {
     private DocumentService documentService;
 
     @PostMapping("/admin-teacher/create-update")
-    public ResponseEntity<?> save(@RequestBody DocumentRequest request){
-        Document result = documentService.saveOrUpdate(request);
-        return new ResponseEntity<>(result, HttpStatus.CREATED);
+    public ResponseEntity<Void> save(@RequestBody DocumentRequest request){
+        documentService.saveOrUpdate(request);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/public/search-public")

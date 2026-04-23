@@ -33,7 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.*;

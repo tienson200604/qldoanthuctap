@@ -71,7 +71,7 @@ async function loadCompany(page){
             </div>
           </div>
           <div class="company-actions">
-            <a href="${b.company.website}" target="_blank" class="btn btn-outline-primary btn-sm">
+            <a href="${b.company.website.startsWith('http') ? b.company.website : 'https://' + b.company.website}" target="_blank" class="btn btn-outline-primary btn-sm">
               <i class="bi bi-globe"></i>
               Website
             </a>

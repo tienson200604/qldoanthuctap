@@ -1,13 +1,39 @@
 async function updateInfor(){
-    var payload = {
-        "fullname":document.getElementById("fullname").value,
-        "phone":document.getElementById("phone").value,
-        "avatar":document.getElementById("avatar").value,
-        "classname":document.getElementById("className").value,
+    var fullname = document.getElementById("fullname").value;
+    var phone = document.getElementById("phone").value;
+    var className = document.getElementById("className").value;
+    var avatar = document.getElementById("avatar").value;
+
+    if(fullname.trim() === ""){
+        swal('Lỗi','Vui lòng nhập họ và tên','error'); return;
     }
-    var response = await postMethodPayload('/api/user/all/update-infor',payload)
-    if(response.status < 300){
-        swal('Thông báo','Cập nhật thông tin thành công','success');
+    if(phone.trim() === ""){
+        swal('Lỗi','Vui lòng nhập số điện thoại','error'); return;
+    }
+
+    var btn = document.getElementById("btn-update-infor");
+    var originalHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang lưu...';
+
+    var payload = {
+        "fullname":fullname,
+        "phone":phone,
+        "avatar":avatar,
+        "classname":className,
+    }
+    try {
+        var response = await postMethodPayload('/api/user/all/update-infor', payload)
+        if (response && response.status < 300) {
+            swal('Thông báo', 'Cập nhật thông tin thành công', 'success');
+        }
+    } catch (error) {
+        console.error(error);
+        // postMethodPayload usually handles its own errors with swal, 
+        // but if it throws (e.g. network error), we should handle it here.
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
     }
 }
 
@@ -17,7 +43,7 @@ async function chooseAvatar(){
     const filePath = document.getElementById('avatarInput')
     const formData = new FormData()
     formData.append("file", filePath.files[0])
-    var urlUpload = 'http://localhost:8080/api/public/upload-file';
+    var urlUpload = firstUrl + '/api/public/upload-file';
     const res = await fetch(urlUpload, {
         method: 'POST',
         body: formData
@@ -58,7 +84,7 @@ async function changePassword(){
         "confirmPass":confirmPassword,
     }
     var response = await postMethodPayload('/api/user/all/change-password', payload)
-    if(response.status < 300){
+    if(response && response.status < 300){
         swal('Thông báo','Đổi mật khẩu thành công','success');
     }
 }

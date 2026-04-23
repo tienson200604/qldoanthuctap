@@ -105,7 +105,12 @@ public class CloudinaryService {
             options.put("type", "upload");
             options.put("attachment", true);
             options.put("expires_at", (System.currentTimeMillis() / 1000L) + DOWNLOAD_URL_EXPIRE_SECONDS);
-            return cloudinaryConfig.privateDownload(assetInfo.publicIdWithoutExtension, assetInfo.extension, options);
+            String downloadPublicId = "raw".equals(assetInfo.resourceType)
+                    ? assetInfo.publicPath
+                    : assetInfo.publicIdWithoutExtension;
+            String format = "raw".equals(assetInfo.resourceType) ? null : assetInfo.extension;
+
+            return cloudinaryConfig.privateDownload(downloadPublicId, format, options);
         } catch (Exception e) {
             return fileUrl;
         }

@@ -46,46 +46,56 @@ public class DocumentService {
     private NotificationService notificationService;
 
     public Document saveOrUpdate(DocumentRequest dto){
+        if (dto.getCategoryId() == null) {
+            throw new MessageException("Vui lòng chọn danh mục cho tài liệu");
+        }
         Category category = categoryRepository.findById(dto.getCategoryId()).orElseThrow(()-> new MessageException("Không tìm thấy danh mục với id: "+dto.getCategoryId()));
-        Document document = documentMapper.requestToEntity(dto);
-        document.setCategory(category);
+        
+        Document document;
         User user = userUtils.getUserWithAuthority();
-        document.setUser(user);
-        if(document.getId() == null){
+        
+        if(dto.getId() == null){
+            document = new Document();
+            document.setNumberDownload(0);
+            document.setNumberView(0);
+            document.setUser(user);
             if(!user.getAuthorities().getName().equals(Contains.ROLE_ADMIN) && dto.getStatus() != null){
-                throw new MessageException("Bạn không có quyền set status cho tài liệu, hãy bỏ field tài liệu hoặc để null");
+                throw new MessageException("Bạn không có quyền set status cho tài liệu");
             }
+            document.setStatus(dto.getStatus() != null ? dto.getStatus() : DocumentStatus.DANG_CHO);
         }
         else{
-            Document optional = documentRepository.findById(dto.getId()).orElseThrow(() -> new MessageException("Không tìm thấy tài liệu với id: "+dto.getId()));
+            document = documentRepository.findById(dto.getId()).orElseThrow(() -> new MessageException("Không tìm thấy tài liệu với id: "+dto.getId()));
             if(!user.getAuthorities().getName().equals(Contains.ROLE_ADMIN) && !user.getAuthorities().getName().equals(Contains.ROLE_STUDENT)){
-                if(!optional.getUser().getId().equals(user.getId())){
+                if(!document.getUser().getId().equals(user.getId())){
                     throw new MessageException("Chỉ admin và chủ tài liệu mới có quyền chỉnh sửa tài liệu này");
                 }
             }
-            if(!user.getAuthorities().getName().equals(Contains.ROLE_ADMIN)){
-                document.setStatus(optional.getStatus());
+            if(user.getAuthorities().getName().equals(Contains.ROLE_ADMIN) && dto.getStatus() != null){
+                document.setStatus(dto.getStatus());
             }
-            document.setNumberDownload(optional.getNumberDownload());
-            document.setNumberView(optional.getNumberView());
-            document.setUser(optional.getUser());
-            document.setStatus(optional.getStatus());
         }
-        if(document.getStatus() == null){
-            document.setStatus(DocumentStatus.DANG_CHO);
-        }
-        else{
-            document.setStatus(dto.getStatus());
-        }
+
+        // Cập nhật các trường thông tin từ DTO
+        document.setName(dto.getName());
+        document.setDescription(dto.getDescription());
+        document.setLinkImage(dto.getLinkImage());
+        document.setCategory(category);
+        
         Document result = documentRepository.save(document);
-        if(result.getStatus().equals(DocumentStatus.DANG_CHO)){
+        
+        if(DocumentStatus.DANG_CHO.equals(result.getStatus())){
             notificationService.save("Tài liệu mới", "/admin/document?status=DANG_CHO", "Có tài liệu mới đang chờ duyệt: "+result.getName());
         }
-        for(DocumentRequest.Detail s : dto.getDetails()){
-            DocumentDetail detail = documentMapper.requestToEntity(s);
-            detail.setDocument(document);
-            documentDetailRepository.save(detail);
+        
+        if (dto.getDetails() != null) {
+            for(DocumentRequest.Detail s : dto.getDetails()){
+                DocumentDetail detail = documentMapper.requestToEntity(s);
+                detail.setDocument(result);
+                documentDetailRepository.save(detail);
+            }
         }
+        
         return result;
     }
 

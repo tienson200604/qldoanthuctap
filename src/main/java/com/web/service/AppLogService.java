@@ -21,7 +21,7 @@ public class AppLogService {
     @Autowired
     private UserUtils userUtils;
 
-    @org.springframework.transaction.annotation.Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
+    @org.springframework.transaction.annotation.Transactional
     public void addLog(String content, LogLevel level) {
         try {
             AppLog log = new AppLog();

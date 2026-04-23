@@ -30,4 +30,6 @@ public class BlogResponse {
     private UserResponse user;
 
     private Category category;
+
+    private String targetRole;
 }

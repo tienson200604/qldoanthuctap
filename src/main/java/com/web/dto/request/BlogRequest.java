@@ -22,4 +22,6 @@ public class BlogRequest {
 
     private Long categoryId;
 
+    private String targetRole;
+
 }

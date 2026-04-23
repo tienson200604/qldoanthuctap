@@ -40,4 +40,6 @@ public class Blog {
     @JoinColumn(name = "user_id")
     private User user;
 
+    private String targetRole;
+
 }

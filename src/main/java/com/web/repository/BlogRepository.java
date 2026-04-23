@@ -22,8 +22,17 @@ public interface BlogRepository extends JpaRepository<Blog,Long> {
 
     Page<Blog> findByCategoryId(Long id, Pageable pageable);
 
+    @Query("select b from Blog b where b.category.id = :id and b.targetRole in :roles")
+    Page<Blog> findByCategoryIdAndTargetRoleIn(Long id, List<String> roles, Pageable pageable);
+
+    @Query("select b from Blog b where b.targetRole in :roles")
+    Page<Blog> findByTargetRoleIn(List<String> roles, Pageable pageable);
+
     @Query("select b from Blog b where lower(b.title) like lower(concat('%',:keyword,'%'))")
     Page<Blog> search(String keyword, Pageable pageable);
+
+    @Query("select b from Blog b where (lower(b.title) like lower(concat('%',:keyword,'%'))) and b.targetRole in :roles")
+    Page<Blog> searchAndTargetRoleIn(String keyword, List<String> roles, Pageable pageable);
 
     @Query("select b from Blog b where lower(b.title) like lower(concat('%',:keyword,'%')) or " +
             "lower(b.description) like lower(concat('%',:keyword,'%')) or " +

@@ -16,9 +16,11 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import com.web.entity.User;
 
 @Service
 public class BlogService {
@@ -54,7 +56,13 @@ public class BlogService {
         }
         Blog result = blogRepository.save(blog);
         if(blogRequest.getId() == null){
-            notificationService.saveToAll("Bài viết mới", "/student/blog-detail?id="+result.getId(), "Có bài viết mới: "+result.getTitle());
+            if (result.getTargetRole().equals("ALL")) {
+                notificationService.saveToRole(com.web.utils.Contains.ROLE_STUDENT, "Bài viết mới", "/student/blog-detail?id="+result.getId(), "Có bài viết mới: "+result.getTitle());
+                notificationService.saveToRole(com.web.utils.Contains.ROLE_TEACHER, "Bài viết mới", "/teacher/blog-detail?id="+result.getId(), "Có bài viết mới: "+result.getTitle());
+            } else {
+                String link = result.getTargetRole().equals(com.web.utils.Contains.ROLE_TEACHER) ? "/teacher/blog-detail?id=" : "/student/blog-detail?id=";
+                notificationService.saveToRole(result.getTargetRole(), "Bài viết mới", link+result.getId(), "Có bài viết mới: "+result.getTitle());
+            }
         }
         return blogMapper.blogToResponse(result);
     }
@@ -69,15 +77,37 @@ public class BlogService {
 
     public Page<BlogResponse> findAll(Pageable pageable,String search,Long category) {
         Page<Blog> list;
+        User user = userUtils.getUserWithAuthority();
+        List<String> roles = new java.util.ArrayList<>();
+        roles.add("ALL");
+        boolean isAdmin = false;
+        if (user != null) {
+            roles.add(user.getAuthorities().getName());
+            if (user.getAuthorities().getName().equals(com.web.utils.Contains.ROLE_ADMIN)) {
+                isAdmin = true;
+            }
+        }
 
         if(category != null){
-            list = blogRepository.findByCategoryId(category, pageable);
+            if (isAdmin) {
+                list = blogRepository.findByCategoryId(category, pageable);
+            } else {
+                list = blogRepository.findByCategoryIdAndTargetRoleIn(category, roles, pageable);
+            }
         }
         else if(search != null && !search.isEmpty()){
-            list = blogRepository.search(search, pageable);
+            if (isAdmin) {
+                list = blogRepository.search(search, pageable);
+            } else {
+                list = blogRepository.searchAndTargetRoleIn(search, roles, pageable);
+            }
         }
         else{
-            list = blogRepository.findAll(pageable);
+            if (isAdmin) {
+                list = blogRepository.findAll(pageable);
+            } else {
+                list = blogRepository.findByTargetRoleIn(roles, pageable);
+            }
         }
 
         Page<BlogResponse> result = list.map(blog-> blogMapper.blogToResponse(blog));

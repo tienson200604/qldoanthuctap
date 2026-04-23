@@ -11,10 +11,10 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">
-                <a href="/">Trang chủ</a>
+                <a href="/teacher/index">Trang chủ</a>
             </li>
             <li class="breadcrumb-item">
-                <a href="/blogs">Thông báo</a>
+                <a href="/teacher/blogs">Thông báo</a>
             </li>
             <li class="breadcrumb-item active">
                 Chi tiết
@@ -66,7 +66,7 @@
                 <h5>Danh mục</h5>
                 <div class="flex-wrap">
                     <span class="badge bg-primary ms-3 mt-3" th:each="c : ${listCategory}">
-                        <a th:href="'/student/blogs?category='+${c.id}" th:text="${c.name}" class="text-white"></a>
+                        <a th:href="'/teacher/blogs?category='+${c.id}" th:text="${c.name}" class="text-white"></a>
                     </span>
                 </div>
             </div>

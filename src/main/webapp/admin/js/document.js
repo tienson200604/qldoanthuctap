@@ -53,16 +53,11 @@ async function loadDocument(page) {
 async function loadCategorySelect() {
     var response = await getMethod(`/api/category/public/all-by-type?type=DOCUMENT`)
     var list = await response.json();
-    var main = '';
+    var main = '<option value="">Chọn danh mục</option>';
     for (i = 0; i < list.length; i++) {
         main += `<option value="${list[i].id}">${list[i].name}</option>`
     }
     document.getElementById("category").innerHTML = main
-    $('#category').select2({
-        theme: "bootstrap-5",
-        width: '100%', 
-        templateSelection: (data) => data.text 
-    });
 }
 
 async function loadDocumentStatus() {
@@ -105,16 +100,11 @@ async function loadDocumentStatus() {
 async function loadInit() {
     var response = await getMethod(`/api/category/public/all-by-type?type=DOCUMENT`)
     var list = await response.json();
-    var main = '<option value="">-- Chọn danh mục --</option>';
+    var main = '<option value="">Chọn danh mục</option>';
     for (i = 0; i < list.length; i++) {
         main += `<option value="${list[i].id}">${list[i].name}</option>`
     }
     document.getElementById("category").innerHTML = main
-    $('#category').select2({
-        theme: "bootstrap-5",
-        width: '100%', 
-        templateSelection: (data) => data.text 
-    });
 
     var response = await getMethod(`/api/document/admin-teacher/document-status`)
     var list = await response.json();

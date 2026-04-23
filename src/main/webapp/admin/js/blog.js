@@ -40,16 +40,11 @@ async function loadBlog(page) {
 async function loadCategorySelect() {
     var response = await getMethod(`/api/category/public/all-by-type?type=BLOG`)
     var list = await response.json();
-    var main = '';
+    var main = '<option value="">Chọn danh mục</option>';
     for (i = 0; i < list.length; i++) {
         main += `<option value="${list[i].id}">${list[i].name}</option>`
     }
     document.getElementById("category").innerHTML = main
-    $('#category').select2({
-        theme: "bootstrap-5",
-        width: '100%', 
-        templateSelection: (data) => data.text 
-    });
 }
 
 
@@ -63,6 +58,7 @@ async function saveBlog() {
         "content": tinyMCE.get('editor').getContent(),
         "image": document.getElementById("image").value,
         "categoryId": document.getElementById("category").value,
+        "targetRole": document.getElementById("targetRole").value,
     }
     var response = await postMethodPayload(`/api/blog/admin/create-update`, payload)
     if (response != null) {
@@ -92,6 +88,7 @@ async function loadABlog() {
         if(result.image){
             document.getElementById("imgpreview").src = result.image
         }
+        document.getElementById("targetRole").value = result.targetRole
          tinyMCE.get('editor').setContent(result.content)
     }
 }

@@ -57,7 +57,18 @@
                     <div class="col-md-12 form-add-user">
                         <div class="form-floating form-add-user">
                             <select class="form-select" id="category">
-                        </select>
+                            </select>
+                            <label>Danh mục</label>
+                        </div>
+                    </div>
+                    <div class="col-md-12 form-add-user">
+                        <div class="form-floating form-add-user">
+                            <select class="form-select" id="targetRole">
+                                <option value="ALL">Tất cả mọi người</option>
+                                <option value="ROLE_STUDENT">Chỉ sinh viên</option>
+                                <option value="ROLE_TEACHER">Chỉ giảng viên</option>
+                            </select>
+                            <label>Đối tượng xem</label>
                         </div>
                     </div>
                     <div class="form-floating form-add-user">
@@ -89,12 +100,12 @@
     </div>
 </div>
 
-<script src="https://cdn.tiny.cloud/1/ki9cw4sa3ezsjymcgc1p2vpztcc01ou0ctbtjtqbin07c68z/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
 <script>
   tinymce.init({
     selector: 'textarea#editor', // Chọn textarea có id là 'editor'
     // Tăng cường các plugin để hỗ trợ nhiều chức năng hơn
-    plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak ' +
+    plugins: 'advlist autolink lists link image charmap preview anchor pagebreak ' +
             'searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking ' +
             'table emoticons template paste codesample help',
     // Định nghĩa các nút trên thanh công cụ. Chia thành nhiều dòng để dễ quản lý.

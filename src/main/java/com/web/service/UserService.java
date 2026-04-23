@@ -303,29 +303,28 @@ public class UserService {
 
 
     public Map<String, Object> importUser(MultipartFile file) {
-
         int success = 0;
         int fail = 0;
-        int numEmailExist = 0;
-        List<String> emailExist = new ArrayList<>();
+        int numDuplicate = 0;
+        List<String> listDuplicate = new ArrayList<>();
 
         try {
-
             Workbook workbook = new XSSFWorkbook(file.getInputStream());
             Sheet sheet = workbook.getSheetAt(0);
-
             Iterator<Row> rows = sheet.iterator();
 
-            // bỏ dòng header
+            // Skip header
             if (rows.hasNext()) {
                 rows.next();
             }
 
-            while (rows.hasNext()) {
+            Set<String> emailsInFile = new HashSet<>();
+            Set<String> codesInFile = new HashSet<>();
 
+            while (rows.hasNext()) {
                 Row row = rows.next();
                 try {
-                    String username = getCellValue(row.getCell(0));
+                    String usernameExcel = getCellValue(row.getCell(0));
                     String password = getCellValue(row.getCell(1));
                     String fullname = getCellValue(row.getCell(2));
                     String email = getCellValue(row.getCell(3));
@@ -335,20 +334,48 @@ public class UserService {
                     String authorityName = getCellValue(row.getCell(7));
                     String avatar = getCellValue(row.getCell(8));
                     String classname = getCellValue(row.getCell(9));
-                    if(userRepository.findByEmail(email).isPresent()){
-                        ++numEmailExist;
-                        emailExist.add(email);
-                        continue;
-                    }
-                    if(username == null || username.isEmpty()){
+
+                    if (email == null || email.trim().isEmpty()) {
                         fail++;
                         continue;
                     }
 
-                    User user = new User();
+                    email = email.trim();
+                    if (code != null) code = code.trim();
 
-                    user.setUsername(email);
-                    user.setPassword(passwordEncoder.encode(password));
+                    // 1. Check duplicate within the file
+                    if (emailsInFile.contains(email)) {
+                        numDuplicate++;
+                        listDuplicate.add(email + " (Trùng email trong file)");
+                        continue;
+                    }
+                    if (code != null && !code.isEmpty() && codesInFile.contains(code)) {
+                        numDuplicate++;
+                        listDuplicate.add(code + " (Trùng mã trong file)");
+                        continue;
+                    }
+
+                    // 2. Check duplicate in database
+                    if (userRepository.findByEmail(email).isPresent()) {
+                        numDuplicate++;
+                        listDuplicate.add(email + " (Email đã tồn tại)");
+                        continue;
+                    }
+                    if (code != null && !code.isEmpty() && userRepository.findByCode(code).isPresent()) {
+                        numDuplicate++;
+                        listDuplicate.add(code + " (Mã đã tồn tại)");
+                        continue;
+                    }
+
+                    // Track for file duplicates
+                    emailsInFile.add(email);
+                    if (code != null && !code.isEmpty()) {
+                        codesInFile.add(code);
+                    }
+
+                    User user = new User();
+                    user.setUsername(email); // Use email as username
+                    user.setPassword(passwordEncoder.encode(password != null ? password : "123")); // Default password if empty
                     user.setFullname(fullname);
                     user.setEmail(email);
                     user.setPhone(phone);
@@ -356,36 +383,36 @@ public class UserService {
                     user.setAvatar(avatar);
                     user.setClassname(classname);
 
-                    if(activedStr != null){
+                    if (activedStr != null) {
                         user.setActived(Boolean.parseBoolean(activedStr));
+                    } else {
+                        user.setActived(true);
                     }
 
-                    if(authorityName != null){
+                    if (authorityName != null) {
                         Authority authority = authorityRepository.findByName(authorityName);
                         user.setAuthorities(authority);
                     }
 
                     user.setCreatedDate(new java.sql.Date(System.currentTimeMillis()));
-
                     userRepository.save(user);
-
                     success++;
 
                 } catch (Exception e) {
                     fail++;
                 }
             }
-
             workbook.close();
 
         } catch (Exception e) {
-            throw new RuntimeException("Import thất bại");
+            throw new RuntimeException("Import thất bại: " + e.getMessage());
         }
+
         Map<String, Object> map = new HashMap<>();
         map.put("success", String.valueOf(success));
         map.put("fail", String.valueOf(fail));
-        map.put("numEmailExist", String.valueOf(numEmailExist));
-        map.put("listEmailExist", emailExist);
+        map.put("numEmailExist", String.valueOf(numDuplicate)); // Keep key name for frontend compatibility
+        map.put("listEmailExist", listDuplicate); // Keep key name for frontend compatibility
         return map;
     }
 

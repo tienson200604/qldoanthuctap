@@ -312,7 +312,7 @@ function showImportResult(result) {
     }
 
     // counts
-    totalCount.innerText = Number(result.success) + Number(result.numEmailExist) ?? 0;
+    totalCount.innerText = Number(result.success) + Number(result.numEmailExist) + Number(result.fail) ?? 0;
     successCount.innerText = result.success ?? 0;
     failCount.innerText = result.numEmailExist ?? 0;
 

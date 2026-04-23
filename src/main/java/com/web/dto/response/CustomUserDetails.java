@@ -25,7 +25,7 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         String rolestr = user.getAuthorities().getName();
-        System.out.println("rolelist: "+rolestr);
+        System.out.println("rolelist: " + rolestr);
         return Collections.singleton(new SimpleGrantedAuthority(rolestr));
     }
 
@@ -59,4 +59,3 @@ public class CustomUserDetails implements UserDetails {
         return true;
     }
 }
-

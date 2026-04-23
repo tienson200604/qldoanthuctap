@@ -1,5 +1,6 @@
 package com.web.utils;
 
+import com.web.entity.Authority;
 import com.web.entity.User;
 import com.web.enums.UserType;
 import com.web.repository.AuthorityRepository;
@@ -25,11 +26,21 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        // 1. Khởi tạo các Quyền (Roles) nếu chưa có
+        String[] roles = { Contains.ROLE_ADMIN, Contains.ROLE_TEACHER, Contains.ROLE_STUDENT, Contains.ROLE_PARENT };
+        for (String roleName : roles) {
+            if (!authorityRepository.findById(roleName).isPresent()) {
+                Authority authority = new Authority();
+                authority.setName(roleName);
+                authorityRepository.save(authority);
+            }
+        }
+
         String username = "admin@gmail.com";
         String password = "admin";
         String email = "admin@gmail.com";
 
-        // Kiểm tra xem tài khoản đã tồn tại chưa
+        // 2. Kiểm tra và tạo tài khoản Admin
         if (!userRepository.findByUsername(username).isPresent()) {
             User user = new User();
             user.setUsername(username);
@@ -39,8 +50,7 @@ public class DataInitializer implements CommandLineRunner {
             user.setActived(true);
             user.setCreatedDate(new Date(System.currentTimeMillis()));
             user.setFullname("ADMIN");
-            user.setAuthorities(authorityRepository.findByName(Contains.ROLE_ADMIN));
-            // Nếu cần mã hóa mật khẩu, bạn có thể làm ở đây
+            user.setAuthorities(authorityRepository.findById(Contains.ROLE_ADMIN).get());
             userRepository.save(user);
         }
     }
